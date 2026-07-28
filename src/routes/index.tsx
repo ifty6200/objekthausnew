@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "ObjektHaus — A Quiet Exhibition of Objects" },
       {
         property: "og:description",
-        content: "Objects shape the spaces we inhabit. Enter the exhibition.",
+        content: "Scroll through the ObjektHaus exhibition: Object No.07, its botanical archive card, the materials behind it and the flowers that name each plywood object.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

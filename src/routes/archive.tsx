@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
+import { Reveal, RuleLine } from "@/components/Reveal";
+import { flowers } from "@/lib/flowers";
 import archiveDark from "@/assets/archive-dark.jpg";
 import botanicalLace from "@/assets/botanical-lace.jpg";
 
@@ -10,25 +12,19 @@ export const Route = createFileRoute("/archive")({
       {
         name: "description",
         content:
-          "The flowers behind each ObjektHaus object: Queen Anne's Lace, Cow Parsley, Yarrow and more, with the archive card that ships with every piece.",
+          "Every flower in the ObjektHaus archive names a plywood object. Open a floret to see the product it represents, why we chose it, and the story behind it.",
       },
       { property: "og:title", content: "Botanical Archive — ObjektHaus" },
       {
         property: "og:description",
-        content: "Explore the flowers behind each object and their stories.",
+        content: "Explore the flowers behind each plywood object and their stories.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Archive,
 });
-
-const entries = [
-  { no: "041", name: "Queen Anne's Lace", latin: "Daucus carota", note: "Discovered, never announced." },
-  { no: "042", name: "Cow Parsley", latin: "Anthriscus sylvestris", note: "Roadside architecture." },
-  { no: "043", name: "Yarrow", latin: "Achillea millefolium", note: "Patient, fine-leaved, durable." },
-  { no: "044", name: "Male Fern", latin: "Dryopteris filix-mas", note: "Unfurls before it stands." },
-  { no: "045", name: "Hogweed", latin: "Heracleum sphondylium", note: "Scale without ceremony." },
-];
 
 function Archive() {
   return (
@@ -41,53 +37,69 @@ function Archive() {
           alt="Herbarium plate of botanical engravings"
           width={1024}
           height={1408}
-          className="absolute inset-0 h-full w-full object-cover opacity-90"
+          className="ken absolute inset-0 h-full w-full object-cover opacity-90"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/20" />
         <div className="relative">
-          <p className="caps opacity-55">Plate No. XXXII</p>
-          <h1 className="mt-4 font-display text-5xl font-light sm:text-6xl">
+          <p className="caps rise opacity-55">Plate No. XXXII</p>
+          <h1 className="rise mt-4 font-display text-5xl font-light sm:text-6xl">
             Botanical
             <br />
             Archive
           </h1>
-          <span className="rule-line mt-6" />
+          <RuleLine className="mt-6" />
         </div>
       </header>
 
       <section className="px-7 py-16 sm:px-10">
+        <p className="caps mb-8 opacity-50">Each floret is an object — open one</p>
         <ul className="divide-y divide-current/15">
-          {entries.map((e) => (
-            <li key={e.no} className="py-7">
-              <div className="flex items-baseline gap-5">
-                <span className="caps w-12 shrink-0 opacity-50">{e.no}</span>
-                <div>
-                  <h2 className="font-display text-3xl font-light">{e.name}</h2>
-                  <p className="mt-1 text-sm italic opacity-60">{e.latin}</p>
-                  <p className="mt-3 text-[0.95rem] opacity-80">{e.note}</p>
+          {flowers.map((f, i) => (
+            <Reveal as="li" key={f.no} delay={i * 70}>
+              <Link
+                to="/flower/$slug"
+                params={{ slug: f.slug }}
+                className="group flex items-baseline gap-5 py-7 transition-opacity duration-500 hover:opacity-65"
+              >
+                <span className="caps w-12 shrink-0 opacity-50">{f.no}</span>
+                <div className="flex-1">
+                  <h2 className="font-display text-3xl font-light">{f.name}</h2>
+                  <p className="mt-1 text-sm italic opacity-60">{f.latin}</p>
+                  <p className="mt-3 text-[0.95rem] opacity-80">{f.note}</p>
+                  <p className="caps mt-3 opacity-55">{f.product}</p>
                 </div>
-              </div>
-            </li>
+                <svg
+                  width="22"
+                  height="8"
+                  viewBox="0 0 22 8"
+                  fill="none"
+                  aria-hidden="true"
+                  className="shrink-0 self-center transition-transform duration-500 group-hover:translate-x-1.5"
+                >
+                  <path d="M0 4h20M16.5 1L20 4l-3.5 3" stroke="currentColor" strokeWidth="1" />
+                </svg>
+              </Link>
+            </Reveal>
           ))}
         </ul>
       </section>
 
       <section className="px-7 pb-24 sm:px-10">
-        <div className="border border-current/20 p-8 text-center">
+        <Reveal className="border border-current/20 p-8 text-center">
           <img
             src={botanicalLace}
             alt="Archive card engraving of Queen Anne's Lace"
             loading="lazy"
             width={1024}
             height={1200}
-            className="mx-auto w-40 opacity-80 invert"
+            className="drift mx-auto w-40 opacity-80 invert"
           />
           <p className="caps mt-6 opacity-60">Included with every object</p>
           <p className="mt-3 font-display text-2xl font-light">The botanical archive card</p>
-          <Link to="/order" className="link-underline caps mt-8 inline-block">
-            Order an object
+          <Link to="/order" className="corner-action caps mt-8 inline-flex">
+            Bring it home
           </Link>
-        </div>
+        </Reveal>
       </section>
     </main>
   );

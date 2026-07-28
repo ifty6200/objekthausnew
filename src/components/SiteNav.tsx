@@ -1,26 +1,13 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useNavTone } from "./use-nav-tone";
+import { SocialLinks } from "./Social";
 
-const menu = [
-  { label: "Exhibition", to: "/", hash: "hero" },
-  { label: "Manifesto", to: "/", hash: "manifesto" },
-  { label: "Object No.07", to: "/", hash: "object" },
-  { label: "Botanical Card", to: "/", hash: "card" },
-  { label: "Materials", to: "/", hash: "materials" },
-  { label: "Botanical Archive", to: "/archive" },
-  { label: "Order", to: "/order" },
-  { label: "Contact", to: "/contact" },
-];
-
-const index = [
-  { no: "I", label: "Entrance", hash: "hero" },
-  { no: "II", label: "Objects shape the spaces", hash: "manifesto" },
-  { no: "III", label: "Object No.07 — Dome Lamp", hash: "object" },
-  { no: "IV", label: "Queen Anne's Lace", hash: "card" },
-  { no: "V", label: "Material before product", hash: "materials" },
-  { no: "VI", label: "Botanical Archive", hash: "archive" },
-  { no: "VII", label: "Bring it home", hash: "order" },
+const items = [
+  { no: "I", label: "Object No.07 — Dome Lamp", hash: "object" },
+  { no: "II", label: "Queen Anne's Lace", hash: "card" },
+  { no: "III", label: "Botanical Archive", to: "/archive" },
+  { no: "IV", label: "Contact", to: "/contact" },
 ];
 
 function EyeIcon() {
@@ -38,10 +25,8 @@ function EyeIcon() {
 
 export function SiteNav() {
   const tone = useNavTone();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [indexOpen, setIndexOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const router = useRouter();
-  const open = menuOpen || indexOpen;
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -51,125 +36,113 @@ export function SiteNav() {
   }, [open]);
 
   const goToSection = (hash: string) => {
-    setMenuOpen(false);
-    setIndexOpen(false);
+    setOpen(false);
     const scroll = () =>
       document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
     if (router.state.location.pathname !== "/") {
-      router.navigate({ to: "/" }).then(() => setTimeout(scroll, 120));
+      router.navigate({ to: "/" }).then(() => setTimeout(scroll, 160));
     } else {
-      setTimeout(scroll, 60);
+      setTimeout(scroll, 80);
     }
   };
 
-  const iconTone = open ? "text-bone" : tone === "dark" ? "text-ink" : "text-bone";
+  const iconTone = open ? "text-olive-foreground" : tone === "dark" ? "text-ink" : "text-bone";
 
   return (
     <>
       <header
         data-nav-root
-        className={`fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 mix-blend-normal transition-colors duration-500 sm:px-8 ${iconTone}`}
+        className={`fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 transition-colors duration-500 sm:px-8 ${iconTone}`}
       >
-        <button
-          type="button"
-          aria-label="Open exhibition index"
-          aria-expanded={indexOpen}
-          onClick={() => {
-            setMenuOpen(false);
-            setIndexOpen((v) => !v);
-          }}
-          className="pointer-events-auto -m-2 p-2 transition-opacity duration-300 hover:opacity-60"
+        <Link
+          to="/"
+          aria-label="Back to the exhibition entrance"
+          onClick={() => setOpen(false)}
+          className="pointer-events-auto -m-2 p-2 transition-all duration-500 hover:opacity-60"
         >
           <EyeIcon />
-        </button>
+        </Link>
 
         <button
           type="button"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}
-          onClick={() => {
-            setIndexOpen(false);
-            setMenuOpen((v) => !v);
-          }}
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
           className="pointer-events-auto -m-2 flex h-9 w-9 flex-col items-end justify-center gap-[7px] p-2"
         >
           <span
-            className={`block h-px w-7 bg-current transition-transform duration-400 ${
-              menuOpen ? "translate-y-[4px] rotate-45" : ""
+            className={`block h-px bg-current transition-all duration-500 ${
+              open ? "w-7 translate-y-[4px] rotate-45" : "w-7"
             }`}
           />
           <span
-            className={`block h-px w-7 bg-current transition-transform duration-400 ${
-              menuOpen ? "-translate-y-[4px] -rotate-45" : ""
+            className={`block h-px bg-current transition-all duration-500 ${
+              open ? "w-7 -translate-y-[4px] -rotate-45" : "w-4"
             }`}
           />
         </button>
       </header>
 
-      {/* Burger menu overlay */}
+      {/* Minimal index overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-ink text-ink-foreground transition-opacity duration-500 ${
-          menuOpen ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-      >
-        <nav className="flex h-full flex-col justify-center px-7 sm:px-10">
-          <p className="caps mb-10 opacity-50">Menu</p>
-          <ul className="space-y-5">
-            {menu.map((item) =>
-              item.hash ? (
-                <li key={item.label}>
-                  <button
-                    type="button"
-                    onClick={() => goToSection(item.hash!)}
-                    className="font-display text-4xl font-light transition-opacity duration-300 hover:opacity-55 sm:text-5xl"
-                  >
-                    {item.label}
-                  </button>
-                </li>
-              ) : (
-                <li key={item.label}>
-                  <Link
-                    to={item.to}
-                    onClick={() => setMenuOpen(false)}
-                    className="font-display text-4xl font-light transition-opacity duration-300 hover:opacity-55 sm:text-5xl"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ),
-            )}
-          </ul>
-          <div className="caps mt-14 flex gap-8 opacity-50">
-            <a href="https://instagram.com" target="_blank" rel="noreferrer">
-              Instagram
-            </a>
-            <span>© ObjektHaus 2024</span>
-          </div>
-        </nav>
-      </div>
-
-      {/* Eye — exhibition index overlay */}
-      <div
-        className={`fixed inset-0 z-40 bg-olive text-olive-foreground transition-opacity duration-500 ${
-          indexOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        className={`fixed inset-0 z-40 bg-olive text-olive-foreground transition-opacity duration-700 ${
+          open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
         <div className="flex h-full flex-col justify-center px-7 sm:px-10">
-          <p className="caps mb-10 opacity-50">Exhibition Index</p>
-          <ul className="divide-y divide-current/15">
-            {index.map((item) => (
-              <li key={item.no}>
-                <button
-                  type="button"
-                  onClick={() => goToSection(item.hash)}
-                  className="flex w-full items-baseline gap-5 py-4 text-left transition-opacity duration-300 hover:opacity-60"
-                >
-                  <span className="caps w-8 shrink-0 opacity-55">{item.no}</span>
-                  <span className="font-display text-2xl font-light sm:text-3xl">{item.label}</span>
-                </button>
+          <p
+            className={`caps mb-12 opacity-50 transition-all duration-700 ${
+              open ? "translate-y-0 opacity-50" : "translate-y-2 opacity-0"
+            }`}
+          >
+            Index
+          </p>
+          <ul>
+            {items.map((item, i) => (
+              <li key={item.label}>
+                {item.hash ? (
+                  <button
+                    type="button"
+                    onClick={() => goToSection(item.hash!)}
+                    style={{ transitionDelay: open ? `${120 + i * 90}ms` : "0ms" }}
+                    className={`group flex w-full items-baseline gap-5 py-4 text-left transition-all duration-700 hover:opacity-60 ${
+                      open ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+                    }`}
+                  >
+                    <span className="caps w-7 shrink-0 opacity-45">{item.no}</span>
+                    <span className="font-display text-2xl font-light sm:text-3xl">
+                      {item.label}
+                    </span>
+                  </button>
+                ) : (
+                  <Link
+                    to={item.to!}
+                    onClick={() => setOpen(false)}
+                    style={{ transitionDelay: open ? `${120 + i * 90}ms` : "0ms" }}
+                    className={`group flex w-full items-baseline gap-5 py-4 text-left transition-all duration-700 hover:opacity-60 ${
+                      open ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+                    }`}
+                  >
+                    <span className="caps w-7 shrink-0 opacity-45">{item.no}</span>
+                    <span className="font-display text-2xl font-light sm:text-3xl">
+                      {item.label}
+                    </span>
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
+
+          <div
+            style={{ transitionDelay: open ? "520ms" : "0ms" }}
+            className={`mt-14 flex items-center gap-6 transition-all duration-700 ${
+              open ? "translate-y-0 opacity-70" : "translate-y-3 opacity-0"
+            }`}
+          >
+            <SocialLinks />
+            <span className="h-px w-10 bg-current opacity-40" />
+            <span className="caps opacity-70">© ObjektHaus 2024</span>
+          </div>
         </div>
       </div>
     </>

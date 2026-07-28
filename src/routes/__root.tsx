@@ -77,16 +77,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "ObjektHaus — Objects for the spaces we inhabit" },
+      {
+        name: "description",
+        content:
+          "ObjektHaus is a scrolling exhibition of quietly made objects in wood, brass, stone, linen and paper, each with its own botanical archive card.",
+      },
+      { name: "author", content: "ObjektHaus" },
+      { property: "og:title", content: "ObjektHaus — Objects for the spaces we inhabit" },
+      {
+        property: "og:description",
+        content: "A scrolling exhibition of quietly made objects and the flowers behind them.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Jost:wght@300;400;500&display=swap",
+      },
       {
         rel: "stylesheet",
         href: appCss,

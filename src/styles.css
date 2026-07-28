@@ -19,6 +19,18 @@
  */
 
 @theme inline {
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --color-olive: var(--olive);
+  --color-olive-foreground: var(--olive-foreground);
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-bone: var(--bone);
+  --color-bone-foreground: var(--bone-foreground);
+  --color-clay: var(--clay);
+  --color-clay-foreground: var(--clay-foreground);
+  --color-sand: var(--sand);
+  --color-sand-foreground: var(--sand-foreground);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -62,26 +74,42 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --radius: 0.125rem;
+  --background: oklch(0.938 0.008 91.5);
+  --foreground: oklch(0.26 0.012 75);
+  --card: oklch(0.955 0.009 91.5);
+  --card-foreground: oklch(0.26 0.012 75);
+  --popover: oklch(0.955 0.009 91.5);
+  --popover-foreground: oklch(0.26 0.012 75);
+  --primary: oklch(0.3 0.02 110);
+  --primary-foreground: oklch(0.96 0.01 91);
+  --secondary: oklch(0.895 0.009 85);
+  --secondary-foreground: oklch(0.26 0.012 75);
+  --muted: oklch(0.895 0.009 85);
+  --muted-foreground: oklch(0.5 0.012 80);
+  --accent: oklch(0.87 0.012 85);
+  --accent-foreground: oklch(0.26 0.012 75);
+  --destructive: oklch(0.55 0.19 30);
+  --destructive-foreground: oklch(0.96 0.01 91);
+  --border: oklch(0.84 0.01 85);
+  --input: oklch(0.84 0.01 85);
+  --ring: oklch(0.55 0.02 100);
+
+  /* ObjektHaus exhibition palette */
+  --olive: oklch(0.31 0.021 116);
+  --olive-foreground: oklch(0.93 0.017 92);
+  --ink: oklch(0.2 0.008 110);
+  --ink-foreground: oklch(0.9 0.015 92);
+  --bone: oklch(0.94 0.009 92);
+  --bone-foreground: oklch(0.26 0.012 75);
+  --clay: oklch(0.87 0.011 78);
+  --clay-foreground: oklch(0.25 0.012 75);
+  --sand: oklch(0.905 0.008 88);
+  --sand-foreground: oklch(0.26 0.012 75);
+
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
+  --tracking-wide-caps: 0.32em;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -140,5 +168,59 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
   }
+}
+
+@utility caps {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide-caps);
+  font-size: 0.6875rem;
+  font-weight: 400;
+}
+
+@utility rule-line {
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  background-color: currentColor;
+  opacity: 0.45;
+}
+
+@utility panel {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 7rem 1.75rem 5rem;
+  overflow: hidden;
+}
+
+@utility link-underline {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid currentColor;
+  transition: opacity 0.4s ease;
+  &:hover {
+    opacity: 0.6;
+  }
+}
+
+@keyframes veil-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility rise {
+  animation: veil-rise 1s cubic-bezier(0.2, 0.6, 0.2, 1) both;
 }

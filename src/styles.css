@@ -224,3 +224,100 @@
 @utility rise {
   animation: veil-rise 1s cubic-bezier(0.2, 0.6, 0.2, 1) both;
 }
+
+/* ——— Motion system ——— */
+@keyframes line-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes ken-burns {
+  from { transform: scale(1.06); }
+  to { transform: scale(1); }
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes trace {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@utility reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 1s cubic-bezier(0.2, 0.6, 0.2, 1),
+    transform 1s cubic-bezier(0.2, 0.6, 0.2, 1),
+    filter 1s ease;
+  filter: blur(6px);
+}
+
+@utility is-visible {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+}
+
+@utility reveal-line {
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 1.1s cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+
+@utility image-veil {
+  overflow: hidden;
+  & img,
+  & video {
+    transition: transform 1.4s cubic-bezier(0.2, 0.6, 0.2, 1), filter 1.2s ease;
+  }
+  &:hover img,
+  &:hover video {
+    transform: scale(1.035);
+  }
+}
+
+@utility ken {
+  animation: ken-burns 12s ease-out both;
+}
+
+@utility drift {
+  animation: drift 5s ease-in-out infinite;
+}
+
+@utility corner-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.4rem;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background-color: currentColor;
+    transform-origin: right center;
+    transform: scaleX(1);
+    transition: transform 0.5s cubic-bezier(0.2, 0.6, 0.2, 1);
+  }
+  &:hover::after {
+    transform-origin: left center;
+    transform: scaleX(0.35);
+  }
+  & .arrow {
+    transition: transform 0.5s cubic-bezier(0.2, 0.6, 0.2, 1);
+  }
+  &:hover .arrow {
+    transform: translateX(5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-line { opacity: 1; transform: none; filter: none; }
+}

@@ -53,7 +53,7 @@ function Index() {
           className="ken absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/25 via-transparent to-ink/45" />
-        <h1 className="rise absolute inset-0 flex items-center justify-center font-display text-5xl font-light tracking-[0.02em] text-bone drop-shadow-[0_2px_18px_rgba(0,0,0,0.35)] sm:text-6xl">
+        <h1 className="rise absolute inset-0 flex items-center justify-center font-display text-5xl font-light tracking-[0.02em] text-bone drop-shadow-[0_2px_18px_rgba(0,0,0,0.35)] sm:text-6xl lg:text-8xl">
           ObjektHaus
         </h1>
         <div className="relative flex flex-col items-center gap-5 text-bone">
@@ -64,7 +64,7 @@ function Index() {
 
       {/* II — Manifesto */}
       <section id="manifesto" data-tone="light" className="panel bg-olive text-olive-foreground">
-        <div className="space-y-9 font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl">
+        <div className="space-y-9 font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl lg:text-6xl">
           <Reveal as="p">
             Objects shape
             <br />
@@ -99,7 +99,7 @@ function Index() {
 
       {/* III — Object No.07 */}
       <section id="object" data-tone="dark" className="panel bg-clay text-clay-foreground">
-        <Reveal className="image-veil mx-auto w-full max-w-md">
+        <Reveal className="image-veil mx-auto w-full max-w-md lg:max-w-lg">
           <img
             src={objectLamp}
             alt="ObjektHaus Object No.07, a speckled ceramic dome table lamp"
@@ -110,7 +110,7 @@ function Index() {
           />
         </Reveal>
         <Reveal className="mt-10" delay={120}>
-          <h2 className="font-display text-4xl font-light sm:text-5xl">Object No.07</h2>
+          <h2 className="font-display text-4xl font-light sm:text-5xl lg:text-6xl">Object No.07</h2>
           <p className="mt-3 text-sm tracking-wide opacity-70">Edition 041 / 101</p>
         </Reveal>
         <RuleLine className="mt-8" />
@@ -125,7 +125,7 @@ function Index() {
 
       {/* IV — Botanical card */}
       <section id="card" data-tone="dark" className="panel bg-sand text-sand-foreground">
-        <Reveal className="image-veil mx-auto w-full max-w-xs">
+        <Reveal className="image-veil mx-auto w-full max-w-xs lg:max-w-sm">
           <img
             src={botanicalLace}
             alt="Ink engraving of a Queen Anne's Lace flower"
@@ -135,7 +135,7 @@ function Index() {
             className="w-full mix-blend-multiply"
           />
         </Reveal>
-        <Reveal as="h2" className="mt-8 font-display text-4xl font-light sm:text-5xl">
+        <Reveal as="h2" className="mt-8 font-display text-4xl font-light sm:text-5xl lg:text-6xl">
           Queen Anne&apos;s Lace
         </Reveal>
         <RuleLine className="mt-5" />
@@ -173,7 +173,7 @@ function Index() {
 
       {/* V — Materials */}
       <section id="materials" data-tone="dark" className="panel bg-bone text-bone-foreground">
-        <Reveal as="h2" className="font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl">
+        <Reveal as="h2" className="font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl lg:text-6xl">
           Every object
           <br />
           begins as
@@ -228,7 +228,7 @@ function Index() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
         <div className="relative">
-          <Reveal as="h2" className="font-display text-4xl font-light sm:text-5xl">
+          <Reveal as="h2" className="font-display text-4xl font-light sm:text-5xl lg:text-6xl">
             Botanical
             <br />
             Archive

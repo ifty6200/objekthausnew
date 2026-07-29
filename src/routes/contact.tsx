@@ -26,7 +26,7 @@ function Contact() {
     <main data-tone="dark" className="min-h-screen bg-sand text-sand-foreground">
       <SiteNav />
 
-      <section className="px-7 pt-32 pb-20 sm:px-10">
+      <section className="mx-auto max-w-2xl px-7 pt-32 pb-20 sm:px-10 lg:pt-40">
         <p className="caps opacity-55">Studio</p>
         <h1 className="mt-4 font-display text-5xl font-light sm:text-6xl">Contact</h1>
         <span className="rule-line mt-6" />

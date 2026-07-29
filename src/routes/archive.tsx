@@ -31,7 +31,7 @@ function Archive() {
     <main data-tone="light" className="min-h-screen bg-ink text-ink-foreground">
       <SiteNav />
 
-      <header className="relative flex min-h-[70svh] flex-col justify-end overflow-hidden px-7 pb-12 sm:px-10">
+      <header className="relative flex min-h-[70svh] flex-col justify-end overflow-hidden px-7 pb-12 sm:px-10 lg:min-h-[80svh] lg:px-16 lg:pb-20">
         <img
           src={archiveDark}
           alt="Herbarium plate of botanical engravings"
@@ -51,7 +51,7 @@ function Archive() {
         </div>
       </header>
 
-      <section className="px-7 py-16 sm:px-10">
+      <section className="mx-auto max-w-5xl px-7 py-16 sm:px-10">
         <p className="caps mb-8 opacity-50">Each floret is an object — open one</p>
         <ul className="divide-y divide-current/15">
           {flowers.map((f, i) => (
@@ -63,7 +63,7 @@ function Archive() {
               >
                 <span className="caps w-12 shrink-0 opacity-50">{f.no}</span>
                 <div className="flex-1">
-                  <h2 className="font-display text-3xl font-light">{f.name}</h2>
+                  <h2 className="font-display text-3xl font-light lg:text-4xl">{f.name}</h2>
                   <p className="mt-1 text-sm italic opacity-60">{f.latin}</p>
                   <p className="mt-3 text-[0.95rem] opacity-80">{f.note}</p>
                   <p className="caps mt-3 opacity-55">{f.product}</p>
@@ -84,7 +84,7 @@ function Archive() {
         </ul>
       </section>
 
-      <section className="px-7 pb-24 sm:px-10">
+      <section className="mx-auto max-w-5xl px-7 pb-24 sm:px-10">
         <Reveal className="border border-current/20 p-8 text-center">
           <img
             src={botanicalLace}

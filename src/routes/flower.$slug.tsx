@@ -35,7 +35,7 @@ function FlowerCard() {
     <main data-tone="dark" className="min-h-screen bg-sand text-sand-foreground">
       <SiteNav />
 
-      <section className="px-7 pt-32 pb-14 sm:px-10">
+      <section className="mx-auto max-w-5xl px-7 pt-32 pb-14 sm:px-10 lg:pt-40">
         <p className="caps rise opacity-55">Floret No. {f.no}</p>
         <h1 className="rise mt-4 font-display text-5xl leading-[1.05] font-light sm:text-6xl">
           {f.name}
@@ -48,7 +48,7 @@ function FlowerCard() {
 
       {/* Swipeable product images */}
       <section className="pb-4">
-        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-7 pb-4 sm:px-10">
+        <div className="mx-auto flex max-w-6xl snap-x snap-mandatory gap-4 overflow-x-auto px-7 pb-4 sm:px-10">
           {f.images.map((img) => (
             <div
               key={img.src}
@@ -65,10 +65,10 @@ function FlowerCard() {
             </div>
           ))}
         </div>
-        <p className="caps px-7 opacity-45 sm:px-10">Swipe — {f.images.length} views</p>
+        <p className="caps mx-auto max-w-6xl px-7 opacity-45 sm:px-10">Swipe — {f.images.length} views</p>
       </section>
 
-      <section className="space-y-12 px-7 py-14 sm:px-10">
+      <section className="mx-auto max-w-5xl space-y-12 px-7 py-14 sm:px-10">
         <Reveal>
           <p className="caps opacity-55">The representing flower card</p>
           <RuleLine className="mt-3" />

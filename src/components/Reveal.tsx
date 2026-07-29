@@ -10,13 +10,12 @@ export function useInView<T extends HTMLElement>(threshold = 0.18) {
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setInView(true);
-            io.unobserve(entry.target);
-          }
+          // Keep observing so the animation recalibrates each time a panel
+          // is revisited instead of only playing once.
+          setInView(entry.isIntersecting);
         }
       },
-      { threshold, rootMargin: "0px 0px -8% 0px" },
+      { threshold, rootMargin: "-4% 0px -8% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();

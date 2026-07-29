@@ -53,7 +53,7 @@ function Index() {
           className="ken absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/25 via-transparent to-ink/45" />
-        <h1 className="rise absolute inset-0 flex items-center justify-center font-display text-5xl font-light tracking-[0.02em] text-bone drop-shadow-[0_2px_18px_rgba(0,0,0,0.35)] sm:text-6xl">
+        <h1 className="rise absolute inset-0 flex items-center justify-center font-display text-5xl font-light tracking-[0.02em] text-bone drop-shadow-[0_2px_18px_rgba(0,0,0,0.35)] sm:text-6xl lg:text-8xl">
           ObjektHaus
         </h1>
         <div className="relative flex flex-col items-center gap-5 text-bone">
@@ -64,7 +64,7 @@ function Index() {
 
       {/* II — Manifesto */}
       <section id="manifesto" data-tone="light" className="panel bg-olive text-olive-foreground">
-        <div className="space-y-9 font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl">
+        <div className="space-y-9 font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl lg:text-6xl">
           <Reveal as="p">
             Objects shape
             <br />
@@ -99,18 +99,20 @@ function Index() {
 
       {/* III — Object No.07 */}
       <section id="object" data-tone="dark" className="panel bg-clay text-clay-foreground">
-        <Reveal className="image-veil mx-auto w-full max-w-md">
+        <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
+        <Reveal className="image-veil mx-auto w-full max-w-md lg:max-w-none">
           <img
             src={objectLamp}
             alt="ObjektHaus Object No.07, a speckled ceramic dome table lamp"
             loading="lazy"
             width={1024}
             height={1408}
-            className="w-full object-contain"
+            className="mx-auto w-full object-contain lg:max-h-[68svh] lg:w-auto"
           />
         </Reveal>
-        <Reveal className="mt-10" delay={120}>
-          <h2 className="font-display text-4xl font-light sm:text-5xl">Object No.07</h2>
+        <div className="lg:pr-6">
+        <Reveal className="mt-10 lg:mt-0" delay={120}>
+          <h2 className="font-display text-4xl font-light sm:text-5xl lg:text-6xl">Object No.07</h2>
           <p className="mt-3 text-sm tracking-wide opacity-70">Edition 041 / 101</p>
         </Reveal>
         <RuleLine className="mt-8" />
@@ -121,21 +123,25 @@ function Index() {
             </Link>
           </Reveal>
         </div>
+        </div>
+        </div>
       </section>
 
       {/* IV — Botanical card */}
       <section id="card" data-tone="dark" className="panel bg-sand text-sand-foreground">
-        <Reveal className="image-veil mx-auto w-full max-w-xs">
+        <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
+        <Reveal className="image-veil mx-auto w-full max-w-xs lg:max-w-sm">
           <img
             src={botanicalLace}
             alt="Ink engraving of a Queen Anne's Lace flower"
             loading="lazy"
             width={1024}
             height={1200}
-            className="w-full mix-blend-multiply"
+            className="mx-auto w-full mix-blend-multiply lg:max-h-[62svh] lg:w-auto lg:object-contain"
           />
         </Reveal>
-        <Reveal as="h2" className="mt-8 font-display text-4xl font-light sm:text-5xl">
+        <div className="lg:pr-6">
+        <Reveal as="h2" className="mt-8 font-display text-4xl font-light sm:text-5xl lg:mt-0 lg:text-6xl">
           Queen Anne&apos;s Lace
         </Reveal>
         <RuleLine className="mt-5" />
@@ -169,11 +175,15 @@ function Index() {
             </Link>
           </Reveal>
         </div>
+        </div>
+        </div>
       </section>
 
       {/* V — Materials */}
       <section id="materials" data-tone="dark" className="panel bg-bone text-bone-foreground">
-        <Reveal as="h2" className="font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl">
+        <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
+        <div>
+        <Reveal as="h2" className="font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl lg:text-6xl">
           Every object
           <br />
           begins as
@@ -183,7 +193,16 @@ function Index() {
           not a product.
         </Reveal>
         <RuleLine className="mt-8" />
-        <Reveal className="image-veil mt-10 w-full rounded-xl" delay={100}>
+        <ul className="mt-10 space-y-4 text-lg font-light tracking-wide opacity-70 lg:mt-12">
+          {["Plywood", "Brass", "Stone", "Linen", "Paper"].map((m, i) => (
+            <Reveal as="li" key={m} delay={i * 80}>
+              {m}
+            </Reveal>
+          ))}
+        </ul>
+        </div>
+        <div>
+        <Reveal className="image-veil mt-10 w-full rounded-xl lg:mt-0" delay={100}>
           <video
             src={craftVideo.url}
             poster={craftWood}
@@ -193,22 +212,17 @@ function Index() {
             playsInline
             preload="metadata"
             aria-label="A craftsman planing a plywood panel, shavings curling away"
-            className="w-full rounded-xl object-cover"
+            className="w-full rounded-xl object-cover lg:max-h-[58svh]"
           />
         </Reveal>
-        <ul className="mt-10 space-y-4 text-lg font-light tracking-wide opacity-70">
-          {["Plywood", "Brass", "Stone", "Linen", "Paper"].map((m, i) => (
-            <Reveal as="li" key={m} delay={i * 80}>
-              {m}
-            </Reveal>
-          ))}
-        </ul>
         <div className="mt-12 flex justify-end">
           <Reveal>
             <Link to="/archive" className="corner-action caps">
               Explore <Arrow />
             </Link>
           </Reveal>
+        </div>
+        </div>
         </div>
       </section>
 
@@ -228,7 +242,7 @@ function Index() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
         <div className="relative">
-          <Reveal as="h2" className="font-display text-4xl font-light sm:text-5xl">
+          <Reveal as="h2" className="font-display text-4xl font-light sm:text-5xl lg:text-6xl">
             Botanical
             <br />
             Archive

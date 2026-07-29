@@ -199,6 +199,21 @@
   overflow: hidden;
 }
 
+/* ——— Desktop scale-up (mobile layout untouched) ——— */
+@media (min-width: 768px) {
+  .panel {
+    padding-block: 9rem 7rem;
+    padding-inline: max(4rem, calc((100% - 60rem) / 2));
+  }
+}
+
+@media (min-width: 1280px) {
+  .panel {
+    padding-block: 10rem 8rem;
+    padding-inline: max(6rem, calc((100% - 68rem) / 2));
+  }
+}
+
 @utility link-underline {
   position: relative;
   display: inline-block;
@@ -248,12 +263,13 @@
 
 @utility reveal {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(14px);
   transition:
-    opacity 0.5s cubic-bezier(0.2, 0.6, 0.2, 1),
-    transform 0.5s cubic-bezier(0.2, 0.6, 0.2, 1),
-    filter 0.5s ease;
-  filter: blur(4px);
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: blur(3px);
+  will-change: opacity, transform;
 }
 
 @utility is-visible {
@@ -265,14 +281,14 @@
 @utility reveal-line {
   transform-origin: left center;
   transform: scaleX(0);
-  transition: transform 0.6s cubic-bezier(0.2, 0.6, 0.2, 1);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @utility image-veil {
   overflow: hidden;
   & img,
   & video {
-    transition: transform 0.7s cubic-bezier(0.2, 0.6, 0.2, 1), filter 0.6s ease;
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease;
   }
   &:hover img,
   &:hover video {

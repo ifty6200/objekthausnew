@@ -202,21 +202,15 @@
 /* ——— Desktop scale-up (mobile layout untouched) ——— */
 @media (min-width: 768px) {
   .panel {
-    padding: 9rem 4rem 7rem;
-  }
-  .panel > *:not(.absolute):not(img) {
-    width: 100%;
-    max-width: 62rem;
-    margin-inline: auto;
+    padding-block: 9rem 7rem;
+    padding-inline: max(4rem, calc((100% - 60rem) / 2));
   }
 }
 
 @media (min-width: 1280px) {
   .panel {
-    padding: 10rem 6rem 8rem;
-  }
-  .panel > *:not(.absolute):not(img) {
-    max-width: 72rem;
+    padding-block: 10rem 8rem;
+    padding-inline: max(6rem, calc((100% - 68rem) / 2));
   }
 }
 

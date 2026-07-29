@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteNav } from "@/components/SiteNav";
+import { SocialLinks } from "@/components/Social";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -35,6 +36,11 @@ function Contact() {
           <p>Gärtnerstraße 14, 10245 Berlin</p>
           <p>Thursday – Saturday, by appointment</p>
           <p className="pt-4">studio@objekthaus.com</p>
+        </div>
+
+        <div className="mt-10 flex items-center gap-6">
+          <span className="caps opacity-55">Elsewhere</span>
+          <SocialLinks className="opacity-80" size={20} />
         </div>
 
         {sent ? (

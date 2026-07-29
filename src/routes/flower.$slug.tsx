@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
-import { flowers, getFlower } from "@/lib/flowers";
+import { flowers, getFlower, type Flower } from "@/lib/flowers";
 
 export const Route = createFileRoute("/flower/$slug")({
   loader: ({ params }) => {
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/flower/$slug")({
 });
 
 function FlowerCard() {
-  const f = Route.useLoaderData();
+  const f = Route.useLoaderData() as Flower;
   const next = flowers[(flowers.findIndex((x) => x.slug === f.slug) + 1) % flowers.length];
 
   return (
@@ -69,6 +69,27 @@ function FlowerCard() {
       </section>
 
       <section className="space-y-12 px-7 py-14 sm:px-10">
+        <Reveal>
+          <p className="caps opacity-55">The representing flower card</p>
+          <RuleLine className="mt-3" />
+          <div className="mt-6 flex flex-col items-center border border-current/20 p-8 text-center">
+            <img
+              src={f.card}
+              alt={`Botanical archive card engraving of ${f.name}`}
+              loading="lazy"
+              width={1024}
+              height={1200}
+              className="drift w-44 opacity-85 mix-blend-multiply dark:mix-blend-normal"
+            />
+            <p className="caps mt-6 opacity-55">Floret No. {f.no}</p>
+            <p className="mt-2 font-display text-2xl font-light">{f.name}</p>
+            <p className="mt-1 text-sm italic opacity-60">{f.latin}</p>
+            <p className="mt-4 max-w-sm text-sm opacity-70">
+              A letterpressed archive card of {f.name}, numbered and slipped into every{" "}
+              {f.product.split("—")[1]?.trim() ?? "object"} we ship.
+            </p>
+          </div>
+        </Reveal>
         <Reveal>
           <p className="caps opacity-55">What it represents</p>
           <RuleLine className="mt-3" />

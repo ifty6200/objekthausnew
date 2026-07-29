@@ -23,6 +23,20 @@ export function FacebookIcon({ size = 18 }: { size?: number }) {
   );
 }
 
+export function WhatsappIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.3" />
+      <path
+        d="M8.6 15.4a4.6 4.6 0 1 1 1.7 1.3l-2.5.7.8-2Z"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function SocialLinks({ className = "", size = 18 }: { className?: string; size?: number }) {
   return (
     <div className={`flex items-center gap-4 ${className}`}>
@@ -43,6 +57,15 @@ export function SocialLinks({ className = "", size = 18 }: { className?: string;
         className="transition-all duration-500 hover:-translate-y-0.5 hover:opacity-60"
       >
         <FacebookIcon size={size} />
+      </a>
+      <a
+        href="https://wa.me/4915112345678"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Message ObjektHaus on WhatsApp"
+        className="transition-all duration-300 hover:-translate-y-0.5 hover:opacity-60"
+      >
+        <WhatsappIcon size={size} />
       </a>
     </div>
   );

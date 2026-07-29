@@ -99,17 +99,19 @@ function Index() {
 
       {/* III — Object No.07 */}
       <section id="object" data-tone="dark" className="panel bg-clay text-clay-foreground">
-        <Reveal className="image-veil mx-auto w-full max-w-md lg:max-w-lg">
+        <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
+        <Reveal className="image-veil mx-auto w-full max-w-md lg:max-w-none">
           <img
             src={objectLamp}
             alt="ObjektHaus Object No.07, a speckled ceramic dome table lamp"
             loading="lazy"
             width={1024}
             height={1408}
-            className="w-full object-contain"
+            className="mx-auto w-full object-contain lg:max-h-[68svh] lg:w-auto"
           />
         </Reveal>
-        <Reveal className="mt-10" delay={120}>
+        <div className="lg:pr-6">
+        <Reveal className="mt-10 lg:mt-0" delay={120}>
           <h2 className="font-display text-4xl font-light sm:text-5xl lg:text-6xl">Object No.07</h2>
           <p className="mt-3 text-sm tracking-wide opacity-70">Edition 041 / 101</p>
         </Reveal>
@@ -121,10 +123,13 @@ function Index() {
             </Link>
           </Reveal>
         </div>
+        </div>
+        </div>
       </section>
 
       {/* IV — Botanical card */}
       <section id="card" data-tone="dark" className="panel bg-sand text-sand-foreground">
+        <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
         <Reveal className="image-veil mx-auto w-full max-w-xs lg:max-w-sm">
           <img
             src={botanicalLace}
@@ -132,10 +137,11 @@ function Index() {
             loading="lazy"
             width={1024}
             height={1200}
-            className="w-full mix-blend-multiply"
+            className="mx-auto w-full mix-blend-multiply lg:max-h-[62svh] lg:w-auto lg:object-contain"
           />
         </Reveal>
-        <Reveal as="h2" className="mt-8 font-display text-4xl font-light sm:text-5xl lg:text-6xl">
+        <div className="lg:pr-6">
+        <Reveal as="h2" className="mt-8 font-display text-4xl font-light sm:text-5xl lg:mt-0 lg:text-6xl">
           Queen Anne&apos;s Lace
         </Reveal>
         <RuleLine className="mt-5" />
@@ -168,6 +174,8 @@ function Index() {
               Explore floret <Arrow />
             </Link>
           </Reveal>
+        </div>
+        </div>
         </div>
       </section>
 

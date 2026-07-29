@@ -181,6 +181,8 @@ function Index() {
 
       {/* V — Materials */}
       <section id="materials" data-tone="dark" className="panel bg-bone text-bone-foreground">
+        <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
+        <div>
         <Reveal as="h2" className="font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl lg:text-6xl">
           Every object
           <br />
@@ -191,7 +193,16 @@ function Index() {
           not a product.
         </Reveal>
         <RuleLine className="mt-8" />
-        <Reveal className="image-veil mt-10 w-full rounded-xl" delay={100}>
+        <ul className="mt-10 space-y-4 text-lg font-light tracking-wide opacity-70 lg:mt-12">
+          {["Plywood", "Brass", "Stone", "Linen", "Paper"].map((m, i) => (
+            <Reveal as="li" key={m} delay={i * 80}>
+              {m}
+            </Reveal>
+          ))}
+        </ul>
+        </div>
+        <div>
+        <Reveal className="image-veil mt-10 w-full rounded-xl lg:mt-0" delay={100}>
           <video
             src={craftVideo.url}
             poster={craftWood}
@@ -201,22 +212,17 @@ function Index() {
             playsInline
             preload="metadata"
             aria-label="A craftsman planing a plywood panel, shavings curling away"
-            className="w-full rounded-xl object-cover"
+            className="w-full rounded-xl object-cover lg:max-h-[58svh]"
           />
         </Reveal>
-        <ul className="mt-10 space-y-4 text-lg font-light tracking-wide opacity-70">
-          {["Plywood", "Brass", "Stone", "Linen", "Paper"].map((m, i) => (
-            <Reveal as="li" key={m} delay={i * 80}>
-              {m}
-            </Reveal>
-          ))}
-        </ul>
         <div className="mt-12 flex justify-end">
           <Reveal>
             <Link to="/archive" className="corner-action caps">
               Explore <Arrow />
             </Link>
           </Reveal>
+        </div>
+        </div>
         </div>
       </section>
 

@@ -214,6 +214,84 @@
   }
 }
 
+@media (min-width: 1536px) {
+  .panel {
+    padding-block: 11rem 9rem;
+    padding-inline: max(8rem, calc((100% - 82rem) / 2));
+  }
+}
+
+@media (min-width: 1800px) {
+  .panel {
+    padding-inline: max(10rem, calc((100% - 96rem) / 2));
+  }
+}
+
+/* ——— Brand marks drawn in currentColor ——— */
+@utility ink-mark {
+  background-color: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+/* ——— Transparent nav icons: legible hit-state on any background ——— */
+@utility nav-chip {
+  border-radius: 9999px;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 9999px;
+    background-color: currentColor;
+    opacity: 0;
+    transform: scale(0.7);
+    transition:
+      opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 1px solid currentColor;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  &:hover::before,
+  &:focus-visible::before {
+    opacity: 0.14;
+    transform: scale(1);
+  }
+  &:hover::after,
+  &:focus-visible::after {
+    opacity: 0.55;
+  }
+  &:active::before {
+    opacity: 0.26;
+    transform: scale(0.94);
+  }
+  &:active {
+    transform: scale(0.94);
+  }
+  &[aria-expanded="true"]::before {
+    opacity: 0.18;
+    transform: scale(1);
+  }
+  &[aria-expanded="true"]::after {
+    opacity: 0.6;
+  }
+  &:focus-visible {
+    outline: none;
+  }
+}
+
 @utility link-underline {
   position: relative;
   display: inline-block;

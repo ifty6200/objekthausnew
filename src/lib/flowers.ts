@@ -24,6 +24,7 @@ export type Flower = {
   note: string;
   product: string;
   edition: string;
+  price: number;
   represents: string;
   why: string;
   story: string;
@@ -40,6 +41,7 @@ export const flowers: Flower[] = [
     note: "Discovered, never announced.",
     product: "Object No.07 — Dome Lamp",
     edition: "Edition 041 / 101",
+    price: 420,
     represents:
       "A hand-formed plywood dome lamp, its shade bent from seven layers of birch ply and sanded until the seams disappear.",
     why: "The flower opens as a wide, weightless dome held on the thinnest of stems — the exact silhouette we were chasing. Its umbel diffuses light the way our shade does: softly, from the edges inward.",
@@ -60,6 +62,7 @@ export const flowers: Flower[] = [
     note: "Roadside architecture.",
     product: "Object No.12 — Card Holder",
     edition: "Edition 042 / 200",
+    price: 60,
     represents:
       "A small desk card holder milled from a single block of laminated plywood, with a shallow scoop cut for the thumb.",
     why: "Cow parsley builds whole structures out of almost nothing — hollow stems, thin ribs, perfect balance. Our holder is the same idea: a few grams of material doing all the work of holding something upright.",
@@ -79,6 +82,7 @@ export const flowers: Flower[] = [
     note: "Patient, fine-leaved, durable.",
     product: "Object No.03 — Mini Stool",
     edition: "Edition 043 / 80",
+    price: 180,
     represents:
       "A three-legged plywood stool at child height, equally at home as a plant stand or a bedside table.",
     why: "Yarrow is the toughest soft-looking thing in the meadow — fine leaves, wiry stems, it survives being walked on. We wanted a stool that reads as delicate but takes a grown adult without a sound.",
@@ -99,6 +103,7 @@ export const flowers: Flower[] = [
     note: "Unfurls before it stands.",
     product: "Object No.09 — Curve Shelf",
     edition: "Edition 044 / 120",
+    price: 140,
     represents:
       "A wall shelf bent from a single plywood sheet, curling upward at one end to stop small objects from wandering.",
     why: "A fern frond arrives coiled and slowly opens. The shelf is that gesture held halfway — one continuous line that decides, at the last moment, to turn upward.",
@@ -118,6 +123,7 @@ export const flowers: Flower[] = [
     note: "Scale without ceremony.",
     product: "Object No.15 — Tall Floor Lamp",
     edition: "Edition 045 / 60",
+    price: 520,
     represents: "A slender plywood floor lamp, a single upright stem carrying a wide, flat shade.",
     why: "Hogweed grows head-high in a season and never looks like it is trying. That is the posture we wanted: tall, plain, unbothered — height as a fact rather than a statement.",
     story:

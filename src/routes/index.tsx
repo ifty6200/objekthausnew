@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { SocialLinks } from "@/components/Social";
+import { QuickAdd } from "@/components/AddToCart";
+import { Wordmark } from "@/components/SiteNav";
+import { getFlower } from "@/lib/flowers";
 import heroMeadow from "@/assets/hero-meadow.jpg";
 import objectLamp from "@/assets/object-lamp.jpg";
 import botanicalLace from "@/assets/botanical-lace.jpg";
@@ -53,8 +56,9 @@ function Index() {
           className="ken absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/25 via-transparent to-ink/45" />
-        <h1 className="rise absolute inset-0 flex items-center justify-center font-display text-5xl font-light tracking-[0.02em] text-bone drop-shadow-[0_2px_18px_rgba(0,0,0,0.35)] sm:text-6xl lg:text-8xl">
-          ObjektHaus
+        <h1 className="rise absolute inset-0 flex items-center justify-center px-10 text-bone">
+          <span className="sr-only">ObjektHaus</span>
+          <Wordmark className="h-16 w-[min(78vw,22rem)] drop-shadow-[0_2px_18px_rgba(0,0,0,0.45)] sm:h-20 sm:w-[26rem] lg:h-28 lg:w-[38rem] xl:w-[44rem]" />
         </h1>
         <div className="relative flex flex-col items-center gap-5 text-bone">
           <p className="caps drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)]">Scroll to enter exhibition</p>
@@ -118,9 +122,7 @@ function Index() {
         <RuleLine className="mt-8" />
         <div className="mt-14 flex justify-end">
           <Reveal delay={200}>
-            <Link to="/order" className="corner-action caps">
-              Bring it home <Arrow />
-            </Link>
+            <QuickAdd flower={getFlower("queen-annes-lace")!} />
           </Reveal>
         </div>
         </div>

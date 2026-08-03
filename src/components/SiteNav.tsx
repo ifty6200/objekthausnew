@@ -2,6 +2,9 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useNavTone } from "./use-nav-tone";
 import { SocialLinks } from "./Social";
+import { useCart } from "@/lib/cart";
+import eyeMark from "@/assets/objekthaus-eye.png.asset.json";
+import wordmark from "@/assets/objekthaus-wordmark.png.asset.json";
 
 const items = [
   { no: "I", label: "Object No.07 — Dome Lamp", hash: "object" },
@@ -10,16 +13,24 @@ const items = [
   { no: "IV", label: "Contact", to: "/contact" },
 ];
 
-function EyeIcon() {
+/** The original hand-brushed ObjektHaus eye, drawn in currentColor via a mask. */
+function EyeIcon({ className = "" }: { className?: string }) {
   return (
-    <svg width="34" height="20" viewBox="0 0 34 20" fill="none" aria-hidden="true">
-      <path
-        d="M1 10C1 10 7 2 17 2C27 2 33 10 33 10C33 10 27 18 17 18C7 18 1 10 1 10Z"
-        stroke="currentColor"
-        strokeWidth="1.4"
-      />
-      <circle cx="17" cy="10" r="3.4" fill="currentColor" />
-    </svg>
+    <span
+      aria-hidden="true"
+      className={`ink-mark block h-[26px] w-[44px] sm:h-[30px] sm:w-[50px] ${className}`}
+      style={{ maskImage: `url(${eyeMark.url})`, WebkitMaskImage: `url(${eyeMark.url})` }}
+    />
+  );
+}
+
+export function Wordmark({ className = "" }: { className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`ink-mark block ${className}`}
+      style={{ maskImage: `url(${wordmark.url})`, WebkitMaskImage: `url(${wordmark.url})` }}
+    />
   );
 }
 
@@ -27,6 +38,7 @@ export function SiteNav() {
   const tone = useNavTone();
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { count, setOpen: setCartOpen } = useCart();
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -47,40 +59,76 @@ export function SiteNav() {
   };
 
   const iconTone = open ? "text-olive-foreground" : tone === "dark" ? "text-ink" : "text-bone";
+  const chip =
+    "nav-chip pointer-events-auto relative flex items-center justify-center transition-all duration-300";
 
   return (
     <>
       <header
         data-nav-root
-        className={`fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 transition-colors duration-500 sm:px-8 ${iconTone}`}
+        className={`fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-5 transition-colors duration-500 sm:px-8 lg:px-12 ${iconTone}`}
       >
         <Link
           to="/"
           aria-label="Back to the exhibition entrance"
           onClick={() => setOpen(false)}
-          className="pointer-events-auto -m-2 p-2 transition-all duration-500 hover:opacity-60"
+          className={`${chip} h-11 w-14`}
         >
           <EyeIcon />
         </Link>
 
-        <button
-          type="button"
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className="pointer-events-auto -m-2 flex h-9 w-9 flex-col items-end justify-center gap-[7px] p-2"
-        >
-          <span
-            className={`block h-px bg-current transition-all duration-500 ${
-              open ? "w-7 translate-y-[4px] rotate-45" : "w-7"
-            }`}
-          />
-          <span
-            className={`block h-px bg-current transition-all duration-500 ${
-              open ? "w-7 -translate-y-[4px] -rotate-45" : "w-4"
-            }`}
-          />
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            aria-label={`Open your selection — ${count} item${count === 1 ? "" : "s"}`}
+            onClick={() => {
+              setOpen(false);
+              setCartOpen(true);
+            }}
+            className={`${chip} h-11 w-11`}
+          >
+            <svg width="20" height="21" viewBox="0 0 20 21" fill="none" aria-hidden="true">
+              <path
+                d="M2.6 6.2h14.8l-1.2 12.3H3.8L2.6 6.2Z"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M7 8V5.2a3 3 0 0 1 6 0V8"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+              />
+            </svg>
+            {count > 0 && (
+              <span className="absolute -top-0 -right-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-current px-1">
+                <span className="text-[0.6rem] leading-none font-medium text-bone mix-blend-difference">
+                  {count}
+                </span>
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+            className={`${chip} h-11 w-11 flex-col items-center justify-center gap-[7px]`}
+          >
+            <span
+              className={`block h-px bg-current transition-all duration-500 ${
+                open ? "w-6 translate-y-[4px] rotate-45" : "w-6"
+              }`}
+            />
+            <span
+              className={`block h-px bg-current transition-all duration-500 ${
+                open ? "w-6 -translate-y-[4px] -rotate-45" : "w-3.5 self-end"
+              }`}
+            />
+          </button>
+        </div>
       </header>
 
       {/* Minimal index overlay */}
@@ -89,7 +137,12 @@ export function SiteNav() {
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
-        <div className="flex h-full flex-col justify-center px-7 sm:px-10">
+        <div className="mx-auto flex h-full w-full max-w-6xl flex-col justify-center px-7 sm:px-10 lg:px-16">
+          <Wordmark
+            className={`mb-10 h-8 w-52 transition-all duration-700 sm:h-10 sm:w-64 ${
+              open ? "translate-y-0 opacity-90" : "translate-y-2 opacity-0"
+            }`}
+          />
           <p
             className={`caps mb-12 opacity-50 transition-all duration-700 ${
               open ? "translate-y-0 opacity-50" : "translate-y-2 opacity-0"

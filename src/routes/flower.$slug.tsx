@@ -2,6 +2,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { flowers, getFlower, type Flower } from "@/lib/flowers";
+import { AddToCart } from "@/components/AddToCart";
+import { formatPrice } from "@/lib/cart";
 
 export const Route = createFileRoute("/flower/$slug")({
   loader: ({ params }) => {
@@ -43,7 +45,9 @@ function FlowerCard() {
         <p className="mt-3 text-sm italic opacity-60">{f.latin}</p>
         <RuleLine className="mt-6" />
         <p className="caps mt-6 opacity-60">{f.product}</p>
-        <p className="mt-2 text-sm opacity-60">{f.edition}</p>
+        <p className="mt-2 text-sm opacity-60">
+          {f.edition} — {formatPrice(f.price)}
+        </p>
       </section>
 
       {/* Swipeable product images */}
@@ -107,19 +111,7 @@ function FlowerCard() {
         </Reveal>
 
         <Reveal delay={200} className="flex justify-end pt-4">
-          <Link to="/order" className="corner-action font-display text-3xl font-light">
-            Bring it home
-            <svg
-              className="arrow"
-              width="22"
-              height="8"
-              viewBox="0 0 22 8"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path d="M0 4h20M16.5 1L20 4l-3.5 3" stroke="currentColor" strokeWidth="1" />
-            </svg>
-          </Link>
+          <AddToCart flower={f} className="justify-end" />
         </Reveal>
 
         <div className="flex items-center justify-between border-t border-current/15 pt-8">

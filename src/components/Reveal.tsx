@@ -1,23 +1,33 @@
 import { useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
 
-export function useInView<T extends HTMLElement>(threshold = 0.18) {
+export function useInView<T extends HTMLElement>(threshold = 0.12) {
   const ref = useRef<T | null>(null);
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    // Recalibrate on every entry: play when any meaningful part of the element
+    // is inside the viewport, reset only once it has fully left, so scrolling
+    // back to a panel always replays the reveal.
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          // Keep observing so the animation recalibrates each time a panel
-          // is revisited instead of only playing once.
-          setInView(entry.isIntersecting);
+          const enter = entry.isIntersecting && entry.intersectionRatio >= threshold;
+          const leave = entry.intersectionRatio <= 0.001;
+          if (enter) setInView(true);
+          else if (leave) setInView(false);
         }
       },
-      { threshold, rootMargin: "-4% 0px -8% 0px" },
+      { threshold: [0, 0.001, threshold, 0.5, 1], rootMargin: "0px 0px -6% 0px" },
     );
     io.observe(el);
+
+    // Elements already on screen at mount should not wait for a scroll event.
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) setInView(true);
+
     return () => io.disconnect();
   }, [threshold]);
 

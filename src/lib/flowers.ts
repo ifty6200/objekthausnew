@@ -1,5 +1,3 @@
-import pLamp1 from "@/assets/p-lamp-1.jpg";
-import pLamp2 from "@/assets/p-lamp-2.jpg";
 import pCard1 from "@/assets/p-card-1.jpg";
 import pCard2 from "@/assets/p-card-2.jpg";
 import pStool1 from "@/assets/p-stool-1.jpg";
@@ -8,9 +6,11 @@ import pShelf1 from "@/assets/p-shelf-1.jpg";
 import pShelf2 from "@/assets/p-shelf-2.jpg";
 import pFloor1 from "@/assets/p-floor-1.jpg";
 import pFloor2 from "@/assets/p-floor-2.jpg";
-import objectLamp from "@/assets/object-lamp.jpg";
 import craftWood from "@/assets/craft-wood.jpg";
-import botanicalLace from "@/assets/botanical-lace.jpg";
+import qalCard from "@/assets/qal-card.jpg.asset.json";
+import halo1 from "@/assets/halo-1.jpg.asset.json";
+import halo2 from "@/assets/halo-2.jpg.asset.json";
+import halo3 from "@/assets/halo-3.jpg.asset.json";
 import cardCowParsley from "@/assets/card-cow-parsley.jpg";
 import cardYarrow from "@/assets/card-yarrow.jpg";
 import cardMaleFern from "@/assets/card-male-fern.jpg";
@@ -39,19 +39,19 @@ export const flowers: Flower[] = [
     name: "Queen Anne's Lace",
     latin: "Daucus carota",
     note: "Discovered, never announced.",
-    product: "Object No.07 — Dome Lamp",
-    edition: "Edition 041 / 101",
+    product: "Object No.01 — Halo Pendant",
+    edition: "Edition 001 / 101",
     price: 420,
     represents:
-      "A hand-formed plywood dome lamp, its shade bent from seven layers of birch ply and sanded until the seams disappear.",
+      "A hanging plywood pendant, its slatted drum ring cut from fine vertical ribs and closed with a soft diffuser disc that glows like an open umbel.",
     why: "The flower opens as a wide, weightless dome held on the thinnest of stems — the exact silhouette we were chasing. Its umbel diffuses light the way our shade does: softly, from the edges inward.",
     story:
-      "No.07 began as a failed bowl. A sheet of ply cracked in the press, curved the wrong way, and sat on the bench for a month before someone turned it over and put a bulb underneath. We kept the curve, lost the crack, and spent a summer learning to bend seven plies without a single splinter. Each lamp is pressed one at a time and takes four days to leave the mould.",
-    card: botanicalLace,
+      "No.01 began as a failed bowl. A sheet of ply cracked in the press, curved the wrong way, and sat on the bench for a month before someone turned it over and put a bulb underneath. We kept the curve, lost the crack, and learned to cut a hundred ribs that meet without a single splinter. Each pendant is assembled one at a time and takes four days to leave the jig.",
+    card: qalCard.url,
     images: [
-      { src: objectLamp, alt: "Object No.07 dome lamp seen from the front" },
-      { src: pLamp1, alt: "Plywood dome lamp glowing on a warm backdrop" },
-      { src: pLamp2, alt: "Detail of the layered plywood edge of the dome shade" },
+      { src: halo1.url, alt: "Detail of the slatted plywood ribs and diffuser of the Halo Pendant" },
+      { src: halo2.url, alt: "Halo Pendant hanging above a dark table with ceramic vessels" },
+      { src: halo3.url, alt: "Halo Pendant edition plate — Object 001, Edition 001 / 101" },
     ],
   },
   {

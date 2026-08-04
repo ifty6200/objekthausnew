@@ -83,7 +83,7 @@ function FlowerCard() {
               loading="lazy"
               width={1024}
               height={1200}
-              className="drift w-44 opacity-85 mix-blend-multiply dark:mix-blend-normal"
+              className="drift w-44 opacity-95"
             />
             <p className="caps mt-6 opacity-55">Floret No. {f.no}</p>
             <p className="mt-2 font-display text-2xl font-light">{f.name}</p>

@@ -7,7 +7,7 @@ import eyeMark from "@/assets/objekthaus-eye.png.asset.json";
 import wordmark from "@/assets/objekthaus-wordmark.png.asset.json";
 
 const items = [
-  { no: "I", label: "Object No.07 — Dome Lamp", hash: "object" },
+  { no: "I", label: "Object No.01 — Halo Pendant", hash: "object" },
   { no: "II", label: "Queen Anne's Lace", hash: "card" },
   { no: "III", label: "Botanical Archive", to: "/archive" },
   { no: "IV", label: "Contact", to: "/contact" },

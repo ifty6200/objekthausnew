@@ -7,8 +7,8 @@ import { Wordmark } from "@/components/SiteNav";
 import { getFlower } from "@/lib/flowers";
 import heroMeadow from "@/assets/hero-meadow.jpg";
 import heroVideo from "@/assets/hero-meadow.mp4.asset.json";
-import objectLamp from "@/assets/object-lamp.jpg";
-import botanicalLace from "@/assets/botanical-lace.jpg";
+import haloHero from "@/assets/halo-2.jpg.asset.json";
+import qalCard from "@/assets/qal-card.jpg.asset.json";
 import craftWood from "@/assets/craft-wood.jpg";
 import craftVideo from "@/assets/craft-plane.mp4.asset.json";
 import archiveDark from "@/assets/archive-dark.jpg";
@@ -106,13 +106,13 @@ function Index() {
         </div>
       </section>
 
-      {/* III — Object No.07 */}
+      {/* III — Object No.01 */}
       <section id="object" data-tone="dark" className="panel bg-clay text-clay-foreground">
         <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
         <Reveal className="image-veil mx-auto w-full max-w-md lg:max-w-none">
           <img
-            src={objectLamp}
-            alt="ObjektHaus Object No.07, a speckled ceramic dome table lamp"
+            src={haloHero.url}
+            alt="ObjektHaus Object No.01, the Halo Pendant lamp glowing above a dark table"
             loading="lazy"
             width={1024}
             height={1408}
@@ -121,8 +121,10 @@ function Index() {
         </Reveal>
         <div className="lg:pr-6">
         <Reveal className="mt-10 lg:mt-0" delay={120}>
-          <h2 className="font-display text-4xl font-light sm:text-5xl lg:text-6xl">Object No.07</h2>
-          <p className="mt-3 text-sm tracking-wide opacity-70">Edition 041 / 101</p>
+          <h2 className="font-display text-4xl font-light sm:text-5xl lg:text-6xl">
+            Object No.01 — Halo Pendant
+          </h2>
+          <p className="mt-3 text-sm tracking-wide opacity-70">Edition 001 / 101</p>
         </Reveal>
         <RuleLine className="mt-8" />
         <div className="mt-14 flex justify-end">
@@ -139,12 +141,12 @@ function Index() {
         <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
         <Reveal className="image-veil mx-auto w-full max-w-xs lg:max-w-sm">
           <img
-            src={botanicalLace}
-            alt="Ink engraving of a Queen Anne's Lace flower"
+            src={qalCard.url}
+            alt="Botanical archive card of Queen Anne's Lace, pressed on textured paper"
             loading="lazy"
             width={1024}
             height={1200}
-            className="mx-auto w-full mix-blend-multiply lg:max-h-[62svh] lg:w-auto lg:object-contain"
+            className="mx-auto w-full lg:max-h-[62svh] lg:w-auto lg:object-contain"
           />
         </Reveal>
         <div className="lg:pr-6">

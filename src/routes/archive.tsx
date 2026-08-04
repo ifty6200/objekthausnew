@@ -3,7 +3,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { flowers } from "@/lib/flowers";
 import archiveDark from "@/assets/archive-dark.jpg";
-import botanicalLace from "@/assets/botanical-lace.jpg";
+import qalCard from "@/assets/qal-card.jpg.asset.json";
 
 export const Route = createFileRoute("/archive")({
   head: () => ({
@@ -87,12 +87,12 @@ function Archive() {
       <section className="mx-auto max-w-5xl px-7 pb-24 sm:px-10">
         <Reveal className="border border-current/20 p-8 text-center">
           <img
-            src={botanicalLace}
-            alt="Archive card engraving of Queen Anne's Lace"
+            src={qalCard.url}
+            alt="Archive card of Queen Anne's Lace"
             loading="lazy"
             width={1024}
             height={1200}
-            className="drift mx-auto w-40 opacity-80 invert"
+            className="drift mx-auto w-40 opacity-90"
           />
           <p className="caps mt-6 opacity-60">Included with every object</p>
           <p className="mt-3 font-display text-2xl font-light">The botanical archive card</p>

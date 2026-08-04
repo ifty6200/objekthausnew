@@ -49,12 +49,16 @@ function Index() {
 
       {/* I — Entrance */}
       <section id="hero" data-tone="light" className="panel justify-end bg-ink text-bone">
-        <img
-          src={heroMeadow}
-          alt="Sunrise over a misty meadow of daisies and poppies"
-          width={1024}
-          height={1536}
-          className="ken absolute inset-0 h-full w-full object-cover"
+        <video
+          src={heroVideo.url}
+          poster={heroMeadow}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-label="A field of chamomile flowers swaying in the sun"
+          className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/25 via-transparent to-ink/45" />
         <h1 className="rise absolute inset-0 flex items-center justify-center px-10 text-bone">

@@ -1,5 +1,3 @@
-import pLamp1 from "@/assets/p-lamp-1.jpg";
-import pLamp2 from "@/assets/p-lamp-2.jpg";
 import pCard1 from "@/assets/p-card-1.jpg";
 import pCard2 from "@/assets/p-card-2.jpg";
 import pStool1 from "@/assets/p-stool-1.jpg";

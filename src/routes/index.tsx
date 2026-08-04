@@ -106,13 +106,13 @@ function Index() {
         </div>
       </section>
 
-      {/* III — Object No.07 */}
+      {/* III — Object No.01 */}
       <section id="object" data-tone="dark" className="panel bg-clay text-clay-foreground">
         <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
         <Reveal className="image-veil mx-auto w-full max-w-md lg:max-w-none">
           <img
-            src={objectLamp}
-            alt="ObjektHaus Object No.07, a speckled ceramic dome table lamp"
+            src={haloHero.url}
+            alt="ObjektHaus Object No.01, the Halo Pendant lamp glowing above a dark table"
             loading="lazy"
             width={1024}
             height={1408}
@@ -121,8 +121,10 @@ function Index() {
         </Reveal>
         <div className="lg:pr-6">
         <Reveal className="mt-10 lg:mt-0" delay={120}>
-          <h2 className="font-display text-4xl font-light sm:text-5xl lg:text-6xl">Object No.07</h2>
-          <p className="mt-3 text-sm tracking-wide opacity-70">Edition 041 / 101</p>
+          <h2 className="font-display text-4xl font-light sm:text-5xl lg:text-6xl">
+            Object No.01 — Halo Pendant
+          </h2>
+          <p className="mt-3 text-sm tracking-wide opacity-70">Edition 001 / 101</p>
         </Reveal>
         <RuleLine className="mt-8" />
         <div className="mt-14 flex justify-end">

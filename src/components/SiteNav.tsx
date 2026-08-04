@@ -188,13 +188,13 @@ export function SiteNav() {
 
           <div
             style={{ transitionDelay: open ? "520ms" : "0ms" }}
-            className={`mt-14 flex items-center gap-6 transition-all duration-700 ${
+            className={`mt-14 flex flex-wrap items-center gap-x-6 gap-y-4 transition-all duration-700 ${
               open ? "translate-y-0 opacity-70" : "translate-y-3 opacity-0"
             }`}
           >
             <SocialLinks />
-            <span className="h-px w-10 bg-current opacity-40" />
-            <span className="caps opacity-70">© ObjektHaus 2024</span>
+            <span className="hidden h-px w-10 bg-current opacity-40 sm:block" />
+            <span className="caps whitespace-nowrap opacity-70">© ObjektHaus 2024</span>
           </div>
         </div>
       </div>

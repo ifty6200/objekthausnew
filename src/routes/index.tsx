@@ -6,6 +6,7 @@ import { QuickAdd } from "@/components/AddToCart";
 import { Wordmark } from "@/components/SiteNav";
 import { getFlower } from "@/lib/flowers";
 import heroMeadow from "@/assets/hero-meadow.jpg";
+import heroVideo from "@/assets/hero-meadow.mp4.asset.json";
 import objectLamp from "@/assets/object-lamp.jpg";
 import botanicalLace from "@/assets/botanical-lace.jpg";
 import craftWood from "@/assets/craft-wood.jpg";

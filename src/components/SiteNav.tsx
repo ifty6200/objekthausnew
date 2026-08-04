@@ -137,7 +137,8 @@ export function SiteNav() {
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
-        <div className="mx-auto flex h-full w-full max-w-6xl flex-col justify-center px-7 sm:px-10 lg:px-16">
+        <div className="h-full w-full overflow-y-auto overscroll-contain">
+        <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col justify-center px-7 py-24 sm:px-10 lg:px-16">
           <Wordmark
             className={`mb-10 h-8 w-52 transition-all duration-700 sm:h-10 sm:w-64 ${
               open ? "translate-y-0 opacity-90" : "translate-y-2 opacity-0"
@@ -188,14 +189,15 @@ export function SiteNav() {
 
           <div
             style={{ transitionDelay: open ? "520ms" : "0ms" }}
-            className={`mt-14 flex items-center gap-6 transition-all duration-700 ${
+            className={`mt-14 flex flex-wrap items-center gap-x-6 gap-y-4 transition-all duration-700 ${
               open ? "translate-y-0 opacity-70" : "translate-y-3 opacity-0"
             }`}
           >
             <SocialLinks />
-            <span className="h-px w-10 bg-current opacity-40" />
-            <span className="caps opacity-70">© ObjektHaus 2024</span>
+            <span className="hidden h-px w-10 bg-current opacity-40 sm:block" />
+            <span className="caps whitespace-nowrap opacity-70">© ObjektHaus 2024</span>
           </div>
+        </div>
         </div>
       </div>
     </>

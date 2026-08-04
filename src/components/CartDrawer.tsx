@@ -12,6 +12,17 @@ export function CartDrawer() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, setOpen]);
 
+  // Lock the page behind the drawer so mobile doesn't scroll the exhibition
+  // underneath while the selection is open.
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
   return (
     <>
       <button
@@ -29,14 +40,14 @@ export function CartDrawer() {
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <header className="flex items-center justify-between border-b border-current/15 px-7 py-6">
+        <header className="flex items-center justify-between border-b border-current/15 px-6 py-6 pt-[max(1.5rem,env(safe-area-inset-top))] sm:px-7">
           <p className="caps opacity-60">Your selection — {count}</p>
           <button type="button" onClick={() => setOpen(false)} className="caps link-underline">
             Close
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-7">
+        <div className="flex-1 overflow-y-auto overscroll-contain px-6 sm:px-7">
           {lines.length === 0 ? (
             <p className="mt-16 font-display text-2xl font-light opacity-70">
               Nothing chosen yet. Open the archive and pick a floret.
@@ -53,9 +64,18 @@ export function CartDrawer() {
                     className="h-24 w-20 shrink-0 object-cover"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-display text-xl font-light">{l.product}</p>
-                    <p className="mt-0.5 truncate text-sm italic opacity-60">{l.name}</p>
-                    <div className="mt-3 flex items-center gap-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="font-display text-xl leading-tight font-light">{l.product}</p>
+                      <button
+                        type="button"
+                        onClick={() => remove(l.slug)}
+                        className="caps shrink-0 pt-1 opacity-45 transition-opacity hover:opacity-90"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <p className="mt-1 text-sm italic opacity-60">{l.name}</p>
+                    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
                       <div className="flex items-center border border-current/25">
                         <button
                           type="button"
@@ -78,20 +98,13 @@ export function CartDrawer() {
                       <span className="text-sm opacity-75">{formatPrice(l.price * l.qty)}</span>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => remove(l.slug)}
-                    className="caps self-start opacity-45 transition-opacity hover:opacity-90"
-                  >
-                    Remove
-                  </button>
                 </li>
               ))}
             </ul>
           )}
         </div>
 
-        <footer className="border-t border-current/15 px-7 py-6">
+        <footer className="border-t border-current/15 px-6 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-7">
           <div className="flex items-center justify-between">
             <span className="caps opacity-55">Total</span>
             <span className="font-display text-2xl font-light">{formatPrice(total)}</span>

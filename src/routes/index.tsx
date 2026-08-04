@@ -141,12 +141,12 @@ function Index() {
         <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
         <Reveal className="image-veil mx-auto w-full max-w-xs lg:max-w-sm">
           <img
-            src={botanicalLace}
-            alt="Ink engraving of a Queen Anne's Lace flower"
+            src={qalCard.url}
+            alt="Botanical archive card of Queen Anne's Lace, pressed on textured paper"
             loading="lazy"
             width={1024}
             height={1200}
-            className="mx-auto w-full mix-blend-multiply lg:max-h-[62svh] lg:w-auto lg:object-contain"
+            className="mx-auto w-full lg:max-h-[62svh] lg:w-auto lg:object-contain"
           />
         </Reveal>
         <div className="lg:pr-6">

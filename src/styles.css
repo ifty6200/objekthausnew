@@ -315,7 +315,7 @@
 }
 
 @utility rise {
-  animation: veil-rise 0.55s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+  animation: veil-rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* ——— Motion system ——— */
@@ -341,12 +341,12 @@
 
 @utility reveal {
   opacity: 0;
-  transform: translateY(14px);
+  transform: translateY(10px);
   transition:
-    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  filter: blur(3px);
+    opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: blur(2px);
   will-change: opacity, transform;
 }
 
@@ -359,14 +359,14 @@
 @utility reveal-line {
   transform-origin: left center;
   transform: scaleX(0);
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @utility image-veil {
   overflow: hidden;
   & img,
   & video {
-    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease;
+    transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
   }
   &:hover img,
   &:hover video {
@@ -375,7 +375,7 @@
 }
 
 @utility ken {
-  animation: ken-burns 7s ease-out both;
+  animation: ken-burns 5s ease-out both;
 }
 
 @utility drift {

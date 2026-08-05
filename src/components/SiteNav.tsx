@@ -4,7 +4,7 @@ import { useNavTone } from "./use-nav-tone";
 import { SocialLinks } from "./Social";
 import { useCart } from "@/lib/cart";
 import eyeMark from "@/assets/objekthaus-eye.png.asset.json";
-import wordmark from "@/assets/objekthaus-wordmark.png.asset.json";
+import { WordmarkGlyph } from "./WordmarkGlyph";
 
 const items = [
   { no: "I", label: "Object No.01 — Halo Pendant", hash: "object" },
@@ -25,13 +25,7 @@ function EyeIcon({ className = "" }: { className?: string }) {
 }
 
 export function Wordmark({ className = "" }: { className?: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`ink-mark block ${className}`}
-      style={{ maskImage: `url(${wordmark.url})`, WebkitMaskImage: `url(${wordmark.url})` }}
-    />
-  );
+  return <WordmarkGlyph className={`block ${className}`} />;
 }
 
 export function SiteNav() {

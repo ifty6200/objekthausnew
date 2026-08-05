@@ -9,7 +9,6 @@ import { getFlower } from "@/lib/flowers";
 import heroVideo from "@/assets/hero-meadow.mp4.asset.json";
 import haloHero from "@/assets/halo-2.jpg.asset.json";
 import qalCard from "@/assets/qal-card.jpg.asset.json";
-import craftWood from "@/assets/craft-wood.jpg";
 import craftVideo from "@/assets/craft-plane.mp4.asset.json";
 import archiveDark from "@/assets/archive-dark.jpg";
 

@@ -3,6 +3,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { SocialLinks } from "@/components/Social";
 import { QuickAdd } from "@/components/AddToCart";
+import { HeroVideo } from "@/components/HeroVideo";
 import { Wordmark } from "@/components/SiteNav";
 import { getFlower } from "@/lib/flowers";
 import heroVideo from "@/assets/hero-meadow.mp4.asset.json";
@@ -48,18 +49,9 @@ function Index() {
 
       {/* I — Entrance */}
       <section id="hero" data-tone="light" className="panel justify-end bg-ink text-bone">
-        <video
+        <HeroVideo
           src={heroVideo.url}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          disablePictureInPicture
-          ref={(el) => {
-            if (el) void el.play().catch(() => {});
-          }}
-          aria-label="A field of chamomile flowers swaying in the sun"
+          label="A field of chamomile flowers swaying in the sun"
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/25 via-transparent to-ink/45" />
@@ -214,15 +206,9 @@ function Index() {
         </div>
         <div>
         <Reveal className="image-veil mt-10 w-full rounded-xl lg:mt-0" delay={100}>
-          <video
+          <HeroVideo
             src={craftVideo.url}
-            poster={craftWood}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-label="A craftsman planing a plywood panel, shavings curling away"
+            label="A craftsman planing a plywood panel, shavings curling away"
             className="w-full rounded-xl object-cover lg:max-h-[58svh]"
           />
         </Reveal>

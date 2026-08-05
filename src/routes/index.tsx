@@ -5,7 +5,6 @@ import { SocialLinks } from "@/components/Social";
 import { QuickAdd } from "@/components/AddToCart";
 import { Wordmark } from "@/components/SiteNav";
 import { getFlower } from "@/lib/flowers";
-import heroMeadow from "@/assets/hero-meadow.jpg";
 import heroVideo from "@/assets/hero-meadow.mp4.asset.json";
 import haloHero from "@/assets/halo-2.jpg.asset.json";
 import qalCard from "@/assets/qal-card.jpg.asset.json";
@@ -51,12 +50,15 @@ function Index() {
       <section id="hero" data-tone="light" className="panel justify-end bg-ink text-bone">
         <video
           src={heroVideo.url}
-          poster={heroMeadow}
           autoPlay
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
+          disablePictureInPicture
+          ref={(el) => {
+            if (el) void el.play().catch(() => {});
+          }}
           aria-label="A field of chamomile flowers swaying in the sun"
           className="absolute inset-0 h-full w-full object-cover"
         />

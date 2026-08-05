@@ -47,9 +47,6 @@ export function HeroVideo({ src, label, className = "" }: Props) {
       muted
       loop
       playsInline
-      // eslint-disable-next-line react/no-unknown-property
-      x5-playsinline=""
-      webkit-playsinline="true"
       preload="auto"
       controls={false}
       disablePictureInPicture

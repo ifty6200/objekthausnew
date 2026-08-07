@@ -6,6 +6,7 @@ import { QuickAdd } from "@/components/AddToCart";
 import { HeroVideo } from "@/components/HeroVideo";
 import { Wordmark } from "@/components/SiteNav";
 import { getFlower } from "@/lib/flowers";
+import { useHero, usePanel5 } from "@/lib/site";
 import heroVideo from "@/assets/hero-meadow.mp4.asset.json";
 import haloHero from "@/assets/halo-2.jpg.asset.json";
 import qalCard from "@/assets/qal-card.jpg.asset.json";
@@ -42,6 +43,13 @@ function Arrow() {
 }
 
 function Index() {
+  const hero = useHero();
+  const panel5 = usePanel5();
+  const materials = (panel5.body || "Plywood\nBrass\nStone\nLinen\nPaper")
+    .split("\n")
+    .map((m) => m.trim())
+    .filter(Boolean);
+
   return (
     <main className="bg-bone">
       <SiteNav />
@@ -49,7 +57,8 @@ function Index() {
       {/* I — Entrance */}
       <section id="hero" data-tone="light" className="panel justify-end bg-ink text-bone">
         <HeroVideo
-          src={heroVideo.url}
+          key={hero.videoUrl || heroVideo.url}
+          src={hero.videoUrl || heroVideo.url}
           label="A field of chamomile flowers swaying in the sun"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -59,7 +68,9 @@ function Index() {
           <Wordmark className="h-16 w-[min(78vw,22rem)] drop-shadow-[0_2px_18px_rgba(0,0,0,0.45)] sm:h-20 sm:w-[26rem] lg:h-28 lg:w-[38rem] xl:w-[44rem]" />
         </h1>
         <div className="relative flex flex-col items-center gap-5 text-bone">
-          <p className="caps drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)]">Scroll to enter exhibition</p>
+          <p className="caps drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)]">
+            {hero.caption || "Scroll to enter exhibition"}
+          </p>
           <span className="drift h-14 w-px bg-current opacity-60" />
         </div>
       </section>
@@ -185,18 +196,29 @@ function Index() {
       <section id="materials" data-tone="dark" className="panel bg-bone text-bone-foreground">
         <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
         <div>
+        {panel5.eyebrow && <p className="caps mb-4 opacity-55">{panel5.eyebrow}</p>}
         <Reveal as="h2" className="font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl lg:text-6xl">
-          Every object
-          <br />
-          begins as
-          <br />
-          a material,
-          <br />
-          not a product.
+          {panel5.title ? (
+            panel5.title.split("\n").map((line, i) => (
+              <span key={i} className="block">
+                {line}
+              </span>
+            ))
+          ) : (
+            <>
+              Every object
+              <br />
+              begins as
+              <br />
+              a material,
+              <br />
+              not a product.
+            </>
+          )}
         </Reveal>
         <RuleLine className="mt-8" />
         <ul className="mt-10 space-y-4 text-lg font-light tracking-wide opacity-70 lg:mt-12">
-          {["Plywood", "Brass", "Stone", "Linen", "Paper"].map((m, i) => (
+          {materials.map((m, i) => (
             <Reveal as="li" key={m} delay={i * 80}>
               {m}
             </Reveal>
@@ -206,11 +228,13 @@ function Index() {
         <div>
         <Reveal className="image-veil mt-10 w-full rounded-xl lg:mt-0" delay={100}>
           <HeroVideo
-            src={craftVideo.url}
+            key={panel5.videoUrl || craftVideo.url}
+            src={panel5.videoUrl || craftVideo.url}
             label="A craftsman planing a plywood panel, shavings curling away"
             className="w-full rounded-xl object-cover lg:max-h-[58svh]"
           />
         </Reveal>
+        {panel5.caption && <p className="caps mt-4 opacity-55">{panel5.caption}</p>}
         <div className="mt-12 flex justify-end">
           <Reveal>
             <Link to="/archive" className="corner-action caps">

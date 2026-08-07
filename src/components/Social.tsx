@@ -1,3 +1,5 @@
+import { useContactInfo, whatsappHref } from "@/lib/site";
+
 export function InstagramIcon({ size = 18 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -38,10 +40,11 @@ export function WhatsappIcon({ size = 18 }: { size?: number }) {
 }
 
 export function SocialLinks({ className = "", size = 18 }: { className?: string; size?: number }) {
+  const contact = useContactInfo();
   return (
     <div className={`flex items-center gap-4 ${className}`}>
       <a
-        href="https://instagram.com"
+        href={contact.instagram}
         target="_blank"
         rel="noreferrer"
         aria-label="ObjektHaus on Instagram"
@@ -50,7 +53,7 @@ export function SocialLinks({ className = "", size = 18 }: { className?: string;
         <InstagramIcon size={size} />
       </a>
       <a
-        href="https://facebook.com"
+        href={contact.facebook}
         target="_blank"
         rel="noreferrer"
         aria-label="ObjektHaus on Facebook"
@@ -59,7 +62,7 @@ export function SocialLinks({ className = "", size = 18 }: { className?: string;
         <FacebookIcon size={size} />
       </a>
       <a
-        href="https://wa.me/4915112345678"
+        href={whatsappHref(contact.whatsapp)}
         target="_blank"
         rel="noreferrer"
         aria-label="Message ObjektHaus on WhatsApp"

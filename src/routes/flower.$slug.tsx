@@ -1,16 +1,13 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
-import { flowers, getFlower, type Flower } from "@/lib/flowers";
+import { getFlower, type Flower } from "@/lib/flowers";
+import { useAllFlowers } from "@/lib/products";
 import { AddToCart } from "@/components/AddToCart";
 import { formatPrice } from "@/lib/cart";
 
 export const Route = createFileRoute("/flower/$slug")({
-  loader: ({ params }) => {
-    const flower = getFlower(params.slug);
-    if (!flower) throw notFound();
-    return flower;
-  },
+  loader: ({ params }) => getFlower(params.slug) ?? null,
   head: ({ loaderData }) => ({
     meta: [
       { title: `${loaderData?.name ?? "Floret"} — ObjektHaus` },
@@ -30,8 +27,27 @@ export const Route = createFileRoute("/flower/$slug")({
 });
 
 function FlowerCard() {
-  const f = Route.useLoaderData() as Flower;
-  const next = flowers[(flowers.findIndex((x) => x.slug === f.slug) + 1) % flowers.length];
+  const { slug } = Route.useParams();
+  const flowers = useAllFlowers();
+  const f = (Route.useLoaderData() as Flower | null) ?? flowers.find((x) => x.slug === slug) ?? null;
+
+  if (!f) {
+    return (
+      <main data-tone="dark" className="min-h-screen bg-sand text-sand-foreground">
+        <SiteNav />
+        <section className="mx-auto max-w-5xl px-7 pt-40 pb-20 sm:px-10">
+          <p className="caps opacity-55">Botanical archive</p>
+          <h1 className="mt-4 font-display text-4xl font-light">Opening this floret…</h1>
+          <Link to="/archive" className="caps link-underline mt-8 inline-block">
+            Back to the archive
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  const idx = flowers.findIndex((x) => x.slug === f.slug);
+  const next = flowers[(idx + 1 + flowers.length) % flowers.length] ?? f;
 
   return (
     <main data-tone="dark" className="min-h-screen bg-sand text-sand-foreground">

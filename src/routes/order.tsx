@@ -4,6 +4,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { SocialLinks } from "@/components/Social";
 import { formatPrice, useCart } from "@/lib/cart";
 import { flowers } from "@/lib/flowers";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/order")({
   head: () => ({
@@ -25,8 +26,48 @@ export const Route = createFileRoute("/order")({
 
 function Order() {
   const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [reference, setReference] = useState<string | null>(null);
   const { lines, setQty, remove, total, count, clear } = useCart();
   const shipping = lines.length === 0 || total >= 500 ? 0 : 24;
+
+  const placeOrder = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (lines.length === 0) return;
+    setBusy(true);
+    setError(null);
+    const form = new FormData(e.currentTarget);
+    const { data, error: err } = await supabase
+      .from("orders")
+      .insert({
+        customer_name: String(form.get("name") ?? ""),
+        phone: String(form.get("phone") ?? ""),
+        address: String(form.get("address") ?? ""),
+        email: String(form.get("email") ?? "") || null,
+        items: lines.map((l) => ({
+          slug: l.slug,
+          name: l.name,
+          product: l.product,
+          qty: l.qty,
+          price: l.price,
+        })),
+        subtotal: total,
+        shipping,
+        total: total + shipping,
+        status: "new",
+      })
+      .select("reference")
+      .maybeSingle();
+    setBusy(false);
+    if (err) {
+      setError("We could not record your order. Please try again or write to the studio.");
+      return;
+    }
+    setReference(data?.reference ?? null);
+    setSent(true);
+    clear();
+  };
 
   return (
     <main data-tone="dark" className="min-h-screen bg-clay text-clay-foreground">
@@ -147,15 +188,14 @@ function Order() {
             {sent ? (
               <p className="font-display text-2xl font-light">
                 Thank you — we&apos;ll write to you about your objects.
+                {reference && (
+                  <span className="caps mt-4 block opacity-60">Order reference {reference}</span>
+                )}
               </p>
             ) : (
           <form
             className="space-y-6"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSent(true);
-              clear();
-            }}
+            onSubmit={placeOrder}
           >
             <p className="caps opacity-55">Your details</p>
             <label className="block">
@@ -201,12 +241,13 @@ function Order() {
                 className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
               />
             </label>
+            {error && <p className="text-sm text-red-500">{error}</p>}
             <button
               type="submit"
-              disabled={lines.length === 0}
+              disabled={lines.length === 0 || busy}
               className="link-underline caps mt-4 disabled:pointer-events-none disabled:opacity-40"
             >
-              Reserve {count > 1 ? `these ${count} objects` : "this object"}
+              {busy ? "Sending…" : `Reserve ${count > 1 ? `these ${count} objects` : "this object"}`}
             </button>
           </form>
             )}

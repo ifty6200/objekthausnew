@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
-import { flowers } from "@/lib/flowers";
+import { useAllFlowers } from "@/lib/products";
 import archiveDark from "@/assets/archive-dark.jpg";
 import qalCard from "@/assets/qal-card.jpg.asset.json";
 
@@ -27,6 +27,8 @@ export const Route = createFileRoute("/archive")({
 });
 
 function Archive() {
+  const flowers = useAllFlowers();
+
   return (
     <main data-tone="light" className="min-h-screen bg-ink text-ink-foreground">
       <SiteNav />

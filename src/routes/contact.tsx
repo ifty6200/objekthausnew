@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { SocialLinks } from "@/components/Social";
+import { useContactInfo, whatsappHref } from "@/lib/site";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const [sent, setSent] = useState(false);
+  const contact = useContactInfo();
 
   return (
     <main data-tone="dark" className="min-h-screen bg-sand text-sand-foreground">
@@ -33,9 +35,18 @@ function Contact() {
 
         <div className="mt-10 space-y-2 text-[0.95rem] opacity-80">
           <p>ObjektHaus Werkstatt</p>
-          <p>Gärtnerstraße 14, 10245 Berlin</p>
-          <p>Thursday – Saturday, by appointment</p>
-          <p className="pt-4">studio@objekthaus.com</p>
+          <p className="whitespace-pre-line">{contact.address}</p>
+          <p>{contact.hours}</p>
+          <p className="pt-4">
+            <a href={`mailto:${contact.email}`} className="link-underline">
+              {contact.email}
+            </a>
+          </p>
+          <p>
+            <a href={whatsappHref(contact.whatsapp)} target="_blank" rel="noreferrer" className="link-underline">
+              {contact.whatsapp}
+            </a>
+          </p>
         </div>
 
         <div className="mt-10 flex items-center gap-6">

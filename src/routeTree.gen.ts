@@ -20,6 +20,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as FlowerSlugRouteImport } from './routes/flower.$slug'
+import { Route as AdminSiteRouteImport } from './routes/admin.site'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 
 const TermsRoute = TermsRouteImport.update({
@@ -77,6 +78,11 @@ const FlowerSlugRoute = FlowerSlugRouteImport.update({
   path: '/flower/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSiteRoute = AdminSiteRouteImport.update({
+  id: '/site',
+  path: '/site',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/site': typeof AdminSiteRoute
   '/flower/$slug': typeof FlowerSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/site': typeof AdminSiteRoute
   '/flower/$slug': typeof FlowerSlugRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/site': typeof AdminSiteRoute
   '/flower/$slug': typeof FlowerSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/admin/products'
+    | '/admin/site'
     | '/flower/$slug'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/admin/products'
+    | '/admin/site'
     | '/flower/$slug'
     | '/admin'
   id:
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/admin/products'
+    | '/admin/site'
     | '/flower/$slug'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -261,6 +273,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FlowerSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/site': {
+      id: '/admin/site'
+      path: '/site'
+      fullPath: '/admin/site'
+      preLoaderRoute: typeof AdminSiteRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/products': {
       id: '/admin/products'
       path: '/products'
@@ -273,11 +292,13 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminProductsRoute: typeof AdminProductsRoute
+  AdminSiteRoute: typeof AdminSiteRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminProductsRoute: AdminProductsRoute,
+  AdminSiteRoute: AdminSiteRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 

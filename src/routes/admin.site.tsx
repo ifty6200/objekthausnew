@@ -19,11 +19,12 @@ export const Route = createFileRoute("/admin/site")({
 
 function useEditor<T extends object>(key: string, fallback: T) {
   const { data } = useSetting<T>(key, fallback);
-  const [draft, setDraft] = useState<T>(data);
+  const current = (data ?? fallback) as T;
+  const [draft, setDraft] = useState<T>(current);
   const [saved, setSaved] = useState(false);
   const qc = useQueryClient();
 
-  useEffect(() => setDraft(data), [data]);
+  useEffect(() => setDraft(current), [current]);
 
   const save = async () => {
     await supabase.from("site_settings").upsert({ key, value: draft as never });

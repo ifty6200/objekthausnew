@@ -55,8 +55,10 @@ export function useSetting<T>(key: string, fallback: T) {
   });
 }
 
-export const useHero = () => useSetting<HeroSettings>("hero", defaultHero).data;
-export const usePanel5 = () => useSetting<Panel5Settings>("panel5", defaultPanel5).data;
-export const useContactInfo = () => useSetting<ContactSettings>("contact", defaultContact).data;
+export const useHero = (): HeroSettings => useSetting<HeroSettings>("hero", defaultHero).data ?? defaultHero;
+export const usePanel5 = (): Panel5Settings =>
+  useSetting<Panel5Settings>("panel5", defaultPanel5).data ?? defaultPanel5;
+export const useContactInfo = (): ContactSettings =>
+  useSetting<ContactSettings>("contact", defaultContact).data ?? defaultContact;
 
 export const whatsappHref = (phone: string) => `https://wa.me/${phone.replace(/[^0-9]/g, "")}`;

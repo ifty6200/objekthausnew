@@ -14,7 +14,9 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArchiveRouteImport } from './routes/archive'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FlowerSlugRouteImport } from './routes/flower.$slug'
 
@@ -43,9 +45,19 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArchiveRoute = ArchiveRouteImport.update({
   id: '/archive',
   path: '/archive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -61,7 +73,9 @@ const FlowerSlugRoute = FlowerSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/archive': typeof ArchiveRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
@@ -71,7 +85,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/archive': typeof ArchiveRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
@@ -82,7 +98,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/archive': typeof ArchiveRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
@@ -94,7 +112,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/archive'
+    | '/auth'
     | '/contact'
     | '/order'
     | '/privacy'
@@ -104,7 +124,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/archive'
+    | '/auth'
     | '/contact'
     | '/order'
     | '/privacy'
@@ -114,7 +136,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/archive'
+    | '/auth'
     | '/contact'
     | '/order'
     | '/privacy'
@@ -125,7 +149,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   ArchiveRoute: typeof ArchiveRoute
+  AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   OrderRoute: typeof OrderRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -171,11 +197,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/archive': {
       id: '/archive'
       path: '/archive'
       fullPath: '/archive'
       preLoaderRoute: typeof ArchiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -197,7 +237,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   ArchiveRoute: ArchiveRoute,
+  AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   OrderRoute: OrderRoute,
   PrivacyRoute: PrivacyRoute,
@@ -208,13 +250,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -16,6 +16,14 @@ import cardYarrow from "@/assets/card-yarrow.jpg";
 import cardMaleFern from "@/assets/card-male-fern.jpg";
 import cardHogweed from "@/assets/card-hogweed.jpg";
 
+export type ProductSpec = {
+  material: string;
+  weight: string;
+  light: string;
+  type: string;
+  colors: string;
+};
+
 export type Flower = {
   slug: string;
   no: string;
@@ -30,6 +38,9 @@ export type Flower = {
   story: string;
   card: string;
   images: { src: string; alt: string }[];
+  weightKg?: number;
+  stockOut?: boolean;
+  specs?: ProductSpec[];
 };
 
 export const flowers: Flower[] = [

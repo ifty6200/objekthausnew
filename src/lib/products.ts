@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { flowers, type Flower } from "@/lib/flowers";
+import { flowers, type Flower, type ProductSpec } from "@/lib/flowers";
 
 export type ProductRow = {
   id: string;
@@ -19,6 +19,9 @@ export type ProductRow = {
   images: { src: string; alt: string }[];
   sort_order: number;
   published: boolean;
+  stock_out: boolean;
+  weight_kg: number;
+  specs: ProductSpec[];
 };
 
 export function rowToFlower(r: ProductRow): Flower {
@@ -36,6 +39,9 @@ export function rowToFlower(r: ProductRow): Flower {
     story: r.story,
     card: r.card_url,
     images: Array.isArray(r.images) ? r.images : [],
+    weightKg: Number(r.weight_kg) || 0,
+    stockOut: !!r.stock_out,
+    specs: Array.isArray(r.specs) ? r.specs : [],
   };
 }
 

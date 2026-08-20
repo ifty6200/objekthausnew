@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { MediaUpload } from "@/components/MediaUpload";
 import type { ProductRow } from "@/lib/products";
+import type { ProductSpec } from "@/lib/flowers";
 import { flowers } from "@/lib/flowers";
 
 export const Route = createFileRoute("/admin/products")({
@@ -28,6 +29,17 @@ const emptyDraft: Draft = {
   images: [],
   sort_order: 0,
   published: true,
+  stock_out: false,
+  weight_kg: 0,
+  specs: [],
+};
+
+const emptySpec: ProductSpec = {
+  material: "",
+  weight: "",
+  light: "",
+  type: "",
+  colors: "",
 };
 
 const slugify = (s: string) =>
@@ -96,6 +108,7 @@ function AdminProducts() {
       slug: draft.slug || slugify(draft.name),
       price: Number(draft.price) || 0,
       sort_order: Number(draft.sort_order) || 0,
+      weight_kg: Number(draft.weight_kg) || 0,
     };
     const { error: e } = draft.id
       ? await supabase.from("products").update(payload).eq("id", draft.id)
@@ -143,9 +156,15 @@ function AdminProducts() {
             <Field label="Floret no." value={draft.no} onChange={(v) => set({ no: v })} />
             <Field label="Object title" value={draft.product} onChange={(v) => set({ product: v })} />
             <Field label="Edition" value={draft.edition} onChange={(v) => set({ edition: v })} />
-            <Field label="Price (€)" type="number" value={draft.price} onChange={(v) => set({ price: Number(v) })} />
+            <Field label="Price (৳)" type="number" value={draft.price} onChange={(v) => set({ price: Number(v) })} />
             <Field label="Sort order" type="number" value={draft.sort_order} onChange={(v) => set({ sort_order: Number(v) })} />
             <Field label="Short note" value={draft.note} onChange={(v) => set({ note: v })} />
+            <Field
+              label="Weight (kg) — used for delivery"
+              type="number"
+              value={draft.weight_kg}
+              onChange={(v) => set({ weight_kg: Number(v) })}
+            />
           </div>
           <div className="mt-6 space-y-6">
             <Field label="What it represents" textarea value={draft.represents} onChange={(v) => set({ represents: v })} />
@@ -195,6 +214,63 @@ function AdminProducts() {
               </button>
             </div>
 
+            <div className="space-y-4">
+              <span className="caps opacity-55">Materials chart</span>
+              {draft.specs.map((s, i) => (
+                <div key={i} className="grid gap-4 border border-current/15 p-4 sm:grid-cols-2">
+                  <Field
+                    label="Material"
+                    value={s.material}
+                    onChange={(v) =>
+                      set({ specs: draft.specs.map((x, j) => (j === i ? { ...x, material: v } : x)) })
+                    }
+                  />
+                  <Field
+                    label="Weight"
+                    value={s.weight}
+                    onChange={(v) =>
+                      set({ specs: draft.specs.map((x, j) => (j === i ? { ...x, weight: v } : x)) })
+                    }
+                  />
+                  <Field
+                    label="Light used"
+                    value={s.light}
+                    onChange={(v) =>
+                      set({ specs: draft.specs.map((x, j) => (j === i ? { ...x, light: v } : x)) })
+                    }
+                  />
+                  <Field
+                    label="Type"
+                    value={s.type}
+                    onChange={(v) =>
+                      set({ specs: draft.specs.map((x, j) => (j === i ? { ...x, type: v } : x)) })
+                    }
+                  />
+                  <Field
+                    label="Colour variations"
+                    value={s.colors}
+                    onChange={(v) =>
+                      set({ specs: draft.specs.map((x, j) => (j === i ? { ...x, colors: v } : x)) })
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() => set({ specs: draft.specs.filter((_, j) => j !== i) })}
+                    className="caps self-end text-left opacity-45 hover:opacity-90"
+                  >
+                    Remove row
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => set({ specs: [...draft.specs, { ...emptySpec }] })}
+                className="caps link-underline"
+              >
+                Add chart row
+              </button>
+            </div>
+
             <label className="flex items-center gap-3 text-sm">
               <input
                 type="checkbox"
@@ -202,6 +278,14 @@ function AdminProducts() {
                 onChange={(e) => set({ published: e.target.checked })}
               />
               Published on the site
+            </label>
+            <label className="flex items-center gap-3 text-sm">
+              <input
+                type="checkbox"
+                checked={draft.stock_out}
+                onChange={(e) => set({ stock_out: e.target.checked })}
+              />
+              Out of stock
             </label>
           </div>
 
@@ -223,18 +307,32 @@ function AdminProducts() {
             <div>
               <p className="font-display text-2xl font-light">{r.product || r.name}</p>
               <p className="caps mt-1 opacity-55">
-                {r.name} — €{Number(r.price)} {r.published ? "" : "· hidden"}
+                ৳{Number(r.price)} · {r.name}
+                {r.published ? "" : " · hidden"}
+                {r.stock_out ? " · out of stock" : ""}
               </p>
             </div>
             <div className="flex gap-5">
               <button
                 type="button"
-                onClick={() => setDraft({ ...r, images: Array.isArray(r.images) ? r.images : [] })}
+                onClick={() =>
+                  setDraft({
+                    ...r,
+                    images: Array.isArray(r.images) ? r.images : [],
+                    specs: Array.isArray(r.specs) ? r.specs : [],
+                  })
+                }
                 className="caps link-underline"
               >
                 Edit
               </button>
-              <button type="button" onClick={() => remove(r.id)} className="caps opacity-45 hover:opacity-90">
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm(`Delete "${r.product || r.name}" permanently?`)) void remove(r.id);
+                }}
+                className="caps opacity-45 hover:opacity-90"
+              >
                 Delete
               </button>
             </div>

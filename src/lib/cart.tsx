@@ -15,14 +15,12 @@ export type CartLine = {
   price: number;
   image: string;
   qty: number;
-  weightKg?: number;
 };
 
 type CartState = {
   lines: CartLine[];
   count: number;
   total: number;
-  weight: number;
   open: boolean;
   setOpen: (v: boolean) => void;
   add: (line: Omit<CartLine, "qty">, qty?: number) => void;
@@ -84,7 +82,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       lines,
       count: lines.reduce((n, l) => n + l.qty, 0),
       total: lines.reduce((n, l) => n + l.qty * l.price, 0),
-      weight: lines.reduce((n, l) => n + l.qty * (Number(l.weightKg) || 0), 0),
       open,
       setOpen,
       add,
@@ -105,4 +102,4 @@ export function useCart() {
 }
 
 export const formatPrice = (n: number) =>
-  `৳ ${Math.round(n).toLocaleString("en-IN")}`;
+  `€ ${n.toLocaleString("de-DE", { minimumFractionDigits: 0 })}`;

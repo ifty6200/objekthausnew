@@ -14,45 +14,11 @@ export type Database = {
   }
   public: {
     Tables: {
-      design_submissions: {
-        Row: {
-          created_at: string
-          description: string
-          id: string
-          reference_url: string
-          status: string
-          title: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string
-          id?: string
-          reference_url?: string
-          status?: string
-          title: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          description?: string
-          id?: string
-          reference_url?: string
-          status?: string
-          title?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       orders: {
         Row: {
           address: string
           created_at: string
           customer_name: string
-          delivery_zone: string
           email: string | null
           id: string
           items: Json
@@ -63,15 +29,12 @@ export type Database = {
           status: string
           subtotal: number
           total: number
-          total_weight: number
           updated_at: string
-          user_id: string | null
         }
         Insert: {
           address: string
           created_at?: string
           customer_name: string
-          delivery_zone?: string
           email?: string | null
           id?: string
           items?: Json
@@ -82,15 +45,12 @@ export type Database = {
           status?: string
           subtotal?: number
           total?: number
-          total_weight?: number
           updated_at?: string
-          user_id?: string | null
         }
         Update: {
           address?: string
           created_at?: string
           customer_name?: string
-          delivery_zone?: string
           email?: string | null
           id?: string
           items?: Json
@@ -101,9 +61,7 @@ export type Database = {
           status?: string
           subtotal?: number
           total?: number
-          total_weight?: number
           updated_at?: string
-          user_id?: string | null
         }
         Relationships: []
       }
@@ -124,11 +82,8 @@ export type Database = {
           represents: string
           slug: string
           sort_order: number
-          specs: Json
-          stock_out: boolean
           story: string
           updated_at: string
-          weight_kg: number
           why: string
         }
         Insert: {
@@ -147,11 +102,8 @@ export type Database = {
           represents?: string
           slug: string
           sort_order?: number
-          specs?: Json
-          stock_out?: boolean
           story?: string
           updated_at?: string
-          weight_kg?: number
           why?: string
         }
         Update: {
@@ -170,42 +122,9 @@ export type Database = {
           represents?: string
           slug?: string
           sort_order?: number
-          specs?: Json
-          stock_out?: boolean
           story?: string
           updated_at?: string
-          weight_kg?: number
           why?: string
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          address: string
-          created_at: string
-          email: string | null
-          full_name: string
-          id: string
-          phone: string
-          updated_at: string
-        }
-        Insert: {
-          address?: string
-          created_at?: string
-          email?: string | null
-          full_name?: string
-          id: string
-          phone?: string
-          updated_at?: string
-        }
-        Update: {
-          address?: string
-          created_at?: string
-          email?: string | null
-          full_name?: string
-          id?: string
-          phone?: string
-          updated_at?: string
         }
         Relationships: []
       }

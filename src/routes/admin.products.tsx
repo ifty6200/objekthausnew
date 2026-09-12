@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MediaUpload } from "@/components/MediaUpload";
 import type { ProductRow } from "@/lib/products";
 import { flowers } from "@/lib/flowers";
+import { defaultFeatured, useSetting, type FeaturedSettings } from "@/lib/site";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
@@ -261,5 +262,50 @@ function AdminProducts() {
         </ul>
       </div>
     </div>
+  );
+}
+
+/** Chooses which object fills the third and fourth panels of the exhibition. */
+function FeaturedPicker({ rows }: { rows: ProductRow[] }) {
+  const qc = useQueryClient();
+  const { data } = useSetting<FeaturedSettings>("featured", defaultFeatured);
+  const current = (data ?? defaultFeatured).slug;
+  const [saved, setSaved] = useState(false);
+
+  const options = [
+    ...flowers.map((f) => ({ slug: f.slug, label: `${f.product} — ${f.name}` })),
+    ...rows
+      .filter((r) => !flowers.some((f) => f.slug === r.slug))
+      .map((r) => ({ slug: r.slug, label: `${r.product || r.name} — ${r.name}` })),
+  ];
+
+  const choose = async (slug: string) => {
+    await supabase.from("site_settings").upsert({ key: "featured", value: { slug } as never });
+    await qc.invalidateQueries({ queryKey: ["site_settings", "featured"] });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <section className="mt-10 border border-current/20 p-6">
+      <h3 className="font-display text-2xl font-light">Featured on the exhibition</h3>
+      <p className="mt-2 text-sm opacity-60">
+        The chosen object fills the third panel, and its flower card fills the fourth panel.
+      </p>
+      <div className="mt-5 space-y-3">
+        {options.map((o) => (
+          <label key={o.slug} className="flex items-center gap-3 text-sm">
+            <input
+              type="radio"
+              name="featured"
+              checked={current === o.slug}
+              onChange={() => void choose(o.slug)}
+            />
+            {o.label}
+          </label>
+        ))}
+      </div>
+      {saved && <p className="caps mt-4 opacity-55">Saved</p>}
+    </section>
   );
 }

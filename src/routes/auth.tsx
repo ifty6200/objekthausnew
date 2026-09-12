@@ -29,7 +29,7 @@ function AuthPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (session) void navigate({ to: "/admin" });
+    if (session) void navigate({ to: "/admin", search: { status: "all" } });
   }, [session, navigate]);
 
   const submit = async (e: React.FormEvent) => {

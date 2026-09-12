@@ -5,11 +5,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { MediaUpload } from "@/components/MediaUpload";
 import {
   defaultContact,
+  defaultDelivery,
   defaultHero,
+  defaultManifesto,
   defaultPanel5,
   useSetting,
   type ContactSettings,
+  type DeliverySettings,
   type HeroSettings,
+  type ManifestoSettings,
   type Panel5Settings,
 } from "@/lib/site";
 
@@ -81,7 +85,9 @@ function SaveRow({ onSave, saved }: { onSave: () => void; saved: boolean }) {
 
 function AdminSite() {
   const hero = useEditor<HeroSettings>("hero", defaultHero);
+  const manifesto = useEditor<ManifestoSettings>("manifesto", defaultManifesto);
   const panel5 = useEditor<Panel5Settings>("panel5", defaultPanel5);
+  const delivery = useEditor<DeliverySettings>("delivery", defaultDelivery);
   const contact = useEditor<ContactSettings>("contact", defaultContact);
 
   return (
@@ -102,6 +108,59 @@ function AdminSite() {
           <Text label="Scroll caption" value={hero.draft.caption} onChange={(v) => hero.set({ caption: v })} />
         </div>
         <SaveRow onSave={hero.save} saved={hero.saved} />
+      </section>
+
+      <section className="border border-current/20 p-6">
+        <h2 className="font-display text-3xl font-light">Second panel — Quote</h2>
+        <p className="mt-2 text-sm opacity-60">
+          One line per row. Leave an empty row between stanzas to draw a dividing line.
+        </p>
+        <div className="mt-6">
+          <textarea
+            rows={12}
+            value={manifesto.draft.body}
+            onChange={(e) => manifesto.set({ body: e.target.value })}
+            className="w-full resize-none border-b border-current/30 bg-transparent py-2 text-sm outline-none focus:border-current"
+          />
+        </div>
+        <SaveRow onSave={manifesto.save} saved={manifesto.saved} />
+      </section>
+
+      <section className="border border-current/20 p-6">
+        <h2 className="font-display text-3xl font-light">Delivery charges</h2>
+        <p className="mt-2 text-sm opacity-60">
+          Delivery is calculated from the total weight of the basket, rounded up to the next kilo.
+        </p>
+        <div className="mt-6 grid gap-6 sm:grid-cols-3">
+          <label className="block">
+            <span className="caps opacity-55">Charge per kg (৳)</span>
+            <input
+              type="number"
+              value={delivery.draft.perKg}
+              onChange={(e) => delivery.set({ perKg: Number(e.target.value) })}
+              className="mt-2 w-full border-b border-current/30 bg-transparent py-2 text-sm outline-none focus:border-current"
+            />
+          </label>
+          <label className="block">
+            <span className="caps opacity-55">Base handling (৳)</span>
+            <input
+              type="number"
+              value={delivery.draft.base}
+              onChange={(e) => delivery.set({ base: Number(e.target.value) })}
+              className="mt-2 w-full border-b border-current/30 bg-transparent py-2 text-sm outline-none focus:border-current"
+            />
+          </label>
+          <label className="block">
+            <span className="caps opacity-55">Free delivery above (৳, 0 = off)</span>
+            <input
+              type="number"
+              value={delivery.draft.freeAbove}
+              onChange={(e) => delivery.set({ freeAbove: Number(e.target.value) })}
+              className="mt-2 w-full border-b border-current/30 bg-transparent py-2 text-sm outline-none focus:border-current"
+            />
+          </label>
+        </div>
+        <SaveRow onSave={delivery.save} saved={delivery.saved} />
       </section>
 
       <section className="border border-current/20 p-6">

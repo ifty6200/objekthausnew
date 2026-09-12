@@ -2,6 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export type HeroSettings = { videoUrl: string; eyebrow: string; caption: string };
+export type ManifestoSettings = { body: string };
+export type FeaturedSettings = { slug: string };
+export type DeliverySettings = { perKg: number; base: number; freeAbove: number };
 export type Panel5Settings = {
   eyebrow: string;
   title: string;
@@ -28,6 +31,12 @@ export const defaultContact: ContactSettings = {
 };
 
 export const defaultHero: HeroSettings = { videoUrl: "", eyebrow: "", caption: "" };
+export const defaultManifesto: ManifestoSettings = {
+  body:
+    "Objects shape\nthe spaces\nwe inhabit.\n\nSpaces shape\nthe moments\nwe remember.\n\nWe create\nobjects that\ninvite you\nto notice.",
+};
+export const defaultFeatured: FeaturedSettings = { slug: "queen-annes-lace" };
+export const defaultDelivery: DeliverySettings = { perKg: 80, base: 60, freeAbove: 0 };
 export const defaultPanel5: Panel5Settings = {
   eyebrow: "",
   title: "",
@@ -60,5 +69,18 @@ export const usePanel5 = (): Panel5Settings =>
   useSetting<Panel5Settings>("panel5", defaultPanel5).data ?? defaultPanel5;
 export const useContactInfo = (): ContactSettings =>
   useSetting<ContactSettings>("contact", defaultContact).data ?? defaultContact;
+export const useManifesto = (): ManifestoSettings =>
+  useSetting<ManifestoSettings>("manifesto", defaultManifesto).data ?? defaultManifesto;
+export const useFeatured = (): FeaturedSettings =>
+  useSetting<FeaturedSettings>("featured", defaultFeatured).data ?? defaultFeatured;
+export const useDelivery = (): DeliverySettings =>
+  useSetting<DeliverySettings>("delivery", defaultDelivery).data ?? defaultDelivery;
+
+/** Delivery cost for a basket, rounded up to the next whole kilo. */
+export function deliveryCost(d: DeliverySettings, weightKg: number, subtotal: number) {
+  if (weightKg <= 0) return 0;
+  if (d.freeAbove > 0 && subtotal >= d.freeAbove) return 0;
+  return Math.round(d.base + d.perKg * Math.ceil(weightKg));
+}
 
 export const whatsappHref = (phone: string) => `https://wa.me/${phone.replace(/[^0-9]/g, "")}`;

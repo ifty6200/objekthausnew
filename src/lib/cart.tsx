@@ -102,4 +102,4 @@ export function useCart() {
 }
 
 export const formatPrice = (n: number) =>
-  `€ ${n.toLocaleString("de-DE", { minimumFractionDigits: 0 })}`;
+  `৳ ${n.toLocaleString("en-BD", { maximumFractionDigits: 0 })}`;

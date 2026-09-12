@@ -143,7 +143,7 @@ function AdminProducts() {
             <Field label="Floret no." value={draft.no} onChange={(v) => set({ no: v })} />
             <Field label="Object title" value={draft.product} onChange={(v) => set({ product: v })} />
             <Field label="Edition" value={draft.edition} onChange={(v) => set({ edition: v })} />
-            <Field label="Price (€)" type="number" value={draft.price} onChange={(v) => set({ price: Number(v) })} />
+            <Field label="Price (৳)" type="number" value={draft.price} onChange={(v) => set({ price: Number(v) })} />
             <Field label="Sort order" type="number" value={draft.sort_order} onChange={(v) => set({ sort_order: Number(v) })} />
             <Field label="Short note" value={draft.note} onChange={(v) => set({ note: v })} />
           </div>
@@ -223,7 +223,7 @@ function AdminProducts() {
             <div>
               <p className="font-display text-2xl font-light">{r.product || r.name}</p>
               <p className="caps mt-1 opacity-55">
-                {r.name} — €{Number(r.price)} {r.published ? "" : "· hidden"}
+                {r.name} — ৳{Number(r.price)} {r.published ? "" : "· hidden"}
               </p>
             </div>
             <div className="flex gap-5">

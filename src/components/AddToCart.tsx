@@ -14,6 +14,7 @@ export function QuickAdd({ flower, className = "" }: { flower: Flower; className
           name: flower.name,
           product: flower.product,
           price: flower.price,
+          weightKg: flower.weightKg ?? 0,
           image: flower.images[0]?.src ?? flower.card,
         })
       }
@@ -61,6 +62,7 @@ export function AddToCart({ flower, className = "" }: { flower: Flower; classNam
               name: flower.name,
               product: flower.product,
               price: flower.price,
+              weightKg: flower.weightKg ?? 0,
               image: flower.images[0]?.src ?? flower.card,
             },
             qty,

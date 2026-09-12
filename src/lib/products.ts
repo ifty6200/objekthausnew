@@ -12,6 +12,7 @@ export type ProductRow = {
   product: string;
   edition: string;
   price: number;
+  weight_kg: number;
   represents: string;
   why: string;
   story: string;
@@ -31,6 +32,7 @@ export function rowToFlower(r: ProductRow): Flower {
     product: r.product,
     edition: r.edition,
     price: Number(r.price),
+    weightKg: Number(r.weight_kg) || 0,
     represents: r.represents,
     why: r.why,
     story: r.story,
@@ -60,4 +62,16 @@ export function useAllFlowers() {
   });
   const extra = data.filter((p) => !flowers.some((f) => f.slug === p.slug));
   return [...flowers, ...extra];
+}
+
+/** Studio objects override the built-in copy when the slug matches. */
+export function useFlower(slug: string): Flower | undefined {
+  const all = useAllFlowers();
+  const { data = [] } = useQuery({
+    queryKey: ["products", "published"],
+    queryFn: fetchProducts,
+    initialData: [] as Flower[],
+    staleTime: 30_000,
+  });
+  return data.find((p) => p.slug === slug) ?? all.find((f) => f.slug === slug);
 }

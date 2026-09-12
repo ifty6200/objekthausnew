@@ -63,7 +63,6 @@ export function AddToCart({ flower, className = "" }: { flower: Flower; classNam
               product: flower.product,
               price: flower.price,
               weightKg: flower.weightKg ?? 0,
-          weightKg: flower.weightKg ?? 0,
               image: flower.images[0]?.src ?? flower.card,
             },
             qty,

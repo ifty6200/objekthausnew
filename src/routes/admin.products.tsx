@@ -135,6 +135,10 @@ function AdminProducts() {
         </button>
       </div>
 
+      <FeaturedPicker rows={rows} />
+
+
+
       {draft && (
         <div className="mt-8 border border-current/20 p-6">
           <p className="caps opacity-55">{draft.id ? "Edit object" : "New object"}</p>

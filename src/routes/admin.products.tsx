@@ -21,6 +21,7 @@ const emptyDraft: Draft = {
   product: "",
   edition: "",
   price: 0,
+  weight_kg: 0,
   represents: "",
   why: "",
   story: "",
@@ -95,6 +96,7 @@ function AdminProducts() {
       ...draft,
       slug: draft.slug || slugify(draft.name),
       price: Number(draft.price) || 0,
+      weight_kg: Number(draft.weight_kg) || 0,
       sort_order: Number(draft.sort_order) || 0,
     };
     const { error: e } = draft.id
@@ -144,6 +146,7 @@ function AdminProducts() {
             <Field label="Object title" value={draft.product} onChange={(v) => set({ product: v })} />
             <Field label="Edition" value={draft.edition} onChange={(v) => set({ edition: v })} />
             <Field label="Price (৳)" type="number" value={draft.price} onChange={(v) => set({ price: Number(v) })} />
+            <Field label="Weight (kg)" type="number" value={draft.weight_kg} onChange={(v) => set({ weight_kg: Number(v) })} />
             <Field label="Sort order" type="number" value={draft.sort_order} onChange={(v) => set({ sort_order: Number(v) })} />
             <Field label="Short note" value={draft.note} onChange={(v) => set({ note: v })} />
           </div>
@@ -223,7 +226,8 @@ function AdminProducts() {
             <div>
               <p className="font-display text-2xl font-light">{r.product || r.name}</p>
               <p className="caps mt-1 opacity-55">
-                {r.name} — ৳{Number(r.price)} {r.published ? "" : "· hidden"}
+                {r.name} — ৳{Number(r.price)} · {Number(r.weight_kg)}kg{" "}
+                {r.published ? "" : "· hidden"}
               </p>
             </div>
             <div className="flex gap-5">

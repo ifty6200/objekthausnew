@@ -30,8 +30,9 @@ function Order() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reference, setReference] = useState<string | null>(null);
-  const { lines, setQty, remove, total, count, clear } = useCart();
-  const shipping = lines.length === 0 || total >= 500 ? 0 : 24;
+  const { lines, setQty, remove, total, totalWeight, count, clear } = useCart();
+  const delivery = useDelivery();
+  const shipping = lines.length === 0 ? 0 : deliveryCost(delivery, totalWeight, total);
 
   const placeOrder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

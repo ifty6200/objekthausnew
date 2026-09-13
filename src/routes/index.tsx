@@ -85,31 +85,18 @@ function Index() {
       {/* II — Manifesto */}
       <section id="manifesto" data-tone="light" className="panel bg-olive text-olive-foreground">
         <div className="space-y-9 font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl lg:text-6xl">
-          <Reveal as="p">
-            Objects shape
-            <br />
-            the spaces
-            <br />
-            we inhabit.
-          </Reveal>
-          <RuleLine />
-          <Reveal as="p" delay={100}>
-            Spaces shape
-            <br />
-            the moments
-            <br />
-            we remember.
-          </Reveal>
-          <RuleLine delay={100} />
-          <Reveal as="p" delay={200}>
-            We create
-            <br />
-            objects that
-            <br />
-            invite you
-            <br />
-            to notice.
-          </Reveal>
+          {quoteBlocks.map((block, bi) => (
+            <div key={bi} className="space-y-9">
+              {bi > 0 && <RuleLine delay={(bi - 1) * 100} />}
+              <Reveal as="p" delay={bi * 100}>
+                {block.split("\n").map((line, li) => (
+                  <span key={li} className="block">
+                    {line}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
+          ))}
         </div>
         <div className="mt-16 flex flex-col items-center gap-3">
           <p className="caps opacity-60">Scroll</p>

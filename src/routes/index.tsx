@@ -45,6 +45,13 @@ function Arrow() {
 function Index() {
   const hero = useHero();
   const panel5 = usePanel5();
+  const manifesto = useManifesto();
+  const featuredSlug = useFeatured().slug || "queen-annes-lace";
+  const featured = useFlower(featuredSlug);
+  const quoteBlocks = (manifesto.body || "")
+    .split(/\n\s*\n/)
+    .map((b) => b.trim())
+    .filter(Boolean);
   const materials = (panel5.body || "Plywood\nBrass\nStone\nLinen\nPaper")
     .split("\n")
     .map((m) => m.trim())

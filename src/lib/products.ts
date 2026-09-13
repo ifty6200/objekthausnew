@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { flowers, type Flower } from "@/lib/flowers";
+import { useSetting } from "@/lib/site";
 
 export type ProductRow = {
   id: string;
@@ -22,6 +23,9 @@ export type ProductRow = {
   published: boolean;
 };
 
+export type HiddenSettings = { slugs: string[] };
+export const defaultHidden: HiddenSettings = { slugs: [] };
+
 export function rowToFlower(r: ProductRow): Flower {
   return {
     slug: r.slug,
@@ -41,6 +45,21 @@ export function rowToFlower(r: ProductRow): Flower {
   };
 }
 
+/** A studio row may leave fields blank — the built-in copy fills the gaps. */
+function mergeWithBuiltIn(row: Flower): Flower {
+  const base = flowers.find((f) => f.slug === row.slug);
+  if (!base) return row;
+  const merged = { ...base } as Flower;
+  (Object.keys(row) as (keyof Flower)[]).forEach((k) => {
+    const v = row[k];
+    if (v === "" || v === undefined || v === null) return;
+    if (Array.isArray(v) && v.length === 0) return;
+    // @ts-expect-error index assignment across union of field types
+    merged[k] = v;
+  });
+  return merged;
+}
+
 export async function fetchProducts(): Promise<Flower[]> {
   const { data, error } = await supabase
     .from("products")
@@ -52,26 +71,37 @@ export async function fetchProducts(): Promise<Flower[]> {
   return (data as unknown as ProductRow[]).map(rowToFlower);
 }
 
-/** Studio-added objects appended to the built-in archive. */
-export function useAllFlowers() {
-  const { data } = useQuery({
+function usePublishedProducts() {
+  return useQuery({
     queryKey: ["products", "published"],
     queryFn: fetchProducts,
     initialData: [] as Flower[],
-    staleTime: 30_000,
+    staleTime: 5_000,
+  }).data;
+}
+
+export function useHiddenSlugs(): string[] {
+  const { data } = useSetting<HiddenSettings>("hidden", defaultHidden);
+  return Array.isArray(data?.slugs) ? data.slugs : [];
+}
+
+/** Built-in archive, overridden by studio edits and minus anything hidden. */
+export function useAllFlowers(): Flower[] {
+  const rows = usePublishedProducts();
+  const hidden = useHiddenSlugs();
+
+  const overridden = flowers.map((f) => {
+    const row = rows.find((r) => r.slug === f.slug);
+    return row ? mergeWithBuiltIn(row) : f;
   });
-  const extra = data.filter((p) => !flowers.some((f) => f.slug === p.slug));
-  return [...flowers, ...extra];
+  const extra = rows
+    .filter((r) => !flowers.some((f) => f.slug === r.slug))
+    .map(mergeWithBuiltIn);
+
+  return [...overridden, ...extra].filter((f) => !hidden.includes(f.slug));
 }
 
 /** Studio objects override the built-in copy when the slug matches. */
 export function useFlower(slug: string): Flower | undefined {
-  const all = useAllFlowers();
-  const { data = [] } = useQuery({
-    queryKey: ["products", "published"],
-    queryFn: fetchProducts,
-    initialData: [] as Flower[],
-    staleTime: 30_000,
-  });
-  return data.find((p) => p.slug === slug) ?? all.find((f) => f.slug === slug);
+  return useAllFlowers().find((f) => f.slug === slug);
 }

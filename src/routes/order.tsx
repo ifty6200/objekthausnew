@@ -3,6 +3,7 @@ import { useState } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { SocialLinks } from "@/components/Social";
 import { formatPrice, useCart } from "@/lib/cart";
+import { deliveryCost, useDelivery } from "@/lib/site";
 import { flowers } from "@/lib/flowers";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -29,8 +30,9 @@ function Order() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reference, setReference] = useState<string | null>(null);
-  const { lines, setQty, remove, total, count, clear } = useCart();
-  const shipping = lines.length === 0 || total >= 500 ? 0 : 24;
+  const { lines, setQty, remove, total, totalWeight, count, clear } = useCart();
+  const delivery = useDelivery();
+  const shipping = lines.length === 0 ? 0 : deliveryCost(delivery, totalWeight, total);
 
   const placeOrder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -51,8 +53,10 @@ function Order() {
           product: l.product,
           qty: l.qty,
           price: l.price,
+          weight_kg: l.weightKg ?? 0,
         })),
         subtotal: total,
+        total_weight: totalWeight,
         shipping,
         total: total + shipping,
         status: "new",
@@ -150,7 +154,9 @@ function Order() {
                     <dd>{formatPrice(total)}</dd>
                   </div>
                   <div className="flex justify-between gap-6 py-3">
-                    <dt className="caps opacity-55">Shipping</dt>
+                    <dt className="caps opacity-55">
+                      Delivery{totalWeight > 0 ? ` — ${totalWeight.toFixed(1)} kg` : ""}
+                    </dt>
                     <dd>{shipping === 0 ? "Included" : formatPrice(shipping)}</dd>
                   </div>
                   <div className="flex justify-between gap-6 py-4">

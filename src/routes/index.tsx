@@ -5,8 +5,8 @@ import { SocialLinks } from "@/components/Social";
 import { QuickAdd } from "@/components/AddToCart";
 import { HeroVideo } from "@/components/HeroVideo";
 import { Wordmark } from "@/components/SiteNav";
-import { getFlower } from "@/lib/flowers";
-import { useHero, usePanel5 } from "@/lib/site";
+import { useFlower } from "@/lib/products";
+import { useHero, usePanel5, useManifesto, useFeatured } from "@/lib/site";
 import heroVideo from "@/assets/hero-meadow.mp4.asset.json";
 import haloHero from "@/assets/halo-2.jpg.asset.json";
 import qalCard from "@/assets/qal-card.jpg.asset.json";
@@ -45,6 +45,13 @@ function Arrow() {
 function Index() {
   const hero = useHero();
   const panel5 = usePanel5();
+  const manifesto = useManifesto();
+  const featuredSlug = useFeatured().slug || "queen-annes-lace";
+  const featured = useFlower(featuredSlug);
+  const quoteBlocks = (manifesto.body || "")
+    .split(/\n\s*\n/)
+    .map((b) => b.trim())
+    .filter(Boolean);
   const materials = (panel5.body || "Plywood\nBrass\nStone\nLinen\nPaper")
     .split("\n")
     .map((m) => m.trim())
@@ -78,31 +85,18 @@ function Index() {
       {/* II — Manifesto */}
       <section id="manifesto" data-tone="light" className="panel bg-olive text-olive-foreground">
         <div className="space-y-9 font-display text-[2.1rem] leading-[1.15] font-light sm:text-5xl lg:text-6xl">
-          <Reveal as="p">
-            Objects shape
-            <br />
-            the spaces
-            <br />
-            we inhabit.
-          </Reveal>
-          <RuleLine />
-          <Reveal as="p" delay={100}>
-            Spaces shape
-            <br />
-            the moments
-            <br />
-            we remember.
-          </Reveal>
-          <RuleLine delay={100} />
-          <Reveal as="p" delay={200}>
-            We create
-            <br />
-            objects that
-            <br />
-            invite you
-            <br />
-            to notice.
-          </Reveal>
+          {quoteBlocks.map((block, bi) => (
+            <div key={bi} className="space-y-9">
+              {bi > 0 && <RuleLine delay={(bi - 1) * 100} />}
+              <Reveal as="p" delay={bi * 100}>
+                {block.split("\n").map((line, li) => (
+                  <span key={li} className="block">
+                    {line}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
+          ))}
         </div>
         <div className="mt-16 flex flex-col items-center gap-3">
           <p className="caps opacity-60">Scroll</p>
@@ -110,13 +104,17 @@ function Index() {
         </div>
       </section>
 
-      {/* III — Object No.01 */}
+      {/* III — Featured object */}
       <section id="object" data-tone="dark" className="panel bg-clay text-clay-foreground">
         <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
         <Reveal className="image-veil mx-auto w-full max-w-md lg:max-w-none">
           <img
-            src={haloHero.url}
-            alt="ObjektHaus Object No.01, the Halo Pendant lamp glowing above a dark table"
+            src={featured?.images[0]?.src || haloHero.url}
+            alt={
+              featured
+                ? `${featured.product} by ObjektHaus`
+                : "ObjektHaus Object No.01, the Halo Pendant lamp glowing above a dark table"
+            }
             loading="lazy"
             width={1024}
             height={1408}
@@ -126,15 +124,19 @@ function Index() {
         <div className="lg:pr-6">
         <Reveal className="mt-10 lg:mt-0" delay={120}>
           <h2 className="font-display text-4xl font-light sm:text-5xl lg:text-6xl">
-            Object No.01 — Halo Pendant
+            {featured ? `${featured.no} — ${featured.product}` : "Object No.01 — Halo Pendant"}
           </h2>
-          <p className="mt-3 text-sm tracking-wide opacity-70">Edition 001 / 101</p>
+          <p className="mt-3 text-sm tracking-wide opacity-70">
+            {featured?.edition || "Edition 001 / 101"}
+          </p>
         </Reveal>
         <RuleLine className="mt-8" />
         <div className="mt-14 flex justify-end">
-          <Reveal delay={200}>
-            <QuickAdd flower={getFlower("queen-annes-lace")!} />
-          </Reveal>
+          {featured && (
+            <Reveal delay={200}>
+              <QuickAdd flower={featured} />
+            </Reveal>
+          )}
         </div>
         </div>
         </div>
@@ -145,8 +147,8 @@ function Index() {
         <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
         <Reveal className="image-veil mx-auto w-full max-w-xs lg:max-w-sm">
           <img
-            src={qalCard.url}
-            alt="Botanical archive card of Queen Anne's Lace, pressed on textured paper"
+            src={featured?.card || qalCard.url}
+            alt={`Botanical archive card of ${featured?.name ?? "Queen Anne's Lace"}`}
             loading="lazy"
             width={1024}
             height={1200}
@@ -155,22 +157,28 @@ function Index() {
         </Reveal>
         <div className="lg:pr-6">
         <Reveal as="h2" className="mt-8 font-display text-4xl font-light sm:text-5xl lg:mt-0 lg:text-6xl">
-          Queen Anne&apos;s Lace
+          {featured?.name ?? "Queen Anne's Lace"}
         </Reveal>
         <RuleLine className="mt-5" />
         <div className="mt-7 space-y-6 text-[0.95rem] leading-relaxed opacity-85">
-          <Reveal as="p" delay={80}>
-            Queen Anne&apos;s Lace grows quietly.
-            <br />
-            Its beauty is discovered,
-            <br />
-            never announced.
-          </Reveal>
-          <Reveal as="p" delay={160}>
-            Like this object,
-            <br />
-            it rewards attention.
-          </Reveal>
+          {(featured?.why || featured?.note) && (
+            <Reveal as="p" delay={80}>
+              {(featured.why || featured.note).split("\n").map((line, i) => (
+                <span key={i} className="block">
+                  {line}
+                </span>
+              ))}
+            </Reveal>
+          )}
+          {!featured && (
+            <Reveal as="p" delay={80}>
+              Queen Anne&apos;s Lace grows quietly.
+              <br />
+              Its beauty is discovered,
+              <br />
+              never announced.
+            </Reveal>
+          )}
           <Reveal as="p" delay={240}>
             Every ObjektHaus purchase
             <br />
@@ -181,7 +189,7 @@ function Index() {
           <Reveal delay={300}>
             <Link
               to="/flower/$slug"
-              params={{ slug: "queen-annes-lace" }}
+              params={{ slug: featuredSlug }}
               className="corner-action caps"
             >
               Explore floret <Arrow />
@@ -191,6 +199,7 @@ function Index() {
         </div>
         </div>
       </section>
+
 
       {/* V — Materials */}
       <section id="materials" data-tone="dark" className="panel bg-bone text-bone-foreground">

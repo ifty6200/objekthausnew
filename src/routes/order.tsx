@@ -154,7 +154,9 @@ function Order() {
                     <dd>{formatPrice(total)}</dd>
                   </div>
                   <div className="flex justify-between gap-6 py-3">
-                    <dt className="caps opacity-55">Shipping</dt>
+                    <dt className="caps opacity-55">
+                      Delivery{totalWeight > 0 ? ` — ${totalWeight.toFixed(1)} kg` : ""}
+                    </dt>
                     <dd>{shipping === 0 ? "Included" : formatPrice(shipping)}</dd>
                   </div>
                   <div className="flex justify-between gap-6 py-4">

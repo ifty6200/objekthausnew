@@ -251,16 +251,93 @@ function AdminProducts() {
         ))}
       </ul>
 
-      <div className="mt-12 border-t border-current/15 pt-8">
-        <p className="caps opacity-55">Founding objects (built into the exhibition)</p>
-        <ul className="mt-4 space-y-2 text-sm opacity-70">
-          {flowers.map((f) => (
-            <li key={f.slug}>
-              {f.product} — {f.name}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <FoundingObjects rows={rows} onEdit={(d) => setDraft(d)} />
+    </div>
+  );
+}
+
+/** The five built-in objects: editable (creates an override row) and hideable. */
+function FoundingObjects({
+  rows,
+  onEdit,
+}: {
+  rows: ProductRow[];
+  onEdit: (d: Draft) => void;
+}) {
+  const qc = useQueryClient();
+  const { data } = useSetting<HiddenSettings>("hidden", defaultHidden);
+  const hidden = Array.isArray(data?.slugs) ? data.slugs : [];
+
+  const toggleHidden = async (slug: string) => {
+    const next = hidden.includes(slug) ? hidden.filter((s) => s !== slug) : [...hidden, slug];
+    await supabase
+      .from("site_settings")
+      .upsert({ key: "hidden", value: { slugs: next } as never });
+    await qc.invalidateQueries({ queryKey: ["site_settings", "hidden"] });
+    await qc.invalidateQueries({ queryKey: ["products"] });
+  };
+
+  const editBuiltIn = (slug: string) => {
+    const f = flowers.find((x) => x.slug === slug)!;
+    const existing = rows.find((r) => r.slug === slug);
+    if (existing) {
+      onEdit({ ...existing, images: Array.isArray(existing.images) ? existing.images : [] });
+      return;
+    }
+    onEdit({
+      slug: f.slug,
+      no: f.no,
+      name: f.name,
+      latin: f.latin,
+      note: f.note,
+      product: f.product,
+      edition: f.edition,
+      price: f.price,
+      weight_kg: f.weightKg,
+      represents: f.represents,
+      why: f.why,
+      story: f.story,
+      card_url: f.card,
+      images: f.images,
+      sort_order: 0,
+      published: true,
+    });
+  };
+
+  return (
+    <div className="mt-12 border-t border-current/15 pt-8">
+      <p className="caps opacity-55">Founding objects (built into the exhibition)</p>
+      <p className="mt-2 text-sm opacity-60">
+        Editing one saves a studio copy that replaces it everywhere on the site.
+      </p>
+      <ul className="mt-4 divide-y divide-current/15">
+        {flowers.map((f) => (
+          <li key={f.slug} className="flex flex-wrap items-center justify-between gap-4 py-4">
+            <div>
+              <p className="text-sm">
+                {f.product} — {f.name}
+              </p>
+              <p className="caps mt-1 opacity-50">
+                {rows.some((r) => r.slug === f.slug) ? "edited in studio" : "original"}
+                {hidden.includes(f.slug) ? " · hidden" : ""}
+              </p>
+            </div>
+            <div className="flex gap-5">
+              <button type="button" onClick={() => editBuiltIn(f.slug)} className="caps link-underline">
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => void toggleHidden(f.slug)}
+                className="caps opacity-45 hover:opacity-90"
+              >
+                {hidden.includes(f.slug) ? "Show" : "Hide"}
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
     </div>
   );
 }

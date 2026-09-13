@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { getFlower, type Flower } from "@/lib/flowers";
-import { useAllFlowers } from "@/lib/products";
+import { useAllFlowers, useFlower } from "@/lib/products";
 import { AddToCart } from "@/components/AddToCart";
 import { formatPrice } from "@/lib/cart";
 
@@ -29,7 +29,9 @@ export const Route = createFileRoute("/flower/$slug")({
 function FlowerCard() {
   const { slug } = Route.useParams();
   const flowers = useAllFlowers();
-  const f = (Route.useLoaderData() as Flower | null) ?? flowers.find((x) => x.slug === slug) ?? null;
+  // Live studio data always wins over the build-time copy in the loader.
+  const live = useFlower(slug);
+  const f = live ?? (Route.useLoaderData() as Flower | null) ?? null;
 
   if (!f) {
     return (

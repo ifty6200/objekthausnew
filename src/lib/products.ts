@@ -72,12 +72,16 @@ export async function fetchProducts(): Promise<Flower[]> {
 }
 
 function usePublishedProducts() {
-  return useQuery({
-    queryKey: ["products", "published"],
-    queryFn: fetchProducts,
-    initialData: [] as Flower[],
-    staleTime: 5_000,
-  }).data;
+  return (
+    useQuery({
+      queryKey: ["products", "published"],
+      queryFn: fetchProducts,
+      placeholderData: [] as Flower[],
+      staleTime: 0,
+      refetchOnMount: "always",
+      refetchOnWindowFocus: true,
+    }).data ?? []
+  );
 }
 
 export function useHiddenSlugs(): string[] {

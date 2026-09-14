@@ -1,20 +1,10 @@
 import pCard1 from "@/assets/p-card-1.jpg";
 import pCard2 from "@/assets/p-card-2.jpg";
-import pStool1 from "@/assets/p-stool-1.jpg";
-import pStool2 from "@/assets/p-stool-2.jpg";
-import pShelf1 from "@/assets/p-shelf-1.jpg";
-import pShelf2 from "@/assets/p-shelf-2.jpg";
-import pFloor1 from "@/assets/p-floor-1.jpg";
-import pFloor2 from "@/assets/p-floor-2.jpg";
-import craftWood from "@/assets/craft-wood.jpg";
 import qalCard from "@/assets/qal-card.jpg.asset.json";
 import halo1 from "@/assets/halo-1.jpg.asset.json";
 import halo2 from "@/assets/halo-2.jpg.asset.json";
 import halo3 from "@/assets/halo-3.jpg.asset.json";
 import cardCowParsley from "@/assets/card-cow-parsley.jpg";
-import cardYarrow from "@/assets/card-yarrow.jpg";
-import cardMaleFern from "@/assets/card-male-fern.jpg";
-import cardHogweed from "@/assets/card-hogweed.jpg";
 
 export type Flower = {
   slug: string;
@@ -75,69 +65,6 @@ export const flowers: Flower[] = [
     images: [
       { src: pCard1, alt: "Plywood card holder with a stack of cards" },
       { src: pCard2, alt: "Card holder photographed from above with a botanical card" },
-    ],
-  },
-  {
-    slug: "yarrow",
-    no: "043",
-    name: "Yarrow",
-    latin: "Achillea millefolium",
-    note: "Patient, fine-leaved, durable.",
-    product: "Object No.03 — Mini Stool",
-    edition: "Edition 043 / 80",
-    price: 180,
-    weightKg: 4,
-    represents:
-      "A three-legged plywood stool at child height, equally at home as a plant stand or a bedside table.",
-    why: "Yarrow is the toughest soft-looking thing in the meadow — fine leaves, wiry stems, it survives being walked on. We wanted a stool that reads as delicate but takes a grown adult without a sound.",
-    story:
-      "The first prototype had four legs and wobbled on every floor we tried. Three legs never wobble. The seat is dished by hand with a curved plane, so no two are identical; the last pass is done by ear, listening for the shaving to go quiet.",
-    card: cardYarrow,
-    images: [
-      { src: pStool1, alt: "Small three-legged plywood stool" },
-      { src: pStool2, alt: "Detail of the plywood stool leg joinery" },
-      { src: craftWood, alt: "Craftsman planing an oak beam in the workshop" },
-    ],
-  },
-  {
-    slug: "male-fern",
-    no: "044",
-    name: "Male Fern",
-    latin: "Dryopteris filix-mas",
-    note: "Unfurls before it stands.",
-    product: "Object No.09 — Curve Shelf",
-    edition: "Edition 044 / 120",
-    price: 140,
-    weightKg: 2.2,
-    represents:
-      "A wall shelf bent from a single plywood sheet, curling upward at one end to stop small objects from wandering.",
-    why: "A fern frond arrives coiled and slowly opens. The shelf is that gesture held halfway — one continuous line that decides, at the last moment, to turn upward.",
-    story:
-      "Bending ply this tightly without cracking took eleven attempts and one very patient steam box. The curve holds a book, a cup, a pair of glasses. It ships with two brass fixings and a spirit level, because a crooked curve is far more obvious than a crooked straight line.",
-    card: cardMaleFern,
-    images: [
-      { src: pShelf1, alt: "Curved plywood wall shelf holding a small ceramic cup" },
-      { src: pShelf2, alt: "Close-up of the bent plywood curve and layered edge grain" },
-    ],
-  },
-  {
-    slug: "hogweed",
-    no: "045",
-    name: "Hogweed",
-    latin: "Heracleum sphondylium",
-    note: "Scale without ceremony.",
-    product: "Object No.15 — Tall Floor Lamp",
-    edition: "Edition 045 / 60",
-    price: 520,
-    weightKg: 6.5,
-    represents: "A slender plywood floor lamp, a single upright stem carrying a wide, flat shade.",
-    why: "Hogweed grows head-high in a season and never looks like it is trying. That is the posture we wanted: tall, plain, unbothered — height as a fact rather than a statement.",
-    story:
-      "The stem is a laminated ply spine, 14mm thin, that flexes very slightly when you brush past it and settles again. We tested it for a year in the studio doorway. It is still standing, and the light it throws across the ceiling is the reason we stopped designing pendants.",
-    card: cardHogweed,
-    images: [
-      { src: pFloor1, alt: "Tall plywood floor lamp in a sunlit corner" },
-      { src: pFloor2, alt: "The wide plywood shade seen from below, lit warmly" },
     ],
   },
 ];

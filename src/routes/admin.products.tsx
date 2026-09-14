@@ -6,6 +6,7 @@ import { MediaUpload } from "@/components/MediaUpload";
 import type { ProductRow } from "@/lib/products";
 import { flowers } from "@/lib/flowers";
 import { defaultFeatured, useSetting, type FeaturedSettings } from "@/lib/site";
+import { defaultHidden, type HiddenSettings } from "@/lib/products";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
@@ -337,7 +338,6 @@ function FoundingObjects({
           </li>
         ))}
       </ul>
-    </div>
     </div>
   );
 }

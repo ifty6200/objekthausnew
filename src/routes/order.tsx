@@ -31,6 +31,7 @@ function Order() {
   const [error, setError] = useState<string | null>(null);
   const [reference, setReference] = useState<string | null>(null);
   const { lines, setQty, remove, total, totalWeight, count, clear } = useCart();
+  const flowers = useAllFlowers();
   const delivery = useDelivery();
   const shipping = lines.length === 0 ? 0 : deliveryCost(delivery, totalWeight, total);
 

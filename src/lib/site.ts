@@ -60,7 +60,10 @@ export function useSetting<T>(key: string, fallback: T) {
     queryKey: ["site_settings", key],
     queryFn: () => fetchSetting<T>(key, fallback),
     initialData: fallback,
-    staleTime: 30_000,
+    initialDataUpdatedAt: 0,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 }
 

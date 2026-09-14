@@ -5,7 +5,7 @@ import { SocialLinks } from "@/components/Social";
 import { QuickAdd } from "@/components/AddToCart";
 import { HeroVideo } from "@/components/HeroVideo";
 import { Wordmark } from "@/components/SiteNav";
-import { useFlower } from "@/lib/products";
+import { useAllFlowers } from "@/lib/products";
 import { useHero, usePanel5, useManifesto, useFeatured } from "@/lib/site";
 import heroVideo from "@/assets/hero-meadow.mp4.asset.json";
 import haloHero from "@/assets/halo-2.jpg.asset.json";
@@ -46,8 +46,11 @@ function Index() {
   const hero = useHero();
   const panel5 = usePanel5();
   const manifesto = useManifesto();
-  const featuredSlug = useFeatured().slug || "queen-annes-lace";
-  const featured = useFlower(featuredSlug);
+  const allFlowers = useAllFlowers();
+  const chosenSlug = useFeatured().slug || "queen-annes-lace";
+  // If the chosen object was hidden or removed, fall back to the first live object.
+  const featured = allFlowers.find((f) => f.slug === chosenSlug) ?? allFlowers[0];
+  const featuredSlug = featured?.slug ?? chosenSlug;
   const quoteBlocks = (manifesto.body || "")
     .split(/\n\s*\n/)
     .map((b) => b.trim())

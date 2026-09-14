@@ -59,7 +59,7 @@ export function useSetting<T>(key: string, fallback: T) {
   return useQuery({
     queryKey: ["site_settings", key],
     queryFn: () => fetchSetting<T>(key, fallback),
-    placeholderData: fallback,
+    placeholderData: () => fallback,
     staleTime: 0,
     refetchOnMount: "always",
     refetchOnWindowFocus: true,

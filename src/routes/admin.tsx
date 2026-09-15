@@ -18,11 +18,16 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-const tabs: { to: "/admin" | "/admin/products" | "/admin/site"; label: string; exact?: boolean }[] = [
+const baseTabs: {
+  to: "/admin" | "/admin/products" | "/admin/site" | "/admin/staff";
+  label: string;
+  exact?: boolean;
+}[] = [
   { to: "/admin", label: "Orders", exact: true },
   { to: "/admin/products", label: "Objects" },
   { to: "/admin/site", label: "Site content" },
 ];
+const staffTab = { to: "/admin/staff" as const, label: "Studio access" };
 
 function AdminLayout() {
   const { session, loading } = useSession();

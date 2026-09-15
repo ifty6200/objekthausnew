@@ -80,9 +80,9 @@ function FlowerCard() {
                 src={img.src}
                 alt={img.alt}
                 loading="lazy"
-                width={900}
-                height={1100}
-                className="h-[58svh] w-full object-cover"
+                width={1020}
+                height={1110}
+                className="aspect-[1020/1110] w-full object-cover"
               />
             </div>
           ))}

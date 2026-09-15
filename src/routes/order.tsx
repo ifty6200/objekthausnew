@@ -41,9 +41,14 @@ function Order() {
     setBusy(true);
     setError(null);
     const form = new FormData(e.currentTarget);
-    const { data, error: err } = await supabase
+    const d = new Date();
+    const ref = `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}${String(
+      d.getDate(),
+    ).padStart(2, "0")}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+    const { error: err } = await supabase
       .from("orders")
       .insert({
+        reference: ref,
         customer_name: String(form.get("name") ?? ""),
         phone: String(form.get("phone") ?? ""),
         address: String(form.get("address") ?? ""),
@@ -61,15 +66,13 @@ function Order() {
         shipping,
         total: total + shipping,
         status: "new",
-      })
-      .select("reference")
-      .maybeSingle();
+      });
     setBusy(false);
     if (err) {
       setError("We could not record your order. Please try again or write to the studio.");
       return;
     }
-    setReference(data?.reference ?? null);
+    setReference(ref);
     setSent(true);
     clear();
   };
@@ -106,9 +109,9 @@ function Order() {
                         src={l.image}
                         alt={l.product}
                         loading="lazy"
-                        width={160}
-                        height={200}
-                        className="h-28 w-24 shrink-0 object-cover"
+                        width={1020}
+                        height={1110}
+                        className="aspect-[1020/1110] w-24 shrink-0 object-cover"
                       />
                       <div className="min-w-0 flex-1">
                         <p className="font-display text-2xl font-light">{l.product}</p>
@@ -223,7 +226,7 @@ function Order() {
                 name="phone"
                 autoComplete="tel"
                 maxLength={25}
-                pattern="[0-9+()\-\s]{6,25}"
+                pattern="[0-9\+\(\)\s\-]{6,25}"
                 className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
               />
             </label>

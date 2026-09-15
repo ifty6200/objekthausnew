@@ -66,15 +66,13 @@ function Order() {
         shipping,
         total: total + shipping,
         status: "new",
-      })
-      .select("reference")
-      .maybeSingle();
+      });
     setBusy(false);
     if (err) {
       setError("We could not record your order. Please try again or write to the studio.");
       return;
     }
-    setReference(data?.reference ?? null);
+    setReference(ref);
     setSent(true);
     clear();
   };
@@ -228,7 +226,7 @@ function Order() {
                 name="phone"
                 autoComplete="tel"
                 maxLength={25}
-                pattern="[0-9+()\-\s]{6,25}"
+                pattern="[0-9+() \s-]{6,25}"
                 className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
               />
             </label>

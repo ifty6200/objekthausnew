@@ -27,7 +27,7 @@ const baseTabs: {
   { to: "/admin/products", label: "Objects" },
   { to: "/admin/site", label: "Site content" },
 ];
-const staffTab = { to: "/admin/staff" as const, label: "Studio access" };
+const staffTab = { to: "/admin/staff" as const, label: "Studio access", exact: false };
 
 function AdminLayout() {
   const { session, loading } = useSession();

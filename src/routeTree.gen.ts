@@ -24,7 +24,6 @@ import { Route as FlowerSlugRouteImport } from './routes/flower.$slug'
 import { Route as AdminStaffRouteImport } from './routes/admin.staff'
 import { Route as AdminSiteRouteImport } from './routes/admin.site'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
-import { Route as ApiPublicBootstrapOwnerRouteImport } from './routes/api/public/bootstrap-owner'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -101,11 +100,6 @@ const AdminProductsRoute = AdminProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => AdminRoute,
 } as any)
-const ApiPublicBootstrapOwnerRoute = ApiPublicBootstrapOwnerRouteImport.update({
-  id: '/api/public/bootstrap-owner',
-  path: '/api/public/bootstrap-owner',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -123,7 +117,6 @@ export interface FileRoutesByFullPath {
   '/admin/staff': typeof AdminStaffRoute
   '/flower/$slug': typeof FlowerSlugRoute
   '/admin/': typeof AdminIndexRoute
-  '/api/public/bootstrap-owner': typeof ApiPublicBootstrapOwnerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -140,7 +133,6 @@ export interface FileRoutesByTo {
   '/admin/staff': typeof AdminStaffRoute
   '/flower/$slug': typeof FlowerSlugRoute
   '/admin': typeof AdminIndexRoute
-  '/api/public/bootstrap-owner': typeof ApiPublicBootstrapOwnerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -159,7 +151,6 @@ export interface FileRoutesById {
   '/admin/staff': typeof AdminStaffRoute
   '/flower/$slug': typeof FlowerSlugRoute
   '/admin/': typeof AdminIndexRoute
-  '/api/public/bootstrap-owner': typeof ApiPublicBootstrapOwnerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -179,7 +170,6 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/flower/$slug'
     | '/admin/'
-    | '/api/public/bootstrap-owner'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -196,7 +186,6 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/flower/$slug'
     | '/admin'
-    | '/api/public/bootstrap-owner'
   id:
     | '__root__'
     | '/'
@@ -214,7 +203,6 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/flower/$slug'
     | '/admin/'
-    | '/api/public/bootstrap-owner'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -229,7 +217,6 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   FlowerSlugRoute: typeof FlowerSlugRoute
-  ApiPublicBootstrapOwnerRoute: typeof ApiPublicBootstrapOwnerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -339,13 +326,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/api/public/bootstrap-owner': {
-      id: '/api/public/bootstrap-owner'
-      path: '/api/public/bootstrap-owner'
-      fullPath: '/api/public/bootstrap-owner'
-      preLoaderRoute: typeof ApiPublicBootstrapOwnerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -377,7 +357,6 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   FlowerSlugRoute: FlowerSlugRoute,
-  ApiPublicBootstrapOwnerRoute: ApiPublicBootstrapOwnerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

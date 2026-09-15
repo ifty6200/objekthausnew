@@ -41,9 +41,14 @@ function Order() {
     setBusy(true);
     setError(null);
     const form = new FormData(e.currentTarget);
-    const { data, error: err } = await supabase
+    const d = new Date();
+    const ref = `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}${String(
+      d.getDate(),
+    ).padStart(2, "0")}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+    const { error: err } = await supabase
       .from("orders")
       .insert({
+        reference: ref,
         customer_name: String(form.get("name") ?? ""),
         phone: String(form.get("phone") ?? ""),
         address: String(form.get("address") ?? ""),

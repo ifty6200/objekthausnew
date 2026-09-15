@@ -29,54 +29,85 @@ const baseTabs: {
 ];
 const staffTab = { to: "/admin/staff" as const, label: "Studio access", exact: false };
 
-function AdminLayout() {
-  const { session, loading } = useSession();
-  const { data: isAdmin, isLoading: roleLoading, refetch } = useIsAdmin(session?.user.id);
-  const { data: isSuper } = useIsSuperAdmin(session?.user.id);
-  const tabs = isSuper ? [...baseTabs, staffTab] : baseTabs;
-  const [claimMsg, setClaimMsg] = useState<string | null>(null);
-  const navigate = useNavigate();
+function StudioLogin({ notice }: { notice?: string | null }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [msg, setMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    if (!loading && !session) void navigate({ to: "/auth" });
-  }, [loading, session, navigate]);
-
-  const claim = async () => {
-    const { data, error } = await supabase.rpc("claim_admin");
-    if (error) setClaimMsg(error.message);
-    else if (data) await refetch();
-    else setClaimMsg("A studio admin already exists. Ask them to add you.");
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setMsg(null);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) setMsg("Those studio credentials were not recognised.");
+    setBusy(false);
   };
 
-  if (loading || !session || roleLoading) {
+  return (
+    <main className="min-h-screen bg-bone px-7 py-32 text-bone-foreground sm:px-10">
+      <div className="mx-auto max-w-md">
+        <p className="caps opacity-50">ObjektHaus</p>
+        <h1 className="mt-4 font-display text-4xl font-light">Studio panel</h1>
+        <p className="mt-4 text-sm opacity-65">
+          Studio credentials only. Customer accounts sign in from the site menu.
+        </p>
+        {notice && <p className="mt-4 text-sm opacity-70">{notice}</p>}
+        <span className="rule-line mt-6" />
+        <form onSubmit={submit} className="mt-10 space-y-6">
+          <label className="block">
+            <span className="caps opacity-55">Studio email</span>
+            <input
+              required
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
+            />
+          </label>
+          <label className="block">
+            <span className="caps opacity-55">Password</span>
+            <input
+              required
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
+            />
+          </label>
+          <button type="submit" disabled={busy} className="caps link-underline disabled:opacity-40">
+            {busy ? "Signing in…" : "Enter studio"}
+          </button>
+        </form>
+        {msg && <p className="mt-6 text-sm opacity-70">{msg}</p>}
+        <Link to="/" className="caps link-underline mt-10 block opacity-60">
+          Back to site
+        </Link>
+      </div>
+    </main>
+  );
+}
+
+function AdminLayout() {
+  const { session, loading } = useSession();
+  const { data: isAdmin, isLoading: roleLoading } = useIsAdmin(session?.user.id);
+  const { data: isSuper } = useIsSuperAdmin(session?.user.id);
+  const tabs = isSuper ? [...baseTabs, staffTab] : baseTabs;
+  const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!loading && session && isAdmin === false) {
+      setNotice(`${session.user.email} has no studio access. Signed out.`);
+      void supabase.auth.signOut();
+    }
+  }, [loading, session, isAdmin]);
+
+  if (loading || (session && roleLoading)) {
     return <div className="min-h-screen bg-bone px-8 py-32 text-bone-foreground">Loading…</div>;
   }
 
-  if (!isAdmin) {
-    return (
-      <main className="min-h-screen bg-bone px-7 py-32 text-bone-foreground sm:px-10">
-        <div className="mx-auto max-w-md">
-          <h1 className="font-display text-4xl font-light">Studio access</h1>
-          <p className="mt-4 text-sm opacity-70">
-            {session.user.email} is signed in but is not a studio admin yet.
-          </p>
-          <button type="button" onClick={claim} className="caps link-underline mt-8">
-            Claim studio access
-          </button>
-          {claimMsg && <p className="mt-4 text-sm opacity-70">{claimMsg}</p>}
-          <Link to="/account" className="caps link-underline mt-8 block">
-            Go to your orders
-          </Link>
-          <button
-            type="button"
-            onClick={() => supabase.auth.signOut()}
-            className="caps mt-10 block opacity-55 hover:opacity-90"
-          >
-            Sign out
-          </button>
-        </div>
-      </main>
-    );
+  if (!session || !isAdmin) {
+    return <StudioLogin notice={notice} />;
   }
 
   return (

@@ -32,6 +32,8 @@ const staffTab = { to: "/admin/staff" as const, label: "Studio access" };
 function AdminLayout() {
   const { session, loading } = useSession();
   const { data: isAdmin, isLoading: roleLoading, refetch } = useIsAdmin(session?.user.id);
+  const { data: isSuper } = useIsSuperAdmin(session?.user.id);
+  const tabs = isSuper ? [...baseTabs, staffTab] : baseTabs;
   const [claimMsg, setClaimMsg] = useState<string | null>(null);
   const navigate = useNavigate();
 

@@ -59,9 +59,9 @@ export function CartDrawer() {
                   <img
                     src={l.image}
                     alt={l.name}
-                    width={120}
-                    height={150}
-                    className="h-24 w-20 shrink-0 object-cover"
+                    width={1020}
+                    height={1110}
+                    className="aspect-[1020/1110] w-20 shrink-0 object-cover"
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-3">

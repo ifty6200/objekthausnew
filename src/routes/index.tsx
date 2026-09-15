@@ -119,9 +119,9 @@ function Index() {
                 : "ObjektHaus Object No.01, the Halo Pendant lamp glowing above a dark table"
             }
             loading="lazy"
-            width={1024}
-            height={1408}
-            className="mx-auto w-full object-contain lg:max-h-[68svh] lg:w-auto"
+            width={1020}
+            height={1110}
+            className="mx-auto aspect-[1020/1110] w-full object-cover lg:max-h-[68svh] lg:w-auto"
           />
         </Reveal>
         <div className="lg:pr-6">

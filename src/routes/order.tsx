@@ -106,9 +106,9 @@ function Order() {
                         src={l.image}
                         alt={l.product}
                         loading="lazy"
-                        width={160}
-                        height={200}
-                        className="h-28 w-24 shrink-0 object-cover"
+                        width={1020}
+                        height={1110}
+                        className="aspect-[1020/1110] w-24 shrink-0 object-cover"
                       />
                       <div className="min-w-0 flex-1">
                         <p className="font-display text-2xl font-light">{l.product}</p>

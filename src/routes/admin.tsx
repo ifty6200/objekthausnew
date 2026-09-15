@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useIsAdmin, useSession } from "@/lib/auth";
+import { useIsAdmin, useIsSuperAdmin, useSession } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({

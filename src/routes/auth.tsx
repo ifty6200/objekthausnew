@@ -29,7 +29,7 @@ function AuthPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (session) void navigate({ to: "/admin", search: { status: "all" } });
+    if (session) void navigate({ to: "/account" });
   }, [session, navigate]);
 
   const submit = async (e: React.FormEvent) => {
@@ -42,7 +42,7 @@ function AuthPage() {
         : supabase.auth.signUp({
             email,
             password,
-            options: { emailRedirectTo: `${window.location.origin}/admin` },
+            options: { emailRedirectTo: `${window.location.origin}/account` },
           });
     const { error } = await fn;
     if (error) setMsg(error.message);
@@ -54,8 +54,11 @@ function AuthPage() {
     <main data-tone="dark" className="min-h-screen bg-sand text-sand-foreground">
       <SiteNav />
       <section className="mx-auto max-w-md px-7 pt-32 pb-20 sm:px-10 lg:pt-40">
-        <p className="caps opacity-55">Studio</p>
+        <p className="caps opacity-55">ObjektHaus</p>
         <h1 className="mt-4 font-display text-5xl font-light">Sign in</h1>
+        <p className="mt-4 text-sm opacity-65">
+          Create an account to follow your orders. Studio staff sign in here too.
+        </p>
         <span className="rule-line mt-6" />
         <form onSubmit={submit} className="mt-10 space-y-6">
           <label className="block">

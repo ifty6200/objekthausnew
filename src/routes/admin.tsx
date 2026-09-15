@@ -64,6 +64,9 @@ function AdminLayout() {
             Claim studio access
           </button>
           {claimMsg && <p className="mt-4 text-sm opacity-70">{claimMsg}</p>}
+          <Link to="/account" className="caps link-underline mt-8 block">
+            Go to your orders
+          </Link>
           <button
             type="button"
             onClick={() => supabase.auth.signOut()}

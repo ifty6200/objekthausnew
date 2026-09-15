@@ -66,6 +66,7 @@ function Order() {
         shipping,
         total: total + shipping,
         status: "new",
+        user_id: (await supabase.auth.getUser()).data.user?.id ?? null,
       });
     setBusy(false);
     if (err) {

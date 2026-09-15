@@ -17,9 +17,11 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as FlowerSlugRouteImport } from './routes/flower.$slug'
+import { Route as AdminStaffRouteImport } from './routes/admin.staff'
 import { Route as AdminSiteRouteImport } from './routes/admin.site'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 
@@ -63,6 +65,11 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -78,6 +85,11 @@ const FlowerSlugRoute = FlowerSlugRouteImport.update({
   path: '/flower/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminStaffRoute = AdminStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSiteRoute = AdminSiteRouteImport.update({
   id: '/site',
   path: '/site',
@@ -91,6 +103,7 @@ const AdminProductsRoute = AdminProductsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
@@ -101,11 +114,13 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/site': typeof AdminSiteRoute
+  '/admin/staff': typeof AdminStaffRoute
   '/flower/$slug': typeof FlowerSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
@@ -115,12 +130,14 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/site': typeof AdminSiteRoute
+  '/admin/staff': typeof AdminStaffRoute
   '/flower/$slug': typeof FlowerSlugRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
@@ -131,6 +148,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/site': typeof AdminSiteRoute
+  '/admin/staff': typeof AdminStaffRoute
   '/flower/$slug': typeof FlowerSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -138,6 +156,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
     | '/admin'
     | '/archive'
     | '/auth'
@@ -148,11 +167,13 @@ export interface FileRouteTypes {
     | '/terms'
     | '/admin/products'
     | '/admin/site'
+    | '/admin/staff'
     | '/flower/$slug'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
     | '/archive'
     | '/auth'
     | '/contact'
@@ -162,11 +183,13 @@ export interface FileRouteTypes {
     | '/terms'
     | '/admin/products'
     | '/admin/site'
+    | '/admin/staff'
     | '/flower/$slug'
     | '/admin'
   id:
     | '__root__'
     | '/'
+    | '/account'
     | '/admin'
     | '/archive'
     | '/auth'
@@ -177,12 +200,14 @@ export interface FileRouteTypes {
     | '/terms'
     | '/admin/products'
     | '/admin/site'
+    | '/admin/staff'
     | '/flower/$slug'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRouteWithChildren
   ArchiveRoute: typeof ArchiveRoute
   AuthRoute: typeof AuthRoute
@@ -252,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -273,6 +305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FlowerSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/staff': {
+      id: '/admin/staff'
+      path: '/staff'
+      fullPath: '/admin/staff'
+      preLoaderRoute: typeof AdminStaffRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/site': {
       id: '/admin/site'
       path: '/site'
@@ -293,12 +332,14 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminProductsRoute: typeof AdminProductsRoute
   AdminSiteRoute: typeof AdminSiteRoute
+  AdminStaffRoute: typeof AdminStaffRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminProductsRoute: AdminProductsRoute,
   AdminSiteRoute: AdminSiteRoute,
+  AdminStaffRoute: AdminStaffRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -306,6 +347,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
   AdminRoute: AdminRouteWithChildren,
   ArchiveRoute: ArchiveRoute,
   AuthRoute: AuthRoute,

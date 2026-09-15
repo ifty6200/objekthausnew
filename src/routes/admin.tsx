@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useIsAdmin, useSession } from "@/lib/auth";
+import { useIsAdmin, useIsSuperAdmin, useSession } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -18,15 +18,22 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-const tabs: { to: "/admin" | "/admin/products" | "/admin/site"; label: string; exact?: boolean }[] = [
+const baseTabs: {
+  to: "/admin" | "/admin/products" | "/admin/site" | "/admin/staff";
+  label: string;
+  exact?: boolean;
+}[] = [
   { to: "/admin", label: "Orders", exact: true },
   { to: "/admin/products", label: "Objects" },
   { to: "/admin/site", label: "Site content" },
 ];
+const staffTab = { to: "/admin/staff" as const, label: "Studio access", exact: false };
 
 function AdminLayout() {
   const { session, loading } = useSession();
   const { data: isAdmin, isLoading: roleLoading, refetch } = useIsAdmin(session?.user.id);
+  const { data: isSuper } = useIsSuperAdmin(session?.user.id);
+  const tabs = isSuper ? [...baseTabs, staffTab] : baseTabs;
   const [claimMsg, setClaimMsg] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -57,6 +64,9 @@ function AdminLayout() {
             Claim studio access
           </button>
           {claimMsg && <p className="mt-4 text-sm opacity-70">{claimMsg}</p>}
+          <Link to="/account" className="caps link-underline mt-8 block">
+            Go to your orders
+          </Link>
           <button
             type="button"
             onClick={() => supabase.auth.signOut()}

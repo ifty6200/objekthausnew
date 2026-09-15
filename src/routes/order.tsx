@@ -226,7 +226,7 @@ function Order() {
                 name="phone"
                 autoComplete="tel"
                 maxLength={25}
-                pattern="[0-9+() \s-]{6,25}"
+                pattern="[0-9\+\(\)\s\-]{6,25}"
                 className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
               />
             </label>

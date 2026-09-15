@@ -84,7 +84,7 @@ function AuthPage() {
           </label>
           {msg && <p className="text-sm opacity-80">{msg}</p>}
           <button type="submit" disabled={busy} className="link-underline caps disabled:opacity-40">
-            {busy ? "One moment…" : mode === "signin" ? "Sign in" : "Create studio account"}
+            {busy ? "One moment…" : mode === "signin" ? "Sign in" : "Create account"}
           </button>
         </form>
         <button

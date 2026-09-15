@@ -39,14 +39,10 @@ function AuthPage() {
     const fn =
       mode === "signin"
         ? supabase.auth.signInWithPassword({ email, password })
-        : supabase.auth.signUp({
-            email,
-            password,
-            options: { emailRedirectTo: `${window.location.origin}/account` },
-          });
+        : supabase.auth.signUp({ email, password });
     const { error } = await fn;
     if (error) setMsg(error.message);
-    else if (mode === "signup") setMsg("Account created. If confirmation is required, check your inbox.");
+    else if (mode === "signup") setMsg("Account created. Signing you in…");
     setBusy(false);
   };
 

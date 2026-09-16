@@ -1,16 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useSession } from "@/lib/auth";
+import { useIsAdmin, useSession } from "@/lib/auth";
 import { SiteNav } from "@/components/SiteNav";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Studio Sign In — ObjektHaus" },
-      { name: "description", content: "Sign in to the ObjektHaus studio panel to manage orders and content." },
-      { property: "og:title", content: "Studio Sign In — ObjektHaus" },
-      { property: "og:description", content: "Studio access for ObjektHaus staff." },
+      { title: "Account — ObjektHaus" },
+      { name: "description", content: "Sign in or create an ObjektHaus account to follow your orders." },
+      { property: "og:title", content: "Account — ObjektHaus" },
+      { property: "og:description", content: "Your ObjektHaus account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -55,7 +55,7 @@ function AuthPage() {
         <p className="caps opacity-55">ObjektHaus</p>
         <h1 className="mt-4 font-display text-5xl font-light">Sign in</h1>
         <p className="mt-4 text-sm opacity-65">
-          Create an account to follow your orders. Studio staff sign in here too.
+          Create an account to follow your orders, or sign in to an existing one.
         </p>
         <span className="rule-line mt-6" />
         <form onSubmit={submit} className="mt-10 space-y-6">

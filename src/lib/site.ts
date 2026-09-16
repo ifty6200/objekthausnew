@@ -12,6 +12,12 @@ export type Panel5Settings = {
   videoUrl: string;
   caption: string;
 };
+export type CheckoutSettings = {
+  noteEnabled: boolean;
+  noteLabel: string;
+  noteHint: string;
+  notePlaceholder: string;
+};
 export type ContactSettings = {
   facebook: string;
   instagram: string;
@@ -37,6 +43,12 @@ export const defaultManifesto: ManifestoSettings = {
 };
 export const defaultFeatured: FeaturedSettings = { slug: "queen-annes-lace" };
 export const defaultDelivery: DeliverySettings = { perKg: 80, base: 60, freeAbove: 0 };
+export const defaultCheckout: CheckoutSettings = {
+  noteEnabled: true,
+  noteLabel: "Special note (optional)",
+  noteHint: "Anything we should know — delivery timing, gift wrapping, a dedication.",
+  notePlaceholder: "",
+};
 export const defaultPanel5: Panel5Settings = {
   eyebrow: "",
   title: "",
@@ -78,6 +90,8 @@ export const useFeatured = (): FeaturedSettings =>
   useSetting<FeaturedSettings>("featured", defaultFeatured).data ?? defaultFeatured;
 export const useDelivery = (): DeliverySettings =>
   useSetting<DeliverySettings>("delivery", defaultDelivery).data ?? defaultDelivery;
+export const useCheckoutSettings = (): CheckoutSettings =>
+  useSetting<CheckoutSettings>("checkout", defaultCheckout).data ?? defaultCheckout;
 
 /** Delivery cost for a basket, rounded up to the next whole kilo. */
 export function deliveryCost(d: DeliverySettings, weightKg: number, subtotal: number) {

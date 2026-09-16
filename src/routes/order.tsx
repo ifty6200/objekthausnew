@@ -3,7 +3,7 @@ import { useState } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { SocialLinks } from "@/components/Social";
 import { formatPrice, useCart } from "@/lib/cart";
-import { deliveryCost, useDelivery } from "@/lib/site";
+import { deliveryCost, useCheckoutSettings, useDelivery } from "@/lib/site";
 import { useAllFlowers } from "@/lib/products";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -33,6 +33,7 @@ function Order() {
   const { lines, setQty, remove, total, totalWeight, count, clear } = useCart();
   const flowers = useAllFlowers();
   const delivery = useDelivery();
+  const checkout = useCheckoutSettings();
   const shipping = lines.length === 0 ? 0 : deliveryCost(delivery, totalWeight, total);
 
   const placeOrder = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -53,6 +54,7 @@ function Order() {
         phone: String(form.get("phone") ?? ""),
         address: String(form.get("address") ?? ""),
         email: String(form.get("email") ?? "") || null,
+        note: String(form.get("note") ?? "").trim() || null,
         items: lines.map((l) => ({
           slug: l.slug,
           name: l.name,
@@ -252,6 +254,21 @@ function Order() {
                 className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
               />
             </label>
+            {checkout.noteEnabled && (
+              <label className="block">
+                <span className="caps opacity-55">{checkout.noteLabel}</span>
+                {checkout.noteHint && (
+                  <span className="mt-1 block text-sm opacity-55">{checkout.noteHint}</span>
+                )}
+                <textarea
+                  name="note"
+                  rows={3}
+                  maxLength={500}
+                  placeholder={checkout.notePlaceholder}
+                  className="mt-2 w-full resize-none border-b border-current/30 bg-transparent py-2 outline-none placeholder:opacity-40 focus:border-current"
+                />
+              </label>
+            )}
             {error && <p className="text-sm text-red-500">{error}</p>}
             <button
               type="submit"

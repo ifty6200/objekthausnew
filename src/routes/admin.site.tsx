@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { MediaUpload } from "@/components/MediaUpload";
 import {
+  defaultCheckout,
   defaultContact,
   defaultDelivery,
   defaultHero,
   defaultManifesto,
   defaultPanel5,
   useSetting,
+  type CheckoutSettings,
   type ContactSettings,
   type DeliverySettings,
   type HeroSettings,
@@ -89,6 +91,7 @@ function AdminSite() {
   const panel5 = useEditor<Panel5Settings>("panel5", defaultPanel5);
   const delivery = useEditor<DeliverySettings>("delivery", defaultDelivery);
   const contact = useEditor<ContactSettings>("contact", defaultContact);
+  const checkout = useEditor<CheckoutSettings>("checkout", defaultCheckout);
 
   return (
     <div className="space-y-16">
@@ -161,6 +164,40 @@ function AdminSite() {
           </label>
         </div>
         <SaveRow onSave={delivery.save} saved={delivery.saved} />
+      </section>
+
+      <section className="border border-current/20 p-6">
+        <h2 className="font-display text-3xl font-light">Checkout — special note box</h2>
+        <p className="mt-2 text-sm opacity-60">
+          The note customers can leave with their order. It appears with the order in the orders panel.
+        </p>
+        <div className="mt-6 space-y-6">
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={checkout.draft.noteEnabled}
+              onChange={(e) => checkout.set({ noteEnabled: e.target.checked })}
+            />
+            <span className="caps opacity-70">Show the note box at checkout</span>
+          </label>
+          <Text
+            label="Label"
+            value={checkout.draft.noteLabel}
+            onChange={(v) => checkout.set({ noteLabel: v })}
+          />
+          <Text
+            label="Helper text"
+            textarea
+            value={checkout.draft.noteHint}
+            onChange={(v) => checkout.set({ noteHint: v })}
+          />
+          <Text
+            label="Placeholder"
+            value={checkout.draft.notePlaceholder}
+            onChange={(v) => checkout.set({ notePlaceholder: v })}
+          />
+        </div>
+        <SaveRow onSave={checkout.save} saved={checkout.saved} />
       </section>
 
       <section className="border border-current/20 p-6">

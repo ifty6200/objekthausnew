@@ -77,38 +77,59 @@ export const removeAdmin = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** One-time bootstrap: creates the studio owner account when no super admin exists yet. */
-export const bootstrapSuperAdmin = createServerFn({ method: "POST" }).handler(async () => {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data: existingRole } = await supabaseAdmin
-    .from("user_roles")
-    .select("user_id")
-    .eq("role", "super_admin")
-    .limit(1);
-  if (existingRole && existingRole.length > 0) return { ok: true, created: false };
+/**
+ * One-time owner setup. Requires the server-side OWNER_BOOTSTRAP_TOKEN secret and
+ * refuses to run once a super admin already exists. Credentials are supplied by the
+ * caller, never stored in source.
+ */
+export const bootstrapSuperAdmin = createServerFn({ method: "POST" })
+  .inputValidator((d) =>
+    z
+      .object({
+        token: z.string().min(16).max(512),
+        email: z.string().email().max(200),
+        password: z.string().min(12).max(200),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const expected = process.env["OWNER_BOOTSTRAP_TOKEN"];
+    if (!expected || data.token !== expected) {
+      throw new Error("Owner setup is not available.");
+    }
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: existingRole } = await supabaseAdmin
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "super_admin")
+      .limit(1);
+    if (existingRole && existingRole.length > 0) {
+      throw new Error("Owner setup has already been completed.");
+    }
 
-  const { data: users } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
-  let userId = (users?.users ?? []).find((u) => (u.email ?? "").toLowerCase() === SUPER_EMAIL)?.id;
-  if (userId) {
-    await supabaseAdmin.auth.admin.updateUserById(userId, {
-      password: SUPER_PASSWORD,
-      email_confirm: true,
-    });
-  } else {
-    const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
-      email: SUPER_EMAIL,
-      password: SUPER_PASSWORD,
-      email_confirm: true,
-    });
-    if (error) throw new Error(error.message);
-    userId = created.user?.id;
-  }
-  if (!userId) throw new Error("Could not create the owner account.");
-  await supabaseAdmin
-    .from("user_roles")
-    .upsert({ user_id: userId, role: "super_admin" }, { onConflict: "user_id,role" });
-  await supabaseAdmin
-    .from("user_roles")
-    .upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" });
-  return { ok: true, created: true };
-});
+    const email = data.email.trim().toLowerCase();
+    const { data: users } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
+    let userId = (users?.users ?? []).find((u) => (u.email ?? "").toLowerCase() === email)?.id;
+    if (userId) {
+      await supabaseAdmin.auth.admin.updateUserById(userId, {
+        password: data.password,
+        email_confirm: true,
+      });
+    } else {
+      const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password: data.password,
+        email_confirm: true,
+      });
+      if (error) throw new Error(error.message);
+      userId = created.user?.id;
+    }
+    if (!userId) throw new Error("Could not create the owner account.");
+    await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: userId, role: "super_admin" }, { onConflict: "user_id,role" });
+    await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" });
+    return { ok: true, created: true };
+  });

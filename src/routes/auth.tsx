@@ -26,11 +26,13 @@ function AuthPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const { session } = useSession();
+  const { data: isAdmin, isLoading: roleLoading } = useIsAdmin(session?.user.id);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (session) void navigate({ to: "/account" });
-  }, [session, navigate]);
+    if (!session || roleLoading) return;
+    void navigate({ to: isAdmin ? "/admin" : "/account" });
+  }, [session, isAdmin, roleLoading, navigate]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

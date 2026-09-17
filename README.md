@@ -1,14 +1,22 @@
-# Welcome to your Lovable project
+# Remix of ObjektHaus 1
+
+create this exact website design 
+the eye and the burger menu on every panel make it as a nav bar transparent nav bar only icons are visible and clickable 
+make nav bar icons have a contrast feature so that it changes color according to the background so that its visible to normal naked eyes 
+
+add a burger menu features and other panels accordingly as every button is there
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://objekthaus2.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/7e525dd3-deea-489f-ba5a-ab5575adc146).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +28,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS

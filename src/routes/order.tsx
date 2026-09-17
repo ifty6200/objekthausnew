@@ -208,7 +208,7 @@ function Order() {
             ) : (
           <form
             className="space-y-6"
-            onSubmit={placeOrder}
+            onSubmit={placeOrderSubmit}
           >
             <p className="caps opacity-55">Your details</p>
             <label className="block">

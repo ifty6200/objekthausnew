@@ -1,10 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/auth";
-import { getMyOrders } from "@/lib/data.functions";
 import { SiteNav } from "@/components/SiteNav";
 import { formatPrice } from "@/lib/cart";
 
@@ -43,11 +41,17 @@ function Account() {
     if (!loading && !session) void navigate({ to: "/auth" });
   }, [loading, session, navigate]);
 
-  const fetchOrders = useServerFn(getMyOrders);
   const { data, isLoading } = useQuery({
     queryKey: ["my-orders", session?.user.id],
     enabled: !!session?.user.id,
-    queryFn: () => fetchOrders(),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("id, reference, status, total, shipping, created_at, items")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as unknown as OrderRow[];
+    },
   });
 
   const current = (data ?? []).filter((o) => OPEN.has(o.status));

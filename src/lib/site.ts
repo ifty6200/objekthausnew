@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getSetting } from "@/lib/data.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export type HeroSettings = { videoUrl: string; eyebrow: string; caption: string };
 export type ManifestoSettings = { body: string };
@@ -58,8 +58,13 @@ export const defaultPanel5: Panel5Settings = {
 };
 
 async function fetchSetting<T>(key: string, fallback: T): Promise<T> {
-  const value = await getSetting({ data: { key } });
-  return { ...fallback, ...((value ?? {}) as Partial<T>) };
+  const { data, error } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", key)
+    .maybeSingle();
+  if (error || !data) return fallback;
+  return { ...fallback, ...((data.value ?? {}) as Partial<T>) };
 }
 
 export function useSetting<T>(key: string, fallback: T) {

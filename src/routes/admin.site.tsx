@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
+import { supabase } from "@/integrations/supabase/client";
 import { MediaUpload } from "@/components/MediaUpload";
-import { adminSaveSetting } from "@/lib/data.functions";
 import {
   defaultCheckout,
   defaultContact,
@@ -30,12 +29,11 @@ function useEditor<T extends object>(key: string, fallback: T) {
   const [draft, setDraft] = useState<T>(current);
   const [saved, setSaved] = useState(false);
   const qc = useQueryClient();
-  const saveSetting = useServerFn(adminSaveSetting);
 
   useEffect(() => setDraft(current), [current]);
 
   const save = async () => {
-    await saveSetting({ data: { key, value: draft } });
+    await supabase.from("site_settings").upsert({ key, value: draft as never });
     await qc.invalidateQueries({ queryKey: ["site_settings", key] });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);

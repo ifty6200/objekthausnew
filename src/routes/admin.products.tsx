@@ -267,14 +267,13 @@ function FoundingObjects({
   onEdit: (d: Draft) => void;
 }) {
   const qc = useQueryClient();
+  const saveSetting = useServerFn(adminSaveSetting);
   const { data } = useSetting<HiddenSettings>("hidden", defaultHidden);
   const hidden = Array.isArray(data?.slugs) ? data.slugs : [];
 
   const toggleHidden = async (slug: string) => {
     const next = hidden.includes(slug) ? hidden.filter((s) => s !== slug) : [...hidden, slug];
-    await supabase
-      .from("site_settings")
-      .upsert({ key: "hidden", value: { slugs: next } as never });
+    await saveSetting({ data: { key: "hidden", value: { slugs: next } } });
     await qc.invalidateQueries({ queryKey: ["site_settings", "hidden"] });
     await qc.invalidateQueries({ queryKey: ["products"] });
   };
@@ -346,6 +345,7 @@ function FoundingObjects({
 /** Chooses which object fills the third and fourth panels of the exhibition. */
 function FeaturedPicker({ rows }: { rows: ProductRow[] }) {
   const qc = useQueryClient();
+  const saveSetting = useServerFn(adminSaveSetting);
   const { data } = useSetting<FeaturedSettings>("featured", defaultFeatured);
   const current = (data ?? defaultFeatured).slug;
   const [saved, setSaved] = useState(false);
@@ -358,7 +358,7 @@ function FeaturedPicker({ rows }: { rows: ProductRow[] }) {
   ];
 
   const choose = async (slug: string) => {
-    await supabase.from("site_settings").upsert({ key: "featured", value: { slug } as never });
+    await saveSetting({ data: { key: "featured", value: { slug } } });
     await qc.invalidateQueries({ queryKey: ["site_settings", "featured"] });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);

@@ -1,12 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
 import { MediaUpload } from "@/components/MediaUpload";
 import type { ProductRow } from "@/lib/products";
 import { flowers } from "@/lib/flowers";
 import { defaultFeatured, useSetting, type FeaturedSettings } from "@/lib/site";
 import { defaultHidden, type HiddenSettings } from "@/lib/products";
+import {
+  adminDeleteProduct,
+  adminListProducts,
+  adminSaveProduct,
+  adminSaveSetting,
+} from "@/lib/data.functions";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
@@ -76,17 +82,13 @@ function AdminProducts() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchProducts = useServerFn(adminListProducts);
+  const saveProduct = useServerFn(adminSaveProduct);
+  const deleteProduct = useServerFn(adminDeleteProduct);
+  const saveSetting = useServerFn(adminSaveSetting);
   const { data: rows = [] } = useQuery({
     queryKey: ["admin-products"],
-    queryFn: async () => {
-      const { data, error: e } = await supabase
-        .from("products")
-        .select("*")
-        .order("sort_order")
-        .order("created_at");
-      if (e) throw e;
-      return (data ?? []) as unknown as ProductRow[];
-    },
+    queryFn: () => fetchProducts(),
   });
 
   const set = (patch: Partial<Draft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
@@ -101,11 +103,10 @@ function AdminProducts() {
       weight_kg: Number(draft.weight_kg) || 0,
       sort_order: Number(draft.sort_order) || 0,
     };
-    const { error: e } = draft.id
-      ? await supabase.from("products").update(payload).eq("id", draft.id)
-      : await supabase.from("products").insert(payload);
-    if (e) {
-      setError(e.message);
+    try {
+      await saveProduct({ data: payload });
+    } catch (e) {
+      setError((e as Error).message);
       return;
     }
     setDraft(null);
@@ -114,7 +115,7 @@ function AdminProducts() {
   };
 
   const remove = async (id: string) => {
-    await supabase.from("products").delete().eq("id", id);
+    await deleteProduct({ data: { id } });
     await qc.invalidateQueries({ queryKey: ["admin-products"] });
     await qc.invalidateQueries({ queryKey: ["products"] });
   };
@@ -266,14 +267,13 @@ function FoundingObjects({
   onEdit: (d: Draft) => void;
 }) {
   const qc = useQueryClient();
+  const saveSetting = useServerFn(adminSaveSetting);
   const { data } = useSetting<HiddenSettings>("hidden", defaultHidden);
   const hidden = Array.isArray(data?.slugs) ? data.slugs : [];
 
   const toggleHidden = async (slug: string) => {
     const next = hidden.includes(slug) ? hidden.filter((s) => s !== slug) : [...hidden, slug];
-    await supabase
-      .from("site_settings")
-      .upsert({ key: "hidden", value: { slugs: next } as never });
+    await saveSetting({ data: { key: "hidden", value: { slugs: next } } });
     await qc.invalidateQueries({ queryKey: ["site_settings", "hidden"] });
     await qc.invalidateQueries({ queryKey: ["products"] });
   };
@@ -345,6 +345,7 @@ function FoundingObjects({
 /** Chooses which object fills the third and fourth panels of the exhibition. */
 function FeaturedPicker({ rows }: { rows: ProductRow[] }) {
   const qc = useQueryClient();
+  const saveSetting = useServerFn(adminSaveSetting);
   const { data } = useSetting<FeaturedSettings>("featured", defaultFeatured);
   const current = (data ?? defaultFeatured).slug;
   const [saved, setSaved] = useState(false);
@@ -357,7 +358,7 @@ function FeaturedPicker({ rows }: { rows: ProductRow[] }) {
   ];
 
   const choose = async (slug: string) => {
-    await supabase.from("site_settings").upsert({ key: "featured", value: { slug } as never });
+    await saveSetting({ data: { key: "featured", value: { slug } } });
     await qc.invalidateQueries({ queryKey: ["site_settings", "featured"] });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);

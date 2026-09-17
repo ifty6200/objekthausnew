@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { flowers, type Flower } from "@/lib/flowers";
+import { listProducts } from "@/lib/data.functions";
 import { useSetting } from "@/lib/site";
 
 export type ProductRow = {
@@ -61,14 +61,8 @@ function mergeWithBuiltIn(row: Flower): Flower {
 }
 
 export async function fetchProducts(): Promise<Flower[]> {
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("published", true)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: true });
-  if (error || !data) return [];
-  return (data as unknown as ProductRow[]).map(rowToFlower);
+  const rows = await listProducts();
+  return rows.map(rowToFlower);
 }
 
 function usePublishedProducts() {

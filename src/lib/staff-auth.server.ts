@@ -95,12 +95,12 @@ export async function issueStaffCookie(session: StaffSession) {
   const token = `${payload}.${await sign(payload)}`;
   setResponseHeader(
     "set-cookie",
-    `${STAFF_COOKIE}=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_DAYS * 86_400}`,
+    `${STAFF_COOKIE}=${token}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${SESSION_DAYS * 86_400}`,
   );
 }
 
 export function clearStaffCookie() {
-  setResponseHeader("set-cookie", `${STAFF_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`);
+  setResponseHeader("set-cookie", `${STAFF_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=0`);
 }
 
 function readCookie(name: string) {

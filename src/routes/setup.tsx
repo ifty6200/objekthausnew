@@ -43,7 +43,7 @@ function SetupPage() {
       if (error) {
         setMsg("Owner account ready. Please sign in from the account page.");
       } else {
-        void navigate({ to: "/admin" });
+        void navigate({ to: "/admin", search: { status: "all" } });
       }
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Setup failed.");

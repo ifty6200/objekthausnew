@@ -135,26 +135,23 @@ export const getMyOrders = createServerFn({ method: "GET" })
 
 // ---------- Admin: products ----------
 
-export const adminListProducts = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    await assertAdmin(context);
-    const db = await personalAdmin();
-    const { data } = await db
-      .from("products")
-      .select("*")
-      .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: true });
-    return (data ?? []) as ProductRow[];
-  });
+export const adminListProducts = createServerFn({ method: "GET" }).handler(async () => {
+  await assertAdmin();
+  const db = await personalAdmin();
+  const { data } = await db
+    .from("products")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+  return (data ?? []) as ProductRow[];
+});
 
 type ProductInput = Omit<ProductRow, "id" | "created_at" | "updated_at"> & { id?: string };
 
 export const adminSaveProduct = createServerFn({ method: "POST" })
   .inputValidator((input: ProductInput) => input)
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context, data }) => {
-    await assertAdmin(context);
+  .handler(async ({ data }) => {
+    await assertAdmin();
     const db = await personalAdmin();
     if (data.id) {
       const { id, ...rest } = data;
@@ -170,9 +167,8 @@ export const adminSaveProduct = createServerFn({ method: "POST" })
 
 export const adminDeleteProduct = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string }) => input)
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context, data }) => {
-    await assertAdmin(context);
+  .handler(async ({ data }) => {
+    await assertAdmin();
     const db = await personalAdmin();
     const { error } = await db.from("products").delete().eq("id", data.id);
     assertSchema(error);
@@ -183,9 +179,8 @@ export const adminDeleteProduct = createServerFn({ method: "POST" })
 
 export const adminSaveSetting = createServerFn({ method: "POST" })
   .inputValidator((input: { key: string; value: unknown }) => input)
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context, data }) => {
-    await assertAdmin(context);
+  .handler(async ({ data }) => {
+    await assertAdmin();
     const db = await personalAdmin();
     const { error } = await db.from("site_settings").upsert({ key: data.key, value: data.value });
     assertSchema(error);

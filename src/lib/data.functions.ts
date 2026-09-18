@@ -19,6 +19,23 @@ async function assertAdmin(context: { supabase: any; userId: string }) {
   if (error || !data) throw new Error("Forbidden — studio access required.");
 }
 
+/** True when the personal database hasn't had the schema script run yet. */
+function isMissingTable(error: any) {
+  return (
+    error?.code === "PGRST205" ||
+    error?.code === "42P01" ||
+    /schema cache|does not exist/i.test(String(error?.message ?? ""))
+  );
+}
+
+const SETUP_HINT =
+  "Your personal database has no tables yet — run supabase/personal-schema.sql in your Supabase SQL editor.";
+
+function assertSchema(error: any) {
+  if (isMissingTable(error)) throw new Error(SETUP_HINT);
+  if (error) throw error;
+}
+
 // ---------- Public reads ----------
 
 export const listProducts = createServerFn({ method: "GET" }).handler(async () => {
@@ -29,7 +46,12 @@ export const listProducts = createServerFn({ method: "GET" }).handler(async () =
     .eq("published", true)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
-  if (error) throw error;
+  // Before the schema script is run, fall back to the built-in objects
+  // instead of breaking the public site.
+  if (error) {
+    if (isMissingTable(error)) return [] as ProductRow[];
+    throw error;
+  }
   return (data ?? []) as ProductRow[];
 });
 
@@ -37,7 +59,12 @@ export const getSetting = createServerFn({ method: "GET" })
   .inputValidator((input: { key: string }) => input)
   .handler(async ({ data }) => {
     const db = await personalAdmin();
-    const { data: row } = await db.from("site_settings").select("value").eq("key", data.key).maybeSingle();
+    const { data: row, error } = await db
+      .from("site_settings")
+      .select("value")
+      .eq("key", data.key)
+      .maybeSingle();
+    if (error && !isMissingTable(error)) throw error;
     return { value: (row?.value ?? null) as any };
   });
 
@@ -80,8 +107,8 @@ export const placeOrder = createServerFn({ method: "POST" })
       })
       .select("reference")
       .single();
-    if (error) throw error;
-    return { reference: row.reference as string };
+    assertSchema(error);
+    return { reference: (row?.reference ?? "") as string };
   });
 
 // ---------- Authenticated: own order history ----------
@@ -134,11 +161,11 @@ export const adminSaveProduct = createServerFn({ method: "POST" })
     if (data.id) {
       const { id, ...rest } = data;
       const { error } = await db.from("products").update(rest).eq("id", id);
-      if (error) throw error;
+      assertSchema(error);
     } else {
       const { id: _omit, ...rest } = data;
       const { error } = await db.from("products").insert(rest);
-      if (error) throw error;
+      assertSchema(error);
     }
     return { ok: true };
   });
@@ -150,7 +177,7 @@ export const adminDeleteProduct = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const db = await personalAdmin();
     const { error } = await db.from("products").delete().eq("id", data.id);
-    if (error) throw error;
+    assertSchema(error);
     return { ok: true };
   });
 
@@ -163,7 +190,7 @@ export const adminSaveSetting = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const db = await personalAdmin();
     const { error } = await db.from("site_settings").upsert({ key: data.key, value: data.value });
-    if (error) throw error;
+    assertSchema(error);
     return { ok: true };
   });
 
@@ -203,7 +230,7 @@ export const adminUpdateOrder = createServerFn({ method: "POST" })
     const db = await personalAdmin();
     const { id, ...rest } = data;
     const { error } = await db.from("orders").update(rest).eq("id", id);
-    if (error) throw error;
+    assertSchema(error);
     return { ok: true };
   });
 
@@ -214,6 +241,6 @@ export const adminDeleteOrder = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const db = await personalAdmin();
     const { error } = await db.from("orders").delete().eq("id", data.id);
-    if (error) throw error;
+    assertSchema(error);
     return { ok: true };
   });

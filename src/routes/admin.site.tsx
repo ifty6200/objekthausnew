@@ -97,6 +97,7 @@ function AdminSite() {
 
   return (
     <div className="space-y-16">
+      <MediaMigration />
       <section className="border border-current/20 p-6">
         <h2 className="font-display text-3xl font-light">Hero video</h2>
         <p className="mt-2 text-sm opacity-60">

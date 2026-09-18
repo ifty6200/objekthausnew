@@ -65,3 +65,18 @@ alter table public.products enable row level security;
 alter table public.site_settings enable row level security;
 alter table public.orders enable row level security;
 -- No policies on purpose: only the service role (server functions) may read/write.
+
+-- Studio staff (owner + admins). Sign-in happens through server functions that
+-- verify a PBKDF2 password hash; sessions are signed HttpOnly cookies.
+create table if not exists public.staff (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  password_hash text not null,
+  role text not null default 'admin' check (role in ('owner', 'admin')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+grant all on public.staff to service_role;
+alter table public.staff enable row level security;
+-- No policies on purpose: credentials are only reachable by the service role.

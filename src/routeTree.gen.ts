@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SetupRouteImport } from './routes/setup'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -35,11 +34,6 @@ const TermsRoute = TermsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SetupRoute = SetupRouteImport.update({
-  id: '/setup',
-  path: '/setup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -123,7 +117,6 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
-  '/setup': typeof SetupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/products': typeof AdminProductsRoute
@@ -141,7 +134,6 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
-  '/setup': typeof SetupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/products': typeof AdminProductsRoute
@@ -161,7 +153,6 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
-  '/setup': typeof SetupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin/products': typeof AdminProductsRoute
@@ -182,7 +173,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/order'
     | '/privacy'
-    | '/setup'
     | '/sitemap.xml'
     | '/terms'
     | '/admin/products'
@@ -200,7 +190,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/order'
     | '/privacy'
-    | '/setup'
     | '/sitemap.xml'
     | '/terms'
     | '/admin/products'
@@ -219,7 +208,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/order'
     | '/privacy'
-    | '/setup'
     | '/sitemap.xml'
     | '/terms'
     | '/admin/products'
@@ -239,7 +227,6 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   OrderRoute: typeof OrderRoute
   PrivacyRoute: typeof PrivacyRoute
-  SetupRoute: typeof SetupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   FlowerSlugRoute: typeof FlowerSlugRoute
@@ -259,13 +246,6 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/setup': {
-      id: '/setup'
-      path: '/setup'
-      fullPath: '/setup'
-      preLoaderRoute: typeof SetupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -395,7 +375,6 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   OrderRoute: OrderRoute,
   PrivacyRoute: PrivacyRoute,
-  SetupRoute: SetupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   FlowerSlugRoute: FlowerSlugRoute,

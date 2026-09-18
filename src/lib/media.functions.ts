@@ -52,3 +52,112 @@ export const uploadMedia = createServerFn({ method: "POST" })
     }
     return { url: signed.data.signedUrl };
   });
+
+// ---------- Copy existing media into the personal bucket ----------
+
+const MEDIA_RE = /\.(jpe?g|png|webp|gif|avif|svg|mp4|webm|mov)(\?|$)/i;
+
+function looksLikeMedia(v: unknown): v is string {
+  if (typeof v !== "string" || v.length < 5) return false;
+  if (!/^https?:\/\//i.test(v) && !v.startsWith("/")) return false;
+  return MEDIA_RE.test(v);
+}
+
+/** Walk a JSON value, replacing media URLs through the supplied map. */
+function rewrite(value: any, map: Map<string, string>): any {
+  if (typeof value === "string") return map.get(value) ?? value;
+  if (Array.isArray(value)) return value.map((v) => rewrite(v, map));
+  if (value && typeof value === "object") {
+    const out: Record<string, any> = {};
+    for (const [k, v] of Object.entries(value)) out[k] = rewrite(v, map);
+    return out;
+  }
+  return value;
+}
+
+function collect(value: any, into: Set<string>) {
+  if (looksLikeMedia(value)) into.add(value);
+  else if (Array.isArray(value)) value.forEach((v) => collect(v, into));
+  else if (value && typeof value === "object") Object.values(value).forEach((v) => collect(v, into));
+}
+
+export const migrateMediaToPersonal = createServerFn({ method: "POST" }).handler(async () => {
+  const { requireStaff } = await import("./staff-auth.server");
+  await requireStaff();
+
+  const { getRequest } = await import("@tanstack/react-start/server");
+  const origin = new URL(getRequest().url).origin;
+
+  const { getPersonalAdmin } = await import("./personal-supabase.server");
+  const db = getPersonalAdmin();
+
+  const buckets = await db.storage.listBuckets();
+  if (!buckets.error && !buckets.data?.some((b: { name: string }) => b.name === BUCKET)) {
+    await db.storage.createBucket(BUCKET, { public: true });
+  }
+  const bucketMarker = `/storage/v1/object/public/${BUCKET}/`;
+
+  const products = (await db.from("products").select("id, slug, card_url, images")).data ?? [];
+  const settings = (await db.from("site_settings").select("key, value")).data ?? [];
+
+  const urls = new Set<string>();
+  for (const p of products as any[]) {
+    collect(p.card_url, urls);
+    collect(p.images, urls);
+  }
+  for (const s of settings as any[]) collect(s.value, urls);
+
+  const map = new Map<string, string>();
+  const failed: string[] = [];
+  let copied = 0;
+
+  for (const url of urls) {
+    if (url.includes(bucketMarker)) continue; // already in the personal bucket
+    try {
+      const absolute = url.startsWith("/") ? `${origin}${url}` : url;
+      const res = await fetch(absolute);
+      if (!res.ok) throw new Error(`download failed (${res.status})`);
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      if (bytes.byteLength > MAX_BYTES) throw new Error("file larger than 45 MB");
+
+      const rawName = decodeURIComponent(absolute.split("?")[0]!.split("/").pop() || "file");
+      const name = rawName.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-100);
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${name}`;
+
+      const { error } = await db.storage.from(BUCKET).upload(path, bytes, {
+        contentType: res.headers.get("content-type") || "application/octet-stream",
+        cacheControl: "31536000",
+        upsert: false,
+      });
+      if (error) throw new Error(error.message);
+
+      const publicUrl = db.storage.from(BUCKET).getPublicUrl(path).data?.publicUrl;
+      if (!publicUrl) throw new Error("could not build a public link");
+      map.set(url, publicUrl);
+      copied += 1;
+    } catch (err) {
+      failed.push(`${url} — ${err instanceof Error ? err.message : "unknown error"}`);
+    }
+  }
+
+  let productsUpdated = 0;
+  for (const p of products as any[]) {
+    const card_url = rewrite(p.card_url, map);
+    const images = rewrite(p.images, map);
+    if (card_url === p.card_url && JSON.stringify(images) === JSON.stringify(p.images)) continue;
+    const { error } = await db.from("products").update({ card_url, images }).eq("id", p.id);
+    if (error) failed.push(`product ${p.slug ?? p.id} — ${error.message}`);
+    else productsUpdated += 1;
+  }
+
+  let settingsUpdated = 0;
+  for (const s of settings as any[]) {
+    const value = rewrite(s.value, map);
+    if (JSON.stringify(value) === JSON.stringify(s.value)) continue;
+    const { error } = await db.from("site_settings").upsert({ key: s.key, value });
+    if (error) failed.push(`setting ${s.key} — ${error.message}`);
+    else settingsUpdated += 1;
+  }
+
+  return { found: urls.size, copied, productsUpdated, settingsUpdated, failed };
+});

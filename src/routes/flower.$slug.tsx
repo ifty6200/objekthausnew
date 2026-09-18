@@ -39,15 +39,22 @@ function FlowerCard() {
   const viewedName = f?.product;
   const viewedVariant = f?.name;
   const viewedPrice = f?.price;
+  // Fire view_item once per object, and only after the live prices have arrived,
+  // so the event never carries a stale build-time price.
+  const loaded = flowers.length > 0;
+  const trackedSlug = useRef<string | null>(null);
   useEffect(() => {
+    if (!loaded) return;
     if (!viewedSlug || !viewedName || typeof viewedPrice !== "number") return;
+    if (trackedSlug.current === viewedSlug) return;
+    trackedSlug.current = viewedSlug;
     trackViewItem(
       toAnalyticsItem(
         { slug: viewedSlug, name: viewedVariant ?? "", product: viewedName, price: viewedPrice },
         1,
       ),
     );
-  }, [viewedSlug, viewedName, viewedVariant, viewedPrice]);
+  }, [loaded, viewedSlug, viewedName, viewedVariant, viewedPrice]);
 
 
   if (!f) {

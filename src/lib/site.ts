@@ -58,7 +58,7 @@ export const defaultPanel5: Panel5Settings = {
 };
 
 async function fetchSetting<T>(key: string, fallback: T): Promise<T> {
-  const value = await getSetting({ data: { key } });
+  const { value } = await getSetting({ data: { key } });
   return { ...fallback, ...((value ?? {}) as Partial<T>) };
 }
 

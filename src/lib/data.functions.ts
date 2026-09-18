@@ -11,10 +11,7 @@ async function personalAdmin() {
   return getPersonalAdmin();
 }
 
-async function assertAdmin(context: {
-  supabase: { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> };
-  userId: string;
-}) {
+async function assertAdmin(context: { supabase: any; userId: string }) {
   const { data, error } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin",
@@ -41,7 +38,7 @@ export const getSetting = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const db = await personalAdmin();
     const { data: row } = await db.from("site_settings").select("value").eq("key", data.key).maybeSingle();
-    return (row?.value ?? null) as unknown;
+    return { value: (row?.value ?? null) as any };
   });
 
 // ---------- Public: place an order ----------

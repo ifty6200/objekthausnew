@@ -19,13 +19,17 @@ function createSupabaseFetch(key: string): typeof fetch {
   };
 }
 
-let _client: ReturnType<typeof createClient> | undefined;
+// Schema types for the personal project are not generated here, so the client
+// is intentionally loosely typed.
+type LooseClient = ReturnType<typeof createClient<any, any, any>>;
 
-export function getPersonalAdmin() {
+let _client: LooseClient | undefined;
+
+export function getPersonalAdmin(): LooseClient {
   if (_client) return _client;
-  const url = process.env["PERSONAL_SUPABASE_URL"];
-  const key = process.env["PERSONAL_SUPABASE_SERVICE_ROLE_KEY"];
-  const isPlaceholder = (v?: string) => !v || /PLACEHOLDER|REPLACE/i.test(v);
+  const url = process.env["PERSONAL_SUPABASE_URL"] ?? "";
+  const key = process.env["PERSONAL_SUPABASE_SERVICE_ROLE_KEY"] ?? "";
+  const isPlaceholder = (v: string) => !v || /PLACEHOLDER|REPLACE/i.test(v);
   if (isPlaceholder(url) || isPlaceholder(key)) {
     throw new Error(
       "Missing PERSONAL_SUPABASE_URL / PERSONAL_SUPABASE_SERVICE_ROLE_KEY. Add them in Project Settings → Secrets.",

@@ -161,11 +161,11 @@ export const adminSaveProduct = createServerFn({ method: "POST" })
     if (data.id) {
       const { id, ...rest } = data;
       const { error } = await db.from("products").update(rest).eq("id", id);
-      if (error) throw error;
+      assertSchema(error);
     } else {
       const { id: _omit, ...rest } = data;
       const { error } = await db.from("products").insert(rest);
-      if (error) throw error;
+      assertSchema(error);
     }
     return { ok: true };
   });

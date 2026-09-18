@@ -68,7 +68,7 @@ function AdminLayout() {
             </Link>
             <button
               type="button"
-              onClick={() => supabase.auth.signOut()}
+              onClick={() => void handleSignOut()}
               className="caps opacity-55 hover:opacity-90"
             >
               Sign out

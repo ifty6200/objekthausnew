@@ -78,6 +78,17 @@ function usePublishedProducts() {
   );
 }
 
+/** True once the live product prices have been fetched at least once. */
+export function useProductsLoaded(): boolean {
+  return useQuery({
+    queryKey: ["products", "published"],
+    queryFn: fetchProducts,
+    placeholderData: [] as Flower[],
+    staleTime: 0,
+  }).isFetched;
+}
+
+
 export function useHiddenSlugs(): string[] {
   const { data } = useSetting<HiddenSettings>("hidden", defaultHidden);
   return Array.isArray(data?.slugs) ? data.slugs : [];

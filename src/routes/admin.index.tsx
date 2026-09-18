@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { adminListOrders, adminUpdateOrder, adminDeleteOrder } from "@/lib/data.functions";
 import { formatPrice } from "@/lib/cart";
 import { deliveryCost, useDelivery } from "@/lib/site";
 
@@ -85,26 +85,19 @@ function AdminOrders() {
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["orders"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as unknown as Order[];
-    },
+    queryFn: async () => (await adminListOrders()) as unknown as Order[],
   });
 
   const shown = status === "all" ? orders : orders.filter((o) => o.status === status);
   const countOf = (k: Filter) => (k === "all" ? orders.length : orders.filter((o) => o.status === k).length);
 
   const setStatus = async (id: string, next: OrderStatus) => {
-    await supabase.from("orders").update({ status: next }).eq("id", id);
+    await adminUpdateOrder({ data: { id, status: next } });
     await qc.invalidateQueries({ queryKey: ["orders"] });
   };
 
   const removeOrder = async (id: string) => {
-    await supabase.from("orders").delete().eq("id", id);
+    await adminDeleteOrder({ data: { id } });
     await qc.invalidateQueries({ queryKey: ["orders"] });
   };
 
@@ -253,29 +246,31 @@ function OrderEditor({
   const save = async () => {
     setBusy(true);
     setError(null);
-    const { error: err } = await supabase
-      .from("orders")
-      .update({
-        reference: d.reference,
-        customer_name: d.customer_name,
-        phone: d.phone,
-        address: d.address,
-        email: d.email || null,
-        note: d.note || null,
-        status: d.status,
-        delivery_zone: d.delivery_zone,
-        items: d.items as never,
-        subtotal: Number(d.subtotal),
-        shipping: Number(d.shipping),
-        total: Number(d.total),
-        total_weight: Number(d.total_weight),
-      })
-      .eq("id", d.id);
-    setBusy(false);
-    if (err) {
-      setError(err.message);
+    try {
+      await adminUpdateOrder({
+        data: {
+          id: d.id,
+          reference: d.reference,
+          customer_name: d.customer_name,
+          phone: d.phone,
+          address: d.address,
+          email: d.email || null,
+          note: d.note || null,
+          status: d.status,
+          delivery_zone: d.delivery_zone,
+          items: d.items,
+          subtotal: Number(d.subtotal),
+          shipping: Number(d.shipping),
+          total: Number(d.total),
+          total_weight: Number(d.total_weight),
+        },
+      });
+    } catch (e) {
+      setBusy(false);
+      setError(e instanceof Error ? e.message : "Could not save this order.");
       return;
     }
+    setBusy(false);
     await onSaved();
   };
 

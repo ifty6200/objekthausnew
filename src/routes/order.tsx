@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { SiteNav } from "@/components/SiteNav";
 import { SocialLinks } from "@/components/Social";
-import { formatPrice, useCart } from "@/lib/cart";
+import { formatPrice, toAnalyticsItem, useCart } from "@/lib/cart";
 import { deliveryCost, useCheckoutSettings, useDelivery } from "@/lib/site";
 import { useAllFlowers } from "@/lib/products";
 import { supabase } from "@/integrations/supabase/client";
 import { placeOrder } from "@/lib/data.functions";
+import { trackBeginCheckout, trackPurchase } from "@/lib/analytics";
 
 export const Route = createFileRoute("/order")({
   head: () => ({

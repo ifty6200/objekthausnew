@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { getFlower, type Flower } from "@/lib/flowers";
 import { useAllFlowers, useFlower } from "@/lib/products";
 import { AddToCart } from "@/components/AddToCart";
-import { formatPrice } from "@/lib/cart";
+import { formatPrice, toAnalyticsItem } from "@/lib/cart";
+import { trackViewItem } from "@/lib/analytics";
 
 export const Route = createFileRoute("/flower/$slug")({
   loader: ({ params }) => getFlower(params.slug) ?? null,

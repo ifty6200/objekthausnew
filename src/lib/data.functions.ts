@@ -11,12 +11,10 @@ async function personalAdmin() {
   return getPersonalAdmin();
 }
 
-async function assertAdmin(context: { supabase: any; userId: string }) {
-  const { data, error } = await context.supabase.rpc("has_role", {
-    _user_id: context.userId,
-    _role: "admin",
-  });
-  if (error || !data) throw new Error("Forbidden — studio access required.");
+// Studio access is authenticated against the personal database's staff table.
+async function assertAdmin() {
+  const { requireStaff } = await import("@/lib/staff-auth.server");
+  await requireStaff();
 }
 
 /** True when the personal database hasn't had the schema script run yet. */

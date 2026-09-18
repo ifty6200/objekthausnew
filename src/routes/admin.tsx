@@ -1,7 +1,9 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useIsAdmin, useIsSuperAdmin, useSession } from "@/lib/auth";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { staffSignOut } from "@/lib/staff-auth.functions";
+import { useStaff } from "@/lib/staff";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({

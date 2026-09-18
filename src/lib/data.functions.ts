@@ -38,7 +38,7 @@ export const getSetting = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const db = await personalAdmin();
     const { data: row } = await db.from("site_settings").select("value").eq("key", data.key).maybeSingle();
-    return (row?.value ?? null) as unknown;
+    return { value: (row?.value ?? null) as any };
   });
 
 // ---------- Public: place an order ----------

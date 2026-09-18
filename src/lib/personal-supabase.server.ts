@@ -27,9 +27,9 @@ let _client: LooseClient | undefined;
 
 export function getPersonalAdmin(): LooseClient {
   if (_client) return _client;
-  const url = process.env["PERSONAL_SUPABASE_URL"];
-  const key = process.env["PERSONAL_SUPABASE_SERVICE_ROLE_KEY"];
-  const isPlaceholder = (v?: string) => !v || /PLACEHOLDER|REPLACE/i.test(v);
+  const url = process.env["PERSONAL_SUPABASE_URL"] ?? "";
+  const key = process.env["PERSONAL_SUPABASE_SERVICE_ROLE_KEY"] ?? "";
+  const isPlaceholder = (v: string) => !v || /PLACEHOLDER|REPLACE/i.test(v);
   if (isPlaceholder(url) || isPlaceholder(key)) {
     throw new Error(
       "Missing PERSONAL_SUPABASE_URL / PERSONAL_SUPABASE_SERVICE_ROLE_KEY. Add them in Project Settings → Secrets.",

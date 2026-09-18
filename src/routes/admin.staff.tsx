@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { createAdmin, listStaff, removeAdmin } from "@/lib/staff.functions";
+import { createAdmin, listStaff, removeAdmin } from "@/lib/staff-auth.functions";
 
 export const Route = createFileRoute("/admin/staff")({
   head: () => ({
@@ -36,8 +36,8 @@ function Staff() {
 
   const create = useMutation({
     mutationFn: () => addAdmin({ data: { email, password } }),
-    onSuccess: () => {
-      setMsg(`${email} can now sign in as an admin.`);
+    onSuccess: (r) => {
+      setMsg(`${r.email} can now sign in on the studio sign-in page.`);
       setEmail("");
       setPassword("");
       void qc.invalidateQueries({ queryKey: ["staff"] });
@@ -46,13 +46,13 @@ function Staff() {
   });
 
   const drop = useMutation({
-    mutationFn: (userId: string) => dropAdmin({ data: { userId } }),
+    mutationFn: (id: string) => dropAdmin({ data: { id } }),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ["staff"] }),
     onError: (e: Error) => setMsg(e.message),
   });
 
   if (error) {
-    return <p className="text-sm opacity-70">Only the super admin can manage studio access.</p>;
+    return <p className="text-sm opacity-70">{(error as Error).message}</p>;
   }
 
   const rows = data ?? [];
@@ -61,8 +61,8 @@ function Staff() {
     <div className="max-w-2xl">
       <h2 className="font-display text-3xl font-light">Studio access</h2>
       <p className="mt-3 text-sm opacity-70">
-        Create an admin account with any email and password. They can manage orders, objects and site
-        content — but cannot add or remove other admins.
+        Create a staff login with any email and password. They can manage orders, objects and site
+        content — but cannot add or remove other staff.
       </p>
 
       <form
@@ -77,7 +77,7 @@ function Staff() {
           <span className="caps opacity-55">Email</span>
           <input
             required
-            type="email"
+            type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
@@ -95,7 +95,7 @@ function Staff() {
           />
         </label>
         <button type="submit" disabled={create.isPending} className="caps link-underline disabled:opacity-40">
-          {create.isPending ? "Creating…" : "Create admin"}
+          {create.isPending ? "Creating…" : "Create staff login"}
         </button>
       </form>
 
@@ -107,17 +107,15 @@ function Staff() {
       ) : (
         <ul className="mt-4 divide-y divide-current/15 border-t border-current/15">
           {rows.map((r) => (
-            <li key={`${r.userId}-${r.role}`} className="flex items-center justify-between gap-4 py-4">
+            <li key={r.id} className="flex items-center justify-between gap-4 py-4">
               <div>
-                <p>{r.email || r.userId}</p>
-                <p className="caps mt-1 opacity-50">
-                  {r.role === "super_admin" ? "Super admin" : "Admin"}
-                </p>
+                <p>{r.email}</p>
+                <p className="caps mt-1 opacity-50">{r.role === "owner" ? "Owner" : "Admin"}</p>
               </div>
               {r.role === "admin" && (
                 <button
                   type="button"
-                  onClick={() => drop.mutate(r.userId)}
+                  onClick={() => drop.mutate(r.id)}
                   className="caps opacity-55 hover:opacity-90"
                 >
                   Remove

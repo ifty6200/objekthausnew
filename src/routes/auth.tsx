@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useIsAdmin, useSession } from "@/lib/auth";
+import { useSession } from "@/lib/auth";
 import { SiteNav } from "@/components/SiteNav";
 
 export const Route = createFileRoute("/auth")({
@@ -26,13 +26,12 @@ function AuthPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const { session } = useSession();
-  const { data: isAdmin, isLoading: roleLoading } = useIsAdmin(session?.user.id);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!session || roleLoading) return;
-    void navigate({ to: isAdmin ? "/admin" : "/account" });
-  }, [session, isAdmin, roleLoading, navigate]);
+    if (!session) return;
+    void navigate({ to: "/account" });
+  }, [session, navigate]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

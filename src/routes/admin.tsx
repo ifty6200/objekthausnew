@@ -1,7 +1,9 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useIsAdmin, useIsSuperAdmin, useSession } from "@/lib/auth";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { staffSignOut } from "@/lib/staff-auth.functions";
+import { useStaff } from "@/lib/staff";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -30,19 +32,25 @@ const baseTabs: {
 const staffTab = { to: "/admin/staff" as const, label: "Studio access", exact: false };
 
 function AdminLayout() {
-  const { session, loading } = useSession();
-  const { data: isAdmin, isLoading: roleLoading } = useIsAdmin(session?.user.id);
-  const { data: isSuper } = useIsSuperAdmin(session?.user.id);
-  const tabs = isSuper ? [...baseTabs, staffTab] : baseTabs;
+  const { data: status, isLoading } = useStaff();
+  const staff = status?.session ?? null;
+  const tabs = staff?.role === "owner" ? [...baseTabs, staffTab] : baseTabs;
   const navigate = useNavigate();
+  const qc = useQueryClient();
+  const signOut = useServerFn(staffSignOut);
 
   useEffect(() => {
-    if (loading || roleLoading) return;
-    if (!session) void navigate({ to: "/auth", replace: true });
-    else if (isAdmin === false) void navigate({ to: "/account", replace: true });
-  }, [loading, roleLoading, session, isAdmin, navigate]);
+    if (isLoading) return;
+    if (!staff) void navigate({ to: "/admin-login", replace: true });
+  }, [isLoading, staff, navigate]);
 
-  if (loading || roleLoading || !session || !isAdmin) {
+  const handleSignOut = async () => {
+    await signOut({});
+    qc.clear();
+    void navigate({ to: "/admin-login", replace: true });
+  };
+
+  if (isLoading || !staff) {
     return <div className="min-h-screen bg-bone px-8 py-32 text-bone-foreground">Loading…</div>;
   }
 
@@ -60,7 +68,7 @@ function AdminLayout() {
             </Link>
             <button
               type="button"
-              onClick={() => supabase.auth.signOut()}
+              onClick={() => void handleSignOut()}
               className="caps opacity-55 hover:opacity-90"
             >
               Sign out

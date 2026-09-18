@@ -9,34 +9,42 @@ type Props = {
   accept?: string;
 };
 
-const TEN_YEARS = 60 * 60 * 24 * 365 * 10;
+async function toBase64(file: File) {
+  const buf = new Uint8Array(await file.arrayBuffer());
+  let s = "";
+  const chunk = 8192;
+  for (let i = 0; i < buf.length; i += chunk) {
+    s += String.fromCharCode(...buf.subarray(i, i + chunk));
+  }
+  return btoa(s);
+}
 
 /** Upload a file to the studio media store and hand back a long-lived URL. */
 export function MediaUpload({ label, value, onChange, accept = "image/*,video/*" }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const input = useRef<HTMLInputElement | null>(null);
+  const send = useServerFn(uploadMedia);
 
   const upload = async (file: File) => {
     setBusy(true);
     setError(null);
-    const path = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-    const { error: upErr } = await supabase.storage.from("media").upload(path, file, {
-      cacheControl: "31536000",
-      upsert: false,
-    });
-    if (upErr) {
-      setError(upErr.message);
+    try {
+      const { url } = await send({
+        data: {
+          name: file.name,
+          contentType: file.type || "application/octet-stream",
+          data: await toBase64(file),
+        },
+      });
+      onChange(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not upload that file.");
+    } finally {
       setBusy(false);
-      return;
     }
-    const { data, error: signErr } = await supabase.storage
-      .from("media")
-      .createSignedUrl(path, TEN_YEARS);
-    if (signErr || !data) setError(signErr?.message ?? "Could not create a link");
-    else onChange(data.signedUrl);
-    setBusy(false);
   };
+
 
   const isVideo = /\.(mp4|webm|mov)(\?|$)/i.test(value);
 

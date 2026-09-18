@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { trackAddToCart, trackRemoveFromCart, type AnalyticsItem } from "@/lib/analytics";
 
 export type CartLine = {
   slug: string;

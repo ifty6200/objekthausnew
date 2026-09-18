@@ -107,7 +107,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       })
       .select("reference")
       .single();
-    if (error) throw error;
+    assertSchema(error);
     return { reference: row.reference as string };
   });
 
@@ -177,7 +177,7 @@ export const adminDeleteProduct = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const db = await personalAdmin();
     const { error } = await db.from("products").delete().eq("id", data.id);
-    if (error) throw error;
+    assertSchema(error);
     return { ok: true };
   });
 
@@ -190,7 +190,7 @@ export const adminSaveSetting = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const db = await personalAdmin();
     const { error } = await db.from("site_settings").upsert({ key: data.key, value: data.value });
-    if (error) throw error;
+    assertSchema(error);
     return { ok: true };
   });
 
@@ -230,7 +230,7 @@ export const adminUpdateOrder = createServerFn({ method: "POST" })
     const db = await personalAdmin();
     const { id, ...rest } = data;
     const { error } = await db.from("orders").update(rest).eq("id", id);
-    if (error) throw error;
+    assertSchema(error);
     return { ok: true };
   });
 
@@ -241,6 +241,6 @@ export const adminDeleteOrder = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const db = await personalAdmin();
     const { error } = await db.from("orders").delete().eq("id", data.id);
-    if (error) throw error;
+    assertSchema(error);
     return { ok: true };
   });

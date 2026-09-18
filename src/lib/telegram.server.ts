@@ -1,5 +1,7 @@
-// Server-only helper: sends order notifications to Telegram through the
-// Lovable connector gateway. Never import from client-reachable module scope.
+// Server-only helper: sends order notifications to Telegram.
+// Works self-hosted with a raw bot token (TELEGRAM_BOT_TOKEN), and falls back
+// to the Lovable connector gateway when running on Lovable.
+// Never import from client-reachable module scope.
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/telegram";
 
@@ -80,11 +82,33 @@ async function getChatId(): Promise<string | null> {
 /** Best-effort notification — never throws into the checkout flow. */
 export async function notifyNewOrder(order: OrderNotification): Promise<void> {
   try {
+    const chatId = await getChatId();
+    if (!chatId) {
+      console.error("Telegram notification skipped: missing chat id");
+      return;
+    }
+    const text = formatOrderMessage(order);
+
+    // Self-hosted path: raw Telegram Bot API token works anywhere.
+    const botToken = process.env["TELEGRAM_BOT_TOKEN"];
+    if (botToken) {
+      const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+      });
+      const body = (await res.json()) as { ok?: boolean; description?: string };
+      if (!res.ok || !body.ok) {
+        console.error(`Telegram sendMessage failed [${res.status}]: ${body.description ?? ""}`);
+      }
+      return;
+    }
+
+    // Lovable path: connector gateway.
     const lovableKey = process.env["LOVABLE_API_KEY"];
     const connectionKey = process.env["TELEGRAM_API_KEY"];
-    const chatId = await getChatId();
-    if (!lovableKey || !connectionKey || !chatId) {
-      console.error("Telegram notification skipped: missing key or chat id");
+    if (!lovableKey || !connectionKey) {
+      console.error("Telegram notification skipped: missing TELEGRAM_BOT_TOKEN or connector keys");
       return;
     }
 
@@ -95,11 +119,7 @@ export async function notifyNewOrder(order: OrderNotification): Promise<void> {
         "X-Connection-Api-Key": connectionKey,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: formatOrderMessage(order),
-        parse_mode: "HTML",
-      }),
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
     });
 
     if (!res.ok) {

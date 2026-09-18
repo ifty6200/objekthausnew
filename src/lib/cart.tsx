@@ -35,6 +35,18 @@ type CartState = {
 const CartContext = createContext<CartState | null>(null);
 const KEY = "objekthaus.cart.v1";
 
+/** Shape a cart line for the Google Tag Manager ecommerce dataLayer. */
+export const toAnalyticsItem = (
+  line: Pick<CartLine, "slug" | "name" | "product" | "price">,
+  qty: number,
+): AnalyticsItem => ({
+  item_id: line.slug,
+  item_name: line.product,
+  item_variant: line.name,
+  price: line.price,
+  quantity: qty,
+});
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>([]);
   const [open, setOpen] = useState(false);

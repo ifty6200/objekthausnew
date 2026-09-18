@@ -35,6 +35,21 @@ function FlowerCard() {
   const live = useFlower(slug);
   const f = live ?? (Route.useLoaderData() as Flower | null) ?? null;
 
+  const viewedSlug = f?.slug;
+  const viewedName = f?.product;
+  const viewedVariant = f?.name;
+  const viewedPrice = f?.price;
+  useEffect(() => {
+    if (!viewedSlug || !viewedName || typeof viewedPrice !== "number") return;
+    trackViewItem(
+      toAnalyticsItem(
+        { slug: viewedSlug, name: viewedVariant ?? "", product: viewedName, price: viewedPrice },
+        1,
+      ),
+    );
+  }, [viewedSlug, viewedName, viewedVariant, viewedPrice]);
+
+
   if (!f) {
     return (
       <main data-tone="dark" className="min-h-screen bg-sand text-sand-foreground">

@@ -106,7 +106,30 @@ export const placeOrder = createServerFn({ method: "POST" })
       .select("reference")
       .single();
     assertSchema(error);
-    return { reference: (row?.reference ?? "") as string };
+
+    const reference = (row?.reference ?? "") as string;
+    // Notify the studio's Telegram bot; never block the customer on it.
+    try {
+      const { notifyNewOrder } = await import("@/lib/telegram.server");
+      await notifyNewOrder({
+        reference,
+        customer_name: data.customer_name,
+        phone: data.phone,
+        address: data.address,
+        email: data.email ?? null,
+        note: data.note ?? null,
+        items: Array.isArray(data.items) ? (data.items as any[]) : [],
+        subtotal: data.subtotal,
+        shipping: data.shipping,
+        total: data.total,
+        total_weight: data.total_weight,
+        delivery_zone: data.delivery_zone ?? "inside",
+      });
+    } catch (e) {
+      console.error("Order notification failed:", e);
+    }
+
+    return { reference };
   });
 
 // ---------- Authenticated: own order history ----------

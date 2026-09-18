@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { MediaUpload } from "@/components/MediaUpload";
 import { adminSaveSetting } from "@/lib/data.functions";
+import { migrateMediaToPersonal } from "@/lib/media.functions";
 import {
   defaultCheckout,
   defaultContact,
@@ -87,6 +88,72 @@ function SaveRow({ onSave, saved }: { onSave: () => void; saved: boolean }) {
   );
 }
 
+type MigrationResult = {
+  found: number;
+  copied: number;
+  productsUpdated: number;
+  settingsUpdated: number;
+  failed: string[];
+};
+
+function MediaMigration() {
+  const run = useServerFn(migrateMediaToPersonal);
+  const qc = useQueryClient();
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<MigrationResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const start = async () => {
+    setBusy(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = (await run({})) as MigrationResult;
+      setResult(res);
+      await qc.invalidateQueries();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not copy the media.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="border border-current/20 p-6">
+      <h2 className="font-display text-3xl font-light">Media library</h2>
+      <p className="mt-2 text-sm opacity-60">
+        Copies every photo and video currently used by your objects and pages into your own storage,
+        then points the site at the new copies. Safe to run more than once — files already stored
+        with you are skipped.
+      </p>
+      <button
+        type="button"
+        onClick={start}
+        disabled={busy}
+        className="caps mt-6 border border-current/40 px-5 py-2 text-xs disabled:opacity-50"
+      >
+        {busy ? "Copying…" : "Copy all media to my storage"}
+      </button>
+      {result && (
+        <div className="mt-4 space-y-1 text-sm">
+          <p>
+            {result.copied} of {result.found} files copied · {result.productsUpdated} objects and{" "}
+            {result.settingsUpdated} page sections updated.
+          </p>
+          {result.failed.length > 0 && (
+            <ul className="list-disc pl-5 opacity-70">
+              {result.failed.map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+      {error && <p className="mt-4 text-sm opacity-70">{error}</p>}
+    </section>
+  );
+}
+
 function AdminSite() {
   const hero = useEditor<HeroSettings>("hero", defaultHero);
   const manifesto = useEditor<ManifestoSettings>("manifesto", defaultManifesto);
@@ -97,6 +164,7 @@ function AdminSite() {
 
   return (
     <div className="space-y-16">
+      <MediaMigration />
       <section className="border border-current/20 p-6">
         <h2 className="font-display text-3xl font-light">Hero video</h2>
         <p className="mt-2 text-sm opacity-60">

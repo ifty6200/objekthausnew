@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { uploadMedia } from "@/lib/media.functions";
 
 type Props = {
   label: string;

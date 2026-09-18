@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { SiteNav } from "@/components/SiteNav";
 import { SocialLinks } from "@/components/Social";
 import { formatPrice, useCart } from "@/lib/cart";
 import { deliveryCost, useCheckoutSettings, useDelivery } from "@/lib/site";
 import { useAllFlowers } from "@/lib/products";
 import { supabase } from "@/integrations/supabase/client";
+import { placeOrder } from "@/lib/data.functions";
 
 export const Route = createFileRoute("/order")({
   head: () => ({
@@ -26,6 +28,7 @@ export const Route = createFileRoute("/order")({
 });
 
 function Order() {
+  const sendOrder = useServerFn(placeOrder);
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,48 +39,45 @@ function Order() {
   const checkout = useCheckoutSettings();
   const shipping = lines.length === 0 ? 0 : deliveryCost(delivery, totalWeight, total);
 
-  const placeOrder = async (e: React.FormEvent<HTMLFormElement>) => {
+  const placeOrderSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (lines.length === 0) return;
     setBusy(true);
     setError(null);
     const form = new FormData(e.currentTarget);
-    const d = new Date();
-    const ref = `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}${String(
-      d.getDate(),
-    ).padStart(2, "0")}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
-    const { error: err } = await supabase
-      .from("orders")
-      .insert({
-        reference: ref,
-        customer_name: String(form.get("name") ?? ""),
-        phone: String(form.get("phone") ?? ""),
-        address: String(form.get("address") ?? ""),
-        email: String(form.get("email") ?? "") || null,
-        note: String(form.get("note") ?? "").trim() || null,
-        items: lines.map((l) => ({
-          slug: l.slug,
-          name: l.name,
-          product: l.product,
-          qty: l.qty,
-          price: l.price,
-          weight_kg: l.weightKg ?? 0,
-        })),
-        subtotal: total,
-        total_weight: totalWeight,
-        shipping,
-        total: total + shipping,
-        status: "new",
-        user_id: (await supabase.auth.getUser()).data.user?.id ?? null,
+    const userId = (await supabase.auth.getUser()).data.user?.id ?? null;
+    try {
+      const { reference: ref } = await sendOrder({
+        data: {
+          customer_name: String(form.get("name") ?? ""),
+          phone: String(form.get("phone") ?? ""),
+          address: String(form.get("address") ?? ""),
+          email: String(form.get("email") ?? "") || null,
+          note: String(form.get("note") ?? "").trim() || null,
+          items: lines.map((l) => ({
+            slug: l.slug,
+            name: l.name,
+            product: l.product,
+            qty: l.qty,
+            price: l.price,
+            weight_kg: l.weightKg ?? 0,
+          })),
+          subtotal: total,
+          total_weight: totalWeight,
+          shipping,
+          total: total + shipping,
+          delivery_zone: "inside",
+          user_id: userId,
+        },
       });
-    setBusy(false);
-    if (err) {
+      setReference(ref);
+      setSent(true);
+      clear();
+    } catch {
       setError("We could not record your order. Please try again or write to the studio.");
-      return;
+    } finally {
+      setBusy(false);
     }
-    setReference(ref);
-    setSent(true);
-    clear();
   };
 
   return (
@@ -208,7 +208,7 @@ function Order() {
             ) : (
           <form
             className="space-y-6"
-            onSubmit={placeOrder}
+            onSubmit={placeOrderSubmit}
           >
             <p className="caps opacity-55">Your details</p>
             <label className="block">

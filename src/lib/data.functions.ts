@@ -19,6 +19,23 @@ async function assertAdmin(context: { supabase: any; userId: string }) {
   if (error || !data) throw new Error("Forbidden — studio access required.");
 }
 
+/** True when the personal database hasn't had the schema script run yet. */
+function isMissingTable(error: any) {
+  return (
+    error?.code === "PGRST205" ||
+    error?.code === "42P01" ||
+    /schema cache|does not exist/i.test(String(error?.message ?? ""))
+  );
+}
+
+const SETUP_HINT =
+  "Your personal database has no tables yet — run supabase/personal-schema.sql in your Supabase SQL editor.";
+
+function assertSchema(error: any) {
+  if (isMissingTable(error)) throw new Error(SETUP_HINT);
+  if (error) throw error;
+}
+
 // ---------- Public reads ----------
 
 export const listProducts = createServerFn({ method: "GET" }).handler(async () => {
@@ -29,7 +46,12 @@ export const listProducts = createServerFn({ method: "GET" }).handler(async () =
     .eq("published", true)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
-  if (error) throw error;
+  // Before the schema script is run, fall back to the built-in objects
+  // instead of breaking the public site.
+  if (error) {
+    if (isMissingTable(error)) return [] as ProductRow[];
+    throw error;
+  }
   return (data ?? []) as ProductRow[];
 });
 
@@ -37,7 +59,12 @@ export const getSetting = createServerFn({ method: "GET" })
   .inputValidator((input: { key: string }) => input)
   .handler(async ({ data }) => {
     const db = await personalAdmin();
-    const { data: row } = await db.from("site_settings").select("value").eq("key", data.key).maybeSingle();
+    const { data: row, error } = await db
+      .from("site_settings")
+      .select("value")
+      .eq("key", data.key)
+      .maybeSingle();
+    if (error && !isMissingTable(error)) throw error;
     return { value: (row?.value ?? null) as any };
   });
 

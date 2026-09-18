@@ -66,27 +66,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setOpen(true);
   }, []);
 
-  const setQty = useCallback((slug: string, qty: number) => {
-    setLines((prev) => {
-      const line = prev.find((l) => l.slug === slug);
-      if (line && qty < line.qty) {
-        trackRemoveFromCart(toAnalyticsItem(line, line.qty - qty));
-      } else if (line && qty > line.qty) {
-        trackAddToCart(toAnalyticsItem(line, qty - line.qty));
-      }
-      return qty <= 0
-        ? prev.filter((l) => l.slug !== slug)
-        : prev.map((l) => (l.slug === slug ? { ...l, qty } : l));
-    });
-  }, []);
+  const setQty = useCallback(
+    (slug: string, qty: number) => {
+      const line = lines.find((l) => l.slug === slug);
+      if (line && qty < line.qty) trackRemoveFromCart(toAnalyticsItem(line, line.qty - qty));
+      if (line && qty > line.qty) trackAddToCart(toAnalyticsItem(line, qty - line.qty));
+      setLines((prev) =>
+        qty <= 0
+          ? prev.filter((l) => l.slug !== slug)
+          : prev.map((l) => (l.slug === slug ? { ...l, qty } : l)),
+      );
+    },
+    [lines],
+  );
 
-  const remove = useCallback((slug: string) => {
-    setLines((prev) => {
-      const line = prev.find((l) => l.slug === slug);
+  const remove = useCallback(
+    (slug: string) => {
+      const line = lines.find((l) => l.slug === slug);
       if (line) trackRemoveFromCart(toAnalyticsItem(line, line.qty));
-      return prev.filter((l) => l.slug !== slug);
-    });
-  }, []);
+      setLines((prev) => prev.filter((l) => l.slug !== slug));
+    },
+    [lines],
+  );
 
   const clear = useCallback(() => setLines([]), []);
 

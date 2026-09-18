@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { SiteNav } from "@/components/SiteNav";
 import { SocialLinks } from "@/components/Social";
-import { formatPrice, useCart } from "@/lib/cart";
+import { formatPrice, toAnalyticsItem, useCart } from "@/lib/cart";
 import { deliveryCost, useCheckoutSettings, useDelivery } from "@/lib/site";
 import { useAllFlowers } from "@/lib/products";
 import { supabase } from "@/integrations/supabase/client";
 import { placeOrder } from "@/lib/data.functions";
+import { trackBeginCheckout, trackPurchase } from "@/lib/analytics";
 
 export const Route = createFileRoute("/order")({
   head: () => ({
@@ -39,6 +40,18 @@ function Order() {
   const checkout = useCheckoutSettings();
   const shipping = lines.length === 0 ? 0 : deliveryCost(delivery, totalWeight, total);
 
+  // One begin_checkout per visit, once the basket is known.
+  const checkoutTracked = useRef(false);
+  useEffect(() => {
+    if (checkoutTracked.current || lines.length === 0) return;
+    checkoutTracked.current = true;
+    trackBeginCheckout(
+      lines.map((l) => toAnalyticsItem(l, l.qty)),
+      total + shipping,
+    );
+  }, [lines, total, shipping]);
+
+
   const placeOrderSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (lines.length === 0) return;
@@ -69,6 +82,12 @@ function Order() {
           delivery_zone: "inside",
           user_id: userId,
         },
+      });
+      trackPurchase({
+        transactionId: ref,
+        value: total + shipping,
+        shipping,
+        items: lines.map((l) => toAnalyticsItem(l, l.qty)),
       });
       setReference(ref);
       setSent(true);

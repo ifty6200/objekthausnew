@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { getFlower, type Flower } from "@/lib/flowers";
 import { useAllFlowers, useFlower } from "@/lib/products";
 import { AddToCart } from "@/components/AddToCart";
-import { formatPrice } from "@/lib/cart";
+import { formatPrice, toAnalyticsItem } from "@/lib/cart";
+import { trackViewItem } from "@/lib/analytics";
 
 export const Route = createFileRoute("/flower/$slug")({
   loader: ({ params }) => getFlower(params.slug) ?? null,
@@ -32,6 +34,21 @@ function FlowerCard() {
   // Live studio data always wins over the build-time copy in the loader.
   const live = useFlower(slug);
   const f = live ?? (Route.useLoaderData() as Flower | null) ?? null;
+
+  const viewedSlug = f?.slug;
+  const viewedName = f?.product;
+  const viewedVariant = f?.name;
+  const viewedPrice = f?.price;
+  useEffect(() => {
+    if (!viewedSlug || !viewedName || typeof viewedPrice !== "number") return;
+    trackViewItem(
+      toAnalyticsItem(
+        { slug: viewedSlug, name: viewedVariant ?? "", product: viewedName, price: viewedPrice },
+        1,
+      ),
+    );
+  }, [viewedSlug, viewedName, viewedVariant, viewedPrice]);
+
 
   if (!f) {
     return (

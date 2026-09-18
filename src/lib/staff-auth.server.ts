@@ -89,18 +89,32 @@ async function sign(payload: string) {
   return b64url(new Uint8Array(sig));
 }
 
+/**
+ * The editor shows the site inside an iframe, so the session cookie must be
+ * SameSite=None (which requires Secure). Plain http dev hosts reject Secure
+ * cookies, so fall back to Lax there.
+ */
+function cookieAttributes() {
+  const host = getRequestHeader("host") ?? "";
+  const proto = getRequestHeader("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+  return proto === "https" ? "Secure; SameSite=None" : "SameSite=Lax";
+}
+
 export async function issueStaffCookie(session: StaffSession) {
   const body = { ...session, exp: Date.now() + SESSION_DAYS * 86_400_000 };
   const payload = b64url(enc.encode(JSON.stringify(body)));
   const token = `${payload}.${await sign(payload)}`;
   setResponseHeader(
     "set-cookie",
-    `${STAFF_COOKIE}=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_DAYS * 86_400}`,
+    `${STAFF_COOKIE}=${token}; Path=/; HttpOnly; ${cookieAttributes()}; Max-Age=${SESSION_DAYS * 86_400}`,
   );
 }
 
 export function clearStaffCookie() {
-  setResponseHeader("set-cookie", `${STAFF_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`);
+  setResponseHeader(
+    "set-cookie",
+    `${STAFF_COOKIE}=; Path=/; HttpOnly; ${cookieAttributes()}; Max-Age=0`,
+  );
 }
 
 function readCookie(name: string) {

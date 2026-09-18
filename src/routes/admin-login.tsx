@@ -49,10 +49,11 @@ function AdminLogin() {
     setBusy(true);
     setMsg(null);
     try {
-      if (needsOwner) await makeOwner({ data: { email: email.trim(), password } });
-      else await signIn({ data: { email: email.trim(), password } });
-      await qc.invalidateQueries({ queryKey: ["staff-status"] });
-      void navigate({ to: "/admin", search: { status: "all" }, replace: true });
+      const session = needsOwner
+        ? await makeOwner({ data: { email: email.trim(), password } })
+        : await signIn({ data: { email: email.trim(), password } });
+      qc.setQueryData(["staff-status"], { session, needsOwner: false, error: null });
+      await navigate({ to: "/admin", search: { status: "all" }, replace: true });
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Sign in failed.");
     } finally {

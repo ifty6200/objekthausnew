@@ -83,6 +83,12 @@ function Order() {
           user_id: userId,
         },
       });
+      trackPurchase({
+        transactionId: ref,
+        value: total + shipping,
+        shipping,
+        items: lines.map((l) => toAnalyticsItem(l, l.qty)),
+      });
       setReference(ref);
       setSent(true);
       clear();

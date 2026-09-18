@@ -62,19 +62,30 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return prev.map((l) => (l.slug === line.slug ? { ...l, qty: l.qty + qty } : l));
       return [...prev, { ...line, qty }];
     });
+    trackAddToCart(toAnalyticsItem(line, qty));
     setOpen(true);
   }, []);
 
   const setQty = useCallback((slug: string, qty: number) => {
-    setLines((prev) =>
-      qty <= 0
+    setLines((prev) => {
+      const line = prev.find((l) => l.slug === slug);
+      if (line && qty < line.qty) {
+        trackRemoveFromCart(toAnalyticsItem(line, line.qty - qty));
+      } else if (line && qty > line.qty) {
+        trackAddToCart(toAnalyticsItem(line, qty - line.qty));
+      }
+      return qty <= 0
         ? prev.filter((l) => l.slug !== slug)
-        : prev.map((l) => (l.slug === slug ? { ...l, qty } : l)),
-    );
+        : prev.map((l) => (l.slug === slug ? { ...l, qty } : l));
+    });
   }, []);
 
   const remove = useCallback((slug: string) => {
-    setLines((prev) => prev.filter((l) => l.slug !== slug));
+    setLines((prev) => {
+      const line = prev.find((l) => l.slug === slug);
+      if (line) trackRemoveFromCart(toAnalyticsItem(line, line.qty));
+      return prev.filter((l) => l.slug !== slug);
+    });
   }, []);
 
   const clear = useCallback(() => setLines([]), []);

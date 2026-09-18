@@ -206,20 +206,17 @@ type AdminOrderInput = {
   total_weight?: number;
 };
 
-export const adminListOrders = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    await assertAdmin(context);
-    const db = await personalAdmin();
-    const { data } = await db.from("orders").select("*").order("created_at", { ascending: false });
-    return data ?? [];
-  });
+export const adminListOrders = createServerFn({ method: "GET" }).handler(async () => {
+  await assertAdmin();
+  const db = await personalAdmin();
+  const { data } = await db.from("orders").select("*").order("created_at", { ascending: false });
+  return data ?? [];
+});
 
 export const adminUpdateOrder = createServerFn({ method: "POST" })
   .inputValidator((input: AdminOrderInput) => input)
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context, data }) => {
-    await assertAdmin(context);
+  .handler(async ({ data }) => {
+    await assertAdmin();
     const db = await personalAdmin();
     const { id, ...rest } = data;
     const { error } = await db.from("orders").update(rest).eq("id", id);
@@ -229,9 +226,8 @@ export const adminUpdateOrder = createServerFn({ method: "POST" })
 
 export const adminDeleteOrder = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string }) => input)
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context, data }) => {
-    await assertAdmin(context);
+  .handler(async ({ data }) => {
+    await assertAdmin();
     const db = await personalAdmin();
     const { error } = await db.from("orders").delete().eq("id", data.id);
     assertSchema(error);

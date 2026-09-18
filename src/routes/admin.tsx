@@ -32,19 +32,25 @@ const baseTabs: {
 const staffTab = { to: "/admin/staff" as const, label: "Studio access", exact: false };
 
 function AdminLayout() {
-  const { session, loading } = useSession();
-  const { data: isAdmin, isLoading: roleLoading } = useIsAdmin(session?.user.id);
-  const { data: isSuper } = useIsSuperAdmin(session?.user.id);
-  const tabs = isSuper ? [...baseTabs, staffTab] : baseTabs;
+  const { data: status, isLoading } = useStaff();
+  const staff = status?.session ?? null;
+  const tabs = staff?.role === "owner" ? [...baseTabs, staffTab] : baseTabs;
   const navigate = useNavigate();
+  const qc = useQueryClient();
+  const signOut = useServerFn(staffSignOut);
 
   useEffect(() => {
-    if (loading || roleLoading) return;
-    if (!session) void navigate({ to: "/auth", replace: true });
-    else if (isAdmin === false) void navigate({ to: "/account", replace: true });
-  }, [loading, roleLoading, session, isAdmin, navigate]);
+    if (isLoading) return;
+    if (!staff) void navigate({ to: "/admin-login", replace: true });
+  }, [isLoading, staff, navigate]);
 
-  if (loading || roleLoading || !session || !isAdmin) {
+  const handleSignOut = async () => {
+    await signOut({});
+    qc.clear();
+    void navigate({ to: "/admin-login", replace: true });
+  };
+
+  if (isLoading || !staff) {
     return <div className="min-h-screen bg-bone px-8 py-32 text-bone-foreground">Loading…</div>;
   }
 

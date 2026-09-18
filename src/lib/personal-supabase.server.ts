@@ -30,7 +30,16 @@ export function getPersonalAdmin() {
       "Missing PERSONAL_SUPABASE_URL / PERSONAL_SUPABASE_SERVICE_ROLE_KEY. Add them in Project Settings → Secrets.",
     );
   }
-  _client = createClient(url, key, {
+  // Accept values saved without a scheme ("abc.supabase.co") or as a bare
+  // project ref ("abcdefghijklmnop"), and strip any trailing slash.
+  const trimmed = url.trim().replace(/\/+$/, "");
+  const normalizedUrl = /^https?:\/\//i.test(trimmed)
+    ? trimmed
+    : trimmed.includes(".")
+      ? `https://${trimmed}`
+      : `https://${trimmed}.supabase.co`;
+
+  _client = createClient(normalizedUrl, key, {
     global: { fetch: createSupabaseFetch(key) },
     auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
   });

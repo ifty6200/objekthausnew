@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { getFlower, type Flower } from "@/lib/flowers";
-import { useAllFlowers, useFlower } from "@/lib/products";
+import { useAllFlowers, useFlower, useProductsLoaded } from "@/lib/products";
 import { AddToCart } from "@/components/AddToCart";
 import { formatPrice, toAnalyticsItem } from "@/lib/cart";
 import { trackViewItem } from "@/lib/analytics";
@@ -41,7 +41,7 @@ function FlowerCard() {
   const viewedPrice = f?.price;
   // Fire view_item once per object, and only after the live prices have arrived,
   // so the event never carries a stale build-time price.
-  const loaded = flowers.length > 0;
+  const loaded = useProductsLoaded();
   const trackedSlug = useRef<string | null>(null);
   useEffect(() => {
     if (!loaded) return;

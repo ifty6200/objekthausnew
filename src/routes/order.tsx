@@ -40,6 +40,18 @@ function Order() {
   const checkout = useCheckoutSettings();
   const shipping = lines.length === 0 ? 0 : deliveryCost(delivery, totalWeight, total);
 
+  // One begin_checkout per visit, once the basket is known.
+  const checkoutTracked = useRef(false);
+  useEffect(() => {
+    if (checkoutTracked.current || lines.length === 0) return;
+    checkoutTracked.current = true;
+    trackBeginCheckout(
+      lines.map((l) => toAnalyticsItem(l, l.qty)),
+      total + shipping,
+    );
+  }, [lines, total, shipping]);
+
+
   const placeOrderSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (lines.length === 0) return;

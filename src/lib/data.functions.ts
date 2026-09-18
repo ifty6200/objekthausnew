@@ -108,7 +108,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       .select("reference")
       .single();
     assertSchema(error);
-    return { reference: row.reference as string };
+    return { reference: (row?.reference ?? "") as string };
   });
 
 // ---------- Authenticated: own order history ----------

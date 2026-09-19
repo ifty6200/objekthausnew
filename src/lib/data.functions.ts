@@ -29,10 +29,28 @@ function isMissingTable(error: any) {
 const SETUP_HINT =
   "Your personal database has no tables yet — run supabase/personal-schema.sql in your Supabase SQL editor.";
 
+/**
+ * PGRST303 ("JWT issued at future") happens when the server clock is a few
+ * seconds behind the database's. It is transient, so retry briefly.
+ */
+function isClockSkew(error: any) {
+  return error?.code === "PGRST303" || /issued at future/i.test(String(error?.message ?? ""));
+}
+
+async function withRetry<T extends { error: any }>(run: () => Promise<T>): Promise<T> {
+  let result = await run();
+  for (let i = 0; i < 2 && isClockSkew(result.error); i++) {
+    await new Promise((r) => setTimeout(r, 400));
+    result = await run();
+  }
+  return result;
+}
+
 function assertSchema(error: any) {
   if (isMissingTable(error)) throw new Error(SETUP_HINT);
   if (error) throw error;
 }
+
 
 // ---------- Public reads ----------
 

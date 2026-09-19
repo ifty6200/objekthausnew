@@ -37,7 +37,7 @@ function isClockSkew(error: any) {
   return error?.code === "PGRST303" || /issued at future/i.test(String(error?.message ?? ""));
 }
 
-async function withRetry<T extends { error: any }>(run: () => Promise<T>): Promise<T> {
+async function withRetry<T extends { error: any }>(run: () => PromiseLike<T>): Promise<T> {
   let result = await run();
   for (let i = 0; i < 2 && isClockSkew(result.error); i++) {
     await new Promise((r) => setTimeout(r, 400));

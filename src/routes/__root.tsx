@@ -125,11 +125,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+const GA_MEASUREMENT_ID = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_ANALYTICS_API_KEY;
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
         <HeadContent />
+        {GA_MEASUREMENT_ID && (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_MEASUREMENT_ID}');`,
+              }}
+            />
+          </>
+        )}
       </head>
       <body>
         <noscript>

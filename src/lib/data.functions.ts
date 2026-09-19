@@ -56,16 +56,18 @@ function assertSchema(error: any) {
 
 export const listProducts = createServerFn({ method: "GET" }).handler(async () => {
   const db = await personalAdmin();
-  const { data, error } = await db
-    .from("products")
-    .select("*")
-    .eq("published", true)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: true });
+  const { data, error } = await withRetry(() =>
+    db
+      .from("products")
+      .select("*")
+      .eq("published", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true }),
+  );
   // Before the schema script is run, fall back to the built-in objects
   // instead of breaking the public site.
   if (error) {
-    if (isMissingTable(error)) return [] as ProductRow[];
+    if (isMissingTable(error) || isClockSkew(error)) return [] as ProductRow[];
     throw error;
   }
   return (data ?? []) as ProductRow[];
@@ -75,14 +77,14 @@ export const getSetting = createServerFn({ method: "GET" })
   .inputValidator((input: { key: string }) => input)
   .handler(async ({ data }) => {
     const db = await personalAdmin();
-    const { data: row, error } = await db
-      .from("site_settings")
-      .select("value")
-      .eq("key", data.key)
-      .maybeSingle();
-    if (error && !isMissingTable(error)) throw error;
+    const { data: row, error } = await withRetry(() =>
+      db.from("site_settings").select("value").eq("key", data.key).maybeSingle(),
+    );
+    // A missing schema or a transient clock-skew error must never blank the site.
+    if (error && !isMissingTable(error) && !isClockSkew(error)) throw error;
     return { value: (row?.value ?? null) as any };
   });
+
 
 // ---------- Public: place an order ----------
 

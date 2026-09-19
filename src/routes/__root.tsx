@@ -125,8 +125,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
-const GA_MEASUREMENT_ID = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_ANALYTICS_API_KEY;
-
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">

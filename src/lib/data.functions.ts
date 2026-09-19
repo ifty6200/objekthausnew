@@ -29,25 +29,45 @@ function isMissingTable(error: any) {
 const SETUP_HINT =
   "Your personal database has no tables yet — run supabase/personal-schema.sql in your Supabase SQL editor.";
 
+/**
+ * PGRST303 ("JWT issued at future") happens when the server clock is a few
+ * seconds behind the database's. It is transient, so retry briefly.
+ */
+function isClockSkew(error: any) {
+  return error?.code === "PGRST303" || /issued at future/i.test(String(error?.message ?? ""));
+}
+
+async function withRetry<T extends { error: any }>(run: () => PromiseLike<T>): Promise<T> {
+  let result = await run();
+  for (let i = 0; i < 2 && isClockSkew(result.error); i++) {
+    await new Promise((r) => setTimeout(r, 400));
+    result = await run();
+  }
+  return result;
+}
+
 function assertSchema(error: any) {
   if (isMissingTable(error)) throw new Error(SETUP_HINT);
   if (error) throw error;
 }
 
+
 // ---------- Public reads ----------
 
 export const listProducts = createServerFn({ method: "GET" }).handler(async () => {
   const db = await personalAdmin();
-  const { data, error } = await db
-    .from("products")
-    .select("*")
-    .eq("published", true)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: true });
+  const { data, error } = await withRetry(() =>
+    db
+      .from("products")
+      .select("*")
+      .eq("published", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true }),
+  );
   // Before the schema script is run, fall back to the built-in objects
   // instead of breaking the public site.
   if (error) {
-    if (isMissingTable(error)) return [] as ProductRow[];
+    if (isMissingTable(error) || isClockSkew(error)) return [] as ProductRow[];
     throw error;
   }
   return (data ?? []) as ProductRow[];
@@ -57,14 +77,14 @@ export const getSetting = createServerFn({ method: "GET" })
   .inputValidator((input: { key: string }) => input)
   .handler(async ({ data }) => {
     const db = await personalAdmin();
-    const { data: row, error } = await db
-      .from("site_settings")
-      .select("value")
-      .eq("key", data.key)
-      .maybeSingle();
-    if (error && !isMissingTable(error)) throw error;
+    const { data: row, error } = await withRetry(() =>
+      db.from("site_settings").select("value").eq("key", data.key).maybeSingle(),
+    );
+    // A missing schema or a transient clock-skew error must never blank the site.
+    if (error && !isMissingTable(error) && !isClockSkew(error)) throw error;
     return { value: (row?.value ?? null) as any };
   });
+
 
 // ---------- Public: place an order ----------
 

@@ -192,9 +192,26 @@ function Order() {
                     </dd>
                   </div>
                 </dl>
-                <p className="mt-3 text-sm opacity-60">
-                  Each object ships with its numbered botanical archive card.
-                </p>
+                <ul className="mt-6 divide-y divide-current/15 border-y border-current/20 text-sm">
+                  <li className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 py-3">
+                    <span className="caps opacity-55">Dispatch</span>
+                    <span className="opacity-80">
+                      Handcrafted to order — dispatches within 3–5 working days across Bangladesh.
+                    </span>
+                  </li>
+                  <li className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 py-3">
+                    <span className="caps opacity-55">Guarantee</span>
+                    <span className="opacity-80">
+                      Arrives damaged? We replace it or refund you in full.
+                    </span>
+                  </li>
+                  <li className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 py-3">
+                    <span className="caps opacity-55">Archive</span>
+                    <span className="opacity-80">
+                      Each object ships with its numbered botanical archive card.
+                    </span>
+                  </li>
+                </ul>
               </>
             )}
 

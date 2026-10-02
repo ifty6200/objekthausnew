@@ -4,7 +4,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { getFlower, type Flower } from "@/lib/flowers";
 import { useAllFlowers, useFlower, useProductsLoaded } from "@/lib/products";
-import { AddToCart } from "@/components/AddToCart";
+import { AddToCart, QuickAdd } from "@/components/AddToCart";
 import { formatPrice, toAnalyticsItem } from "@/lib/cart";
 import { trackViewItem } from "@/lib/analytics";
 
@@ -164,7 +164,18 @@ function FlowerCard() {
             Next — {next.name}
           </Link>
         </div>
+        <div className="h-20 md:hidden" aria-hidden="true" />
       </section>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-current/15 bg-bone/90 text-ink backdrop-blur-md md:hidden">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="min-w-0">
+            <p className="caps truncate opacity-60">{f.product}</p>
+            <p className="font-display text-lg font-light">{formatPrice(f.price)}</p>
+          </div>
+          <QuickAdd flower={f} className="shrink-0" />
+        </div>
+      </div>
     </main>
   );
 }

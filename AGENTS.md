@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Self-host the site’s production fonts and preload only critical above-the-fold faces to avoid third-party font latency.

@@ -95,7 +95,7 @@ function FlowerCard() {
       {/* Swipeable product images */}
       <section className="pb-4">
         <div className="mx-auto flex max-w-6xl snap-x snap-mandatory gap-4 overflow-x-auto px-7 pb-4 sm:px-10">
-          {f.images.map((img) => (
+          {f.images.map((img, index) => (
             <div
               key={img.src}
               className="image-veil w-[78%] shrink-0 snap-center overflow-hidden rounded-xl sm:w-[52%]"
@@ -103,7 +103,9 @@ function FlowerCard() {
               <img
                 src={img.src}
                 alt={img.alt}
-                loading="lazy"
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "auto"}
+                decoding="async"
                 width={1020}
                 height={1110}
                 className="aspect-[1020/1110] w-full object-cover"

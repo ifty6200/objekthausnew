@@ -12,6 +12,7 @@ import haloHero from "@/assets/halo-2.jpg.asset.json";
 import qalCard from "@/assets/qal-card.jpg.asset.json";
 import craftVideo from "@/assets/craft-plane.mp4.asset.json";
 import archiveDark from "@/assets/archive-dark.jpg";
+import heroPoster from "@/assets/hero-meadow-poster.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -69,6 +70,7 @@ function Index() {
         <HeroVideo
           key={hero.videoUrl || heroVideo.url}
           src={hero.videoUrl || heroVideo.url}
+          poster={heroPoster}
           label="A field of chamomile flowers swaying in the sun"
           className="absolute inset-0 h-full w-full object-cover"
         />

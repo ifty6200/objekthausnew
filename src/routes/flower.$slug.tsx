@@ -10,8 +10,31 @@ import { trackViewItem } from "@/lib/analytics";
 
 export const Route = createFileRoute("/flower/$slug")({
   loader: ({ params }) => getFlower(params.slug) ?? null,
-  head: ({ loaderData }) => ({
+  head: ({ loaderData, params }) => ({
+    links: [{ rel: "canonical", href: `https://objekthausstudio.lovable.app/flower/${params.slug}` }],
+    scripts: loaderData
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: `${loaderData.product} — ${loaderData.name}`,
+              description: loaderData.represents,
+              brand: { "@type": "Brand", name: "ObjektHaus" },
+              offers: {
+                "@type": "Offer",
+                priceCurrency: "BDT",
+                price: loaderData.price,
+                availability: "https://schema.org/InStock",
+                url: `https://objekthausstudio.lovable.app/flower/${params.slug}`,
+              },
+            }),
+          },
+        ]
+      : [],
     meta: [
+      { property: "og:url", content: `https://objekthausstudio.lovable.app/flower/${params.slug}` },
       { title: `${loaderData?.name ?? "Floret"} — ObjektHaus` },
       {
         name: "description",
@@ -21,7 +44,7 @@ export const Route = createFileRoute("/flower/$slug")({
       },
       { property: "og:title", content: `${loaderData?.name ?? "Floret"} — ObjektHaus` },
       { property: "og:description", content: loaderData?.why ?? "" },
-      { property: "og:type", content: "article" },
+      { property: "og:type", content: "product" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),

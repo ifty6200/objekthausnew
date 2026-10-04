@@ -3,12 +3,14 @@ import { SiteNav } from "@/components/SiteNav";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
+    links: [{ rel: "canonical", href: "https://objekthausstudio.lovable.app/privacy" }],
     meta: [
       { title: "Privacy — ObjektHaus" },
       {
         name: "description",
         content: "How ObjektHaus handles the small amount of information you share with the studio.",
       },
+      { property: "og:url", content: "https://objekthausstudio.lovable.app/privacy" },
       { property: "og:title", content: "Privacy — ObjektHaus" },
       { property: "og:description", content: "How the studio handles your information." },
     ],

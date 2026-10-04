@@ -6,6 +6,7 @@ import { useContactInfo, whatsappHref } from "@/lib/site";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
+    links: [{ rel: "canonical", href: "https://objekthausstudio.lovable.app/contact" }],
     meta: [
       { title: "Contact the Studio — ObjektHaus" },
       {
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/contact")({
         content:
           "Write to the ObjektHaus studio about commissions, editions, press or a visit to the workshop.",
       },
+      { property: "og:url", content: "https://objekthausstudio.lovable.app/contact" },
       { property: "og:title", content: "Contact the Studio — ObjektHaus" },
       { property: "og:description", content: "Commissions, editions, press and studio visits." },
     ],

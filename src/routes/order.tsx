@@ -12,6 +12,7 @@ import { trackBeginCheckout, trackPurchase } from "@/lib/analytics";
 
 export const Route = createFileRoute("/order")({
   head: () => ({
+    links: [{ rel: "canonical", href: "https://objekthausstudio.lovable.app/order" }],
     meta: [
       { title: "Checkout — ObjektHaus" },
       {
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/order")({
         content:
           "Review your ObjektHaus selection, adjust quantities and reserve your plywood objects. Every object ships with its botanical archive card.",
       },
+      { property: "og:url", content: "https://objekthausstudio.lovable.app/order" },
       { property: "og:title", content: "Checkout — ObjektHaus" },
       { property: "og:description", content: "Review your selection and reserve your objects." },
       { property: "og:type", content: "website" },

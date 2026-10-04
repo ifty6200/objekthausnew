@@ -7,6 +7,7 @@ import qalCard from "@/assets/qal-card.jpg.asset.json";
 
 export const Route = createFileRoute("/archive")({
   head: () => ({
+    links: [{ rel: "canonical", href: "https://objekthausstudio.lovable.app/archive" }],
     meta: [
       { title: "Botanical Archive — ObjektHaus" },
       {
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/archive")({
         content:
           "Every flower in the ObjektHaus archive names a plywood object. Open a floret to see the product it represents, why we chose it, and the story behind it.",
       },
+      { property: "og:url", content: "https://objekthausstudio.lovable.app/archive" },
       { property: "og:title", content: "Botanical Archive — ObjektHaus" },
       {
         property: "og:description",

@@ -16,6 +16,7 @@ import heroPoster from "@/assets/hero-meadow-poster.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
+    links: [{ rel: "canonical", href: "https://objekthausstudio.lovable.app/" }],
     meta: [
       { title: "ObjektHaus — A Quiet Exhibition of Objects" },
       {
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/")({
         content:
           "Scroll through the ObjektHaus exhibition: Object No.07, its botanical archive card, the materials behind it and the flowers that name each plywood object.",
       },
+      { property: "og:url", content: "https://objekthausstudio.lovable.app/" },
       { property: "og:title", content: "ObjektHaus — A Quiet Exhibition of Objects" },
       {
         property: "og:description",

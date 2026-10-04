@@ -5,7 +5,8 @@ import { adminListOrders, adminUpdateOrder, adminDeleteOrder } from "@/lib/data.
 import { formatPrice } from "@/lib/cart";
 import { deliveryCost, useDelivery } from "@/lib/site";
 
-type OrderStatus = "new" | "pending" | "confirmed" | "cancelled";
+type OrderStatus = "new" | "pending" | "confirmed" | "shipped" | "cancelled";
+const STATUSES: OrderStatus[] = ["new", "pending", "confirmed", "shipped", "cancelled"];
 type Filter = "all" | OrderStatus;
 
 type OrderItem = {
@@ -39,6 +40,7 @@ const filters: { key: Filter; label: string }[] = [
   { key: "new", label: "New orders" },
   { key: "pending", label: "Pending orders" },
   { key: "confirmed", label: "Confirmed orders" },
+  { key: "shipped", label: "Shipped orders" },
   { key: "cancelled", label: "Cancelled orders" },
 ];
 
@@ -96,6 +98,48 @@ function AdminOrders() {
     await qc.invalidateQueries({ queryKey: ["orders"] });
   };
 
+  const [selected, setSelected] = useState<string[]>([]);
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const shownIds = shown.map((o) => o.id);
+  const picked = selected.filter((id) => shownIds.includes(id));
+  const toggle = (id: string) =>
+    setSelected((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
+  const bulk = async (run: (id: string) => Promise<unknown>, confirmText?: string) => {
+    if (!picked.length || (confirmText && !window.confirm(confirmText))) return;
+    setBulkBusy(true);
+    try {
+      await Promise.all(picked.map(run));
+      setSelected([]);
+      await qc.invalidateQueries({ queryKey: ["orders"] });
+    } finally {
+      setBulkBusy(false);
+    }
+  };
+  const exportXml = () => {
+    const rows = shown.filter((o) => picked.includes(o.id));
+    if (!rows.length) return;
+    const esc = (v: unknown) =>
+      String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const cell = (v: unknown, num = false) =>
+      `<Cell><Data ss:Type="${num ? "Number" : "String"}">${esc(v)}</Data></Cell>`;
+    const head = ["Shop", "Customer Name", "Mob.No", "Address", "Product Name", "Total Amount", "Weight (kg)", "Delivery Charge", "Special Note"];
+    const body = rows
+      .map(
+        (o) =>
+          `<Row>${cell("ObjektHaus")}${cell(o.customer_name)}${cell(o.phone)}${cell(o.address)}${cell(
+            o.items.map((it) => `${it.qty} x ${it.product || it.name}`).join(", "),
+          )}${cell(Number(o.total), true)}${cell(Number(o.total_weight), true)}${cell(Number(o.shipping), true)}${cell(o.note ?? "")}</Row>`,
+      )
+      .join("");
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<?mso-application progid="Excel.Sheet"?>\n<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Orders"><Table><Row>${head.map((h) => cell(h)).join("")}</Row>${body}</Table></Worksheet></Workbook>`;
+    const url = URL.createObjectURL(new Blob([xml], { type: "application/xml" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `objekthaus-orders-${new Date().toISOString().slice(0, 10)}.xml`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const removeOrder = async (id: string) => {
     await adminDeleteOrder({ data: { id } });
     await qc.invalidateQueries({ queryKey: ["orders"] });
@@ -123,7 +167,30 @@ function AdminOrders() {
       ) : shown.length === 0 ? (
         <p className="mt-10 text-sm opacity-60">No orders in this panel yet.</p>
       ) : (
-        <ul className="mt-8 divide-y divide-current/15">
+        <>
+        <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 border-y border-current/15 py-4">
+          <button type="button" className="caps link-underline" onClick={() => setSelected(shownIds)}>Select all</button>
+          <button type="button" className="caps link-underline" onClick={() => setSelected([])}>Deselect all</button>
+          <span className="caps opacity-55">{picked.length} selected</span>
+          {picked.length > 0 && (
+            <>
+              {STATUSES.filter((s) => s !== status).map((s) => (
+                <button key={s} type="button" disabled={bulkBusy} className="caps link-underline disabled:opacity-40"
+                  onClick={() => bulk((id) => adminUpdateOrder({ data: { id, status: s } }))}>
+                  {s === "cancelled" ? "Cancel all" : `Mark as ${s}`}
+                </button>
+              ))}
+              {status === "confirmed" && (
+                <button type="button" className="caps link-underline" onClick={exportXml}>Export as .xml</button>
+              )}
+              <button type="button" disabled={bulkBusy} className="caps opacity-55 hover:opacity-100 disabled:opacity-40"
+                onClick={() => bulk((id) => adminDeleteOrder({ data: { id } }), `Delete ${picked.length} order(s)?`)}>
+                Delete all
+              </button>
+            </>
+          )}
+        </div>
+        <ul className="divide-y divide-current/15">
           {shown.map((o) => (
             <li key={o.id} className="py-7">
               {editingId === o.id ? (
@@ -139,12 +206,16 @@ function AdminOrders() {
               ) : (
                 <>
                   <div className="flex flex-wrap items-baseline justify-between gap-3">
+                    <label className="flex items-baseline gap-4">
+                      <input type="checkbox" aria-label={`Select order ${o.reference}`} checked={picked.includes(o.id)}
+                        onChange={() => toggle(o.id)} className="h-4 w-4 accent-current" />
                     <div>
                       <p className="font-display text-2xl font-light">{o.customer_name}</p>
                       <p className="caps mt-1 opacity-55">
                         #{o.reference} — {new Date(o.created_at).toLocaleString()}
                       </p>
                     </div>
+                    </label>
                     <span className="caps rounded-full border border-current/30 px-3 py-1 opacity-80">
                       {o.status}
                     </span>
@@ -179,7 +250,7 @@ function AdminOrders() {
                     <button type="button" onClick={() => setEditingId(o.id)} className="caps link-underline">
                       Edit order
                     </button>
-                    {(["new", "pending", "confirmed", "cancelled"] as OrderStatus[])
+                    {STATUSES
                       .filter((s) => s !== o.status)
                       .map((s) => (
                         <button
@@ -204,6 +275,7 @@ function AdminOrders() {
             </li>
           ))}
         </ul>
+        </>
       )}
     </div>
   );
@@ -292,7 +364,7 @@ function OrderEditor({
             onChange={(e) => set({ status: e.target.value as OrderStatus })}
             className="mt-2 w-full border-b border-current/30 bg-transparent py-2 text-sm outline-none focus:border-current"
           >
-            {(["new", "pending", "confirmed", "cancelled"] as OrderStatus[]).map((s) => (
+            {STATUSES.map((s) => (
               <option key={s} value={s} className="bg-clay text-clay-foreground">
                 {s}
               </option>

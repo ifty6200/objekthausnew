@@ -115,29 +115,36 @@ function AdminOrders() {
       setBulkBusy(false);
     }
   };
-  const exportXml = () => {
+  const exportCsv = () => {
     const rows = shown.filter((o) => picked.includes(o.id));
     if (!rows.length) return;
-    const esc = (v: unknown) =>
-      String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    const cell = (v: unknown, num = false) =>
-      `<Cell><Data ss:Type="${num ? "Number" : "String"}">${esc(v)}</Data></Cell>`;
+    const q = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const head = ["Shop", "Customer Name", "Mob.No", "Address", "Product Name", "Total Amount", "Weight (kg)", "Delivery Charge", "Special Note"];
-    const body = rows
-      .map(
-        (o) =>
-          `<Row>${cell("ObjektHaus")}${cell(o.customer_name)}${cell(o.phone)}${cell(o.address)}${cell(
-            o.items.map((it) => `${it.qty} x ${it.product || it.name}`).join(", "),
-          )}${cell(Number(o.total), true)}${cell(Number(o.total_weight), true)}${cell(Number(o.shipping), true)}${cell(o.note ?? "")}</Row>`,
-      )
-      .join("");
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<?mso-application progid="Excel.Sheet"?>\n<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Orders"><Table><Row>${head.map((h) => cell(h)).join("")}</Row>${body}</Table></Worksheet></Workbook>`;
-    const url = URL.createObjectURL(new Blob([xml], { type: "application/xml" }));
+    const lines = rows.map((o) =>
+      [
+        "ObjektHaus",
+        o.customer_name,
+        o.phone,
+        o.address,
+        o.items.map((it) => `${it.qty} x ${it.product || it.name}`).join(", "),
+        Number(o.total),
+        Number(o.total_weight),
+        Number(o.shipping),
+        o.note ?? "",
+      ].map(q).join(","),
+    );
+    const csv = "\uFEFF" + [head.map(q).join(","), ...lines].join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const a = document.createElement("a");
     a.href = url;
-    a.download = `objekthaus-orders-${new Date().toISOString().slice(0, 10)}.xml`;
+    a.download = `objekthaus-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.style.display = "none";
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => {
+      a.remove();
+      URL.revokeObjectURL(url);
+    }, 1000);
   };
 
   const removeOrder = async (id: string) => {
@@ -181,7 +188,7 @@ function AdminOrders() {
                 </button>
               ))}
               {status === "confirmed" && (
-                <button type="button" className="caps link-underline" onClick={exportXml}>Export as .xml</button>
+                <button type="button" className="caps link-underline" onClick={exportCsv}>Export as .csv</button>
               )}
               <button type="button" disabled={bulkBusy} className="caps opacity-55 hover:opacity-100 disabled:opacity-40"
                 onClick={() => bulk((id) => adminDeleteOrder({ data: { id } }), `Delete ${picked.length} order(s)?`)}>

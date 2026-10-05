@@ -106,6 +106,7 @@ function Contact() {
           </Link>
         </div>
       </section>
+      <footer className="flex gap-6 px-7 py-8 sm:px-10"><Link to="/privacy" className="caps link-underline opacity-60">Privacy policy</Link><Link to="/terms" className="caps link-underline opacity-60">Terms</Link></footer>
     </main>
   );
 }

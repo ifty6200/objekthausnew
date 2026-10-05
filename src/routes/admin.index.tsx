@@ -119,14 +119,15 @@ function AdminOrders() {
     const rows = shown.filter((o) => picked.includes(o.id));
     if (!rows.length) return;
     const q = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const head = ["Shop", "Customer Name", "Mob.No", "Address", "Product Name", "Total Amount", "Weight (kg)", "Delivery Charge", "Special Note"];
+    const head = ["Shop", "Customer Name", "Mob.No", "Address", "Product Name", "Quantity", "Total Amount", "Weight (kg)", "Delivery Charge", "Special Note"];
     const lines = rows.map((o) =>
       [
         "ObjektHaus",
         o.customer_name,
         o.phone,
         o.address,
-        o.items.map((it) => `${it.qty} x ${it.product || it.name}`).join(", "),
+        o.items.map((it) => it.product || it.name).join(", "),
+        o.items.map((it) => it.qty).join(", "),
         Number(o.total),
         Number(o.total_weight),
         Number(o.shipping),

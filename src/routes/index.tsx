@@ -78,7 +78,7 @@ function Index() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/25 via-transparent to-ink/45" />
         <h1 className="rise absolute inset-0 flex items-center justify-center px-10 text-bone">
-          <span className="sr-only">ObjektHaus</span>
+          <span className="sr-only">ObjektHaus — A Quiet Exhibition of Objects</span>
           <Wordmark className="h-16 w-[min(78vw,22rem)] drop-shadow-[0_2px_18px_rgba(0,0,0,0.45)] sm:h-20 sm:w-[26rem] lg:h-28 lg:w-[38rem] xl:w-[44rem]" />
         </h1>
         <div className="relative flex flex-col items-center gap-5 text-bone">

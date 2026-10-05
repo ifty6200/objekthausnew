@@ -149,7 +149,7 @@ function FlowerCard() {
 
       <section className="mx-auto max-w-5xl space-y-12 px-7 py-14 sm:px-10">
         <Reveal>
-          <p className="caps opacity-55">The representing flower card</p>
+          <h2 className="caps opacity-55">The representing flower card</h2>
           <RuleLine className="mt-3" />
           <div className="mt-6 flex flex-col items-center border border-current/20 p-8 text-center">
             <img
@@ -170,17 +170,17 @@ function FlowerCard() {
           </div>
         </Reveal>
         <Reveal>
-          <p className="caps opacity-55">What it represents</p>
+          <h2 className="caps opacity-55">What it represents</h2>
           <RuleLine className="mt-3" />
           <p className="mt-4 text-[1rem] leading-relaxed opacity-85">{f.represents}</p>
         </Reveal>
         <Reveal delay={80}>
-          <p className="caps opacity-55">Why this flower</p>
+          <h2 className="caps opacity-55">Why this flower</h2>
           <RuleLine className="mt-3" />
           <p className="mt-4 text-[1rem] leading-relaxed opacity-85">{f.why}</p>
         </Reveal>
         <Reveal delay={160}>
-          <p className="caps opacity-55">The story</p>
+          <h2 className="caps opacity-55">The story</h2>
           <RuleLine className="mt-3" />
           <p className="mt-4 text-[1rem] leading-relaxed opacity-85">{f.story}</p>
         </Reveal>

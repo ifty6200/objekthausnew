@@ -61,7 +61,7 @@ export const Route = createFileRoute("/flower/$slug")({
 function FlowerCard() {
   const { slug } = Route.useParams();
   const flowers = useAllFlowers();
-  const contact = useSetting<ContactSettings>("contact", defaultContact);
+  const contact = useSetting<ContactSettings>("contact", defaultContact).data ?? defaultContact;
   // Live studio data always wins over the build-time copy in the loader.
   const live = useFlower(slug);
   const f = live ?? (Route.useLoaderData() as Flower | null) ?? null;

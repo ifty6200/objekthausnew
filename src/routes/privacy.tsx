@@ -5,10 +5,10 @@ export const Route = createFileRoute("/privacy")({
   head: () => ({
     links: [{ rel: "canonical", href: "https://objekthausstudio.lovable.app/privacy" }],
     meta: [
-      { title: "Privacy — ObjektHaus" },
+      { title: "Privacy Policy — ObjektHaus" },
       {
         name: "description",
-        content: "How ObjektHaus handles the small amount of information you share with the studio.",
+        content: "How ObjektHaus collects, uses and protects your order details, shares them with couriers, and how to view or delete your information.",
       },
       { property: "og:url", content: "https://objekthausstudio.lovable.app/privacy" },
       { property: "og:title", content: "Privacy — ObjektHaus" },
@@ -19,9 +19,15 @@ export const Route = createFileRoute("/privacy")({
     <LegalPage
       title="Privacy"
       body={[
-        "We collect only what an order or a message requires: your name, your email, and the address an object travels to.",
-        "We do not sell or share this information. Analytics are aggregate and anonymous.",
-        "Write to studio@objekthaus.com at any time to see, correct or delete what we hold.",
+        "Who we are — ObjektHaus is a design studio in Mirpur, Dhaka. This policy explains what we collect when you browse or order, and what we do with it.",
+        "What we collect — your name, phone number, delivery address and email when you place an order, plus any note you leave. If you pay by mobile banking, the sender number and transaction ID you share.",
+        "Why — only to make, dispatch and support your order, and to reply when you write to us. We never sell your information.",
+        "Couriers — your name, phone, address and the amount to collect are shared with our delivery partners (Steadfast, Pathao or Carrybee) solely to deliver your parcel.",
+        "Messages — we may contact you by phone, SMS, WhatsApp or email about your order. Order details are also sent privately to the studio's own notification channel.",
+        "Cookies & measurement — we use Google Tag Manager and Google Analytics to understand, in aggregate, how the site is used. You can block these cookies in your browser.",
+        "Storage & security — orders are stored on secure, access-controlled servers. Only studio staff can see them.",
+        "Your choices — write to studio@objekthaus.com at any time to see, correct or permanently delete what we hold about you.",
+        "Changes — if this policy changes, the updated version will appear on this page. Last updated October 2026.",
       ]}
     />
   ),

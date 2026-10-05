@@ -1,3 +1,4 @@
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { formatPrice, useCart } from "@/lib/cart";
@@ -41,7 +42,7 @@ export function CartDrawer() {
         }`}
       >
         <header className="flex items-center justify-between border-b border-current/15 px-6 py-6 pt-[max(1.5rem,env(safe-area-inset-top))] sm:px-7">
-          <p className="caps opacity-60">Your selection — {count}</p>
+          <p className="caps opacity-60">Your selection — <AnimatedNumber value={count} /></p>
           <button type="button" onClick={() => setOpen(false)} className="caps link-underline">
             Close
           </button>
@@ -85,7 +86,7 @@ export function CartDrawer() {
                         >
                           –
                         </button>
-                        <span className="min-w-6 text-center text-sm">{l.qty}</span>
+                        <span className="min-w-6 text-center text-sm"><AnimatedNumber value={l.qty} /></span>
                         <button
                           type="button"
                           aria-label={`Add one ${l.product}`}
@@ -95,7 +96,7 @@ export function CartDrawer() {
                           +
                         </button>
                       </div>
-                      <span className="text-sm opacity-75">{formatPrice(l.price * l.qty)}</span>
+                      <span className="text-sm opacity-75"><AnimatedNumber value={formatPrice(l.price * l.qty)} /></span>
                     </div>
                   </div>
                 </li>
@@ -107,7 +108,7 @@ export function CartDrawer() {
         <footer className="border-t border-current/15 px-6 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-7">
           <div className="flex items-center justify-between">
             <span className="caps opacity-55">Total</span>
-            <span className="font-display text-2xl font-light">{formatPrice(total)}</span>
+            <span className="font-display text-2xl font-light"><AnimatedNumber value={formatPrice(total)} /></span>
           </div>
           <Link
             to="/order"

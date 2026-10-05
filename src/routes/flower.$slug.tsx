@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
+import { defaultContact, useSetting, whatsappHref, type ContactSettings } from "@/lib/site";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { getFlower, type Flower } from "@/lib/flowers";
@@ -21,6 +23,8 @@ export const Route = createFileRoute("/flower/$slug")({
               "@type": "Product",
               name: `${loaderData.product} — ${loaderData.name}`,
               description: loaderData.represents,
+              image: loaderData.images?.[0]?.src?.startsWith("http") ? loaderData.images[0].src : undefined,
+              itemCondition: "https://schema.org/NewCondition",
               brand: { "@type": "Brand", name: "ObjektHaus" },
               offers: {
                 "@type": "Offer",
@@ -28,6 +32,9 @@ export const Route = createFileRoute("/flower/$slug")({
                 price: loaderData.price,
                 availability: "https://schema.org/InStock",
                 url: `https://objekthausstudio.lovable.app/flower/${params.slug}`,
+                seller: { "@type": "Organization", name: "ObjektHaus" },
+                shippingDetails: { "@type": "OfferShippingDetails", shippingDestination: { "@type": "DefinedRegion", addressCountry: "BD" } },
+                hasMerchantReturnPolicy: { "@type": "MerchantReturnPolicy", applicableCountry: "BD", returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow", merchantReturnDays: 7 },
               },
             }),
           },
@@ -39,7 +46,7 @@ export const Route = createFileRoute("/flower/$slug")({
       {
         name: "description",
         content:
-          loaderData?.represents ??
+          (loaderData ? `${loaderData.product} — handcrafted plywood object with a numbered ${loaderData.name} archive card. Ships across Bangladesh.` : undefined) ??
           "A plywood object from the ObjektHaus botanical archive.",
       },
       { property: "og:title", content: `${loaderData?.name ?? "Floret"} — ObjektHaus` },
@@ -54,6 +61,7 @@ export const Route = createFileRoute("/flower/$slug")({
 function FlowerCard() {
   const { slug } = Route.useParams();
   const flowers = useAllFlowers();
+  const contact = useSetting<ContactSettings>("contact", defaultContact).data ?? defaultContact;
   // Live studio data always wins over the build-time copy in the loader.
   const live = useFlower(slug);
   const f = live ?? (Route.useLoaderData() as Flower | null) ?? null;
@@ -86,7 +94,7 @@ function FlowerCard() {
         <SiteNav />
         <section className="mx-auto max-w-5xl px-7 pt-40 pb-20 sm:px-10">
           <p className="caps opacity-55">Botanical archive</p>
-          <h1 className="mt-4 font-display text-4xl font-light">Opening this floret…</h1>
+          <p className="mt-4 font-display text-4xl font-light">Opening this floret…</p>
           <Link to="/archive" className="caps link-underline mt-8 inline-block">
             Back to the archive
           </Link>
@@ -111,7 +119,7 @@ function FlowerCard() {
         <RuleLine className="mt-6" />
         <p className="caps mt-6 opacity-60">{f.product}</p>
         <p className="mt-2 text-sm opacity-60">
-          {f.edition} — {formatPrice(f.price)}
+          {f.edition} — <AnimatedNumber value={formatPrice(f.price)} />
         </p>
       </section>
 
@@ -123,7 +131,7 @@ function FlowerCard() {
               key={img.src}
               className="image-veil w-[78%] shrink-0 snap-center overflow-hidden rounded-xl sm:w-[52%]"
             >
-              <img
+              <Loupe
                 src={img.src}
                 alt={img.alt}
                 loading={index === 0 ? "eager" : "lazy"}
@@ -177,7 +185,15 @@ function FlowerCard() {
           <p className="mt-4 text-[1rem] leading-relaxed opacity-85">{f.story}</p>
         </Reveal>
 
-        <Reveal delay={200} className="flex justify-end pt-4">
+        <Reveal delay={200} className="flex flex-wrap items-center justify-between gap-6 pt-4">
+          <a
+            href={`${whatsappHref(contact.whatsapp)}?text=${encodeURIComponent(`Inquiring about ${f.product} (${formatPrice(f.price)}) — custom dimensions or Dhaka studio pickup?`)}`}
+            target="_blank"
+            rel="noreferrer"
+            className="caps link-underline"
+          >
+            Ask the studio on WhatsApp
+          </a>
           <AddToCart flower={f} className="justify-end" />
         </Reveal>
 
@@ -196,11 +212,32 @@ function FlowerCard() {
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <div className="min-w-0">
             <p className="caps truncate opacity-60">{f.product}</p>
-            <p className="font-display text-lg font-light">{formatPrice(f.price)}</p>
+            <p className="font-display text-lg font-light"><AnimatedNumber value={formatPrice(f.price)} /></p>
           </div>
           <QuickAdd flower={f} className="shrink-0" />
         </div>
       </div>
     </main>
+  );
+}
+
+/** Hover/touch loupe: magnifies the photo 2.2x around the pointer. */
+function Loupe(props: React.ImgHTMLAttributes<HTMLImageElement>) {
+  const [z, setZ] = useState<string | null>(null);
+  return (
+    <div
+      className="relative cursor-zoom-in overflow-hidden"
+      onPointerMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        setZ(`${((e.clientX - r.left) / r.width) * 100}% ${((e.clientY - r.top) / r.height) * 100}%`);
+      }}
+      onPointerLeave={() => setZ(null)}
+    >
+      <img
+        {...props}
+        className={`${props.className ?? ""} transition-transform duration-300`}
+        style={z ? { transform: "scale(2.2)", transformOrigin: z } : undefined}
+      />
+    </div>
   );
 }

@@ -1,3 +1,4 @@
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useNavTone } from "./use-nav-tone";
@@ -13,6 +14,8 @@ const items = [
   { no: "IV", label: "Contact", to: "/contact" },
   { no: "V", label: "Your orders", to: "/account" },
   { no: "VI", label: "Studio panel", to: "/admin" },
+  { no: "VII", label: "Privacy policy", to: "/privacy" },
+  { no: "VIII", label: "Terms", to: "/terms" },
 ];
 
 /** The original hand-brushed ObjektHaus eye, drawn in currentColor via a mask. */
@@ -100,7 +103,7 @@ export function SiteNav() {
             {count > 0 && (
               <span className="absolute -top-0 -right-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-current px-1">
                 <span className="text-[0.6rem] leading-none font-medium text-bone mix-blend-difference">
-                  {count}
+                  <AnimatedNumber value={count} />
                 </span>
               </span>
             )}

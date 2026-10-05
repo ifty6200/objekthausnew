@@ -1,3 +1,4 @@
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -161,7 +162,7 @@ function Order() {
                             </button>
                           </div>
                           <span className="text-sm opacity-75">
-                            {formatPrice(l.price * l.qty)}
+                            <AnimatedNumber value={formatPrice(l.price * l.qty)} />
                           </span>
                           <button
                             type="button"
@@ -179,18 +180,18 @@ function Order() {
                 <dl className="mt-6 divide-y divide-current/20 text-[0.95rem]">
                   <div className="flex justify-between gap-6 py-3">
                     <dt className="caps opacity-55">Subtotal</dt>
-                    <dd>{formatPrice(total)}</dd>
+                    <dd><AnimatedNumber value={formatPrice(total)} /></dd>
                   </div>
                   <div className="flex justify-between gap-6 py-3">
                     <dt className="caps opacity-55">
                       Delivery{totalWeight > 0 ? ` — ${totalWeight.toFixed(1)} kg` : ""}
                     </dt>
-                    <dd>{shipping === 0 ? "Included" : formatPrice(shipping)}</dd>
+                    <dd>{shipping === 0 ? "Included" : <AnimatedNumber value={formatPrice(shipping)} />}</dd>
                   </div>
                   <div className="flex justify-between gap-6 py-4">
                     <dt className="caps opacity-55">Total</dt>
                     <dd className="font-display text-2xl font-light">
-                      {formatPrice(total + shipping)}
+                      <AnimatedNumber value={formatPrice(total + shipping)} />
                     </dd>
                   </div>
                 </dl>
@@ -334,6 +335,7 @@ function Order() {
           </Link>
         </div>
       </section>
+      <footer className="flex gap-6 px-7 py-8 sm:px-10"><Link to="/privacy" className="caps link-underline opacity-60">Privacy policy</Link><Link to="/terms" className="caps link-underline opacity-60">Terms</Link></footer>
     </main>
   );
 }

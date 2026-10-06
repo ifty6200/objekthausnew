@@ -161,3 +161,23 @@ export const migrateMediaToPersonal = createServerFn({ method: "POST" }).handler
 
   return { found: urls.size, copied, productsUpdated, settingsUpdated, failed };
 });
+
+// ---------- Public co-creation schematic upload (images only, 8 MB) ----------
+const schematic = z.object({
+  name: z.string().min(1).max(200),
+  contentType: z.string().regex(/^image\/(png|jpe?g|webp|gif)$/),
+  data: z.string().min(1).max(12_000_000),
+});
+
+export const uploadSchematic = createServerFn({ method: "POST" })
+  .inputValidator((d) => schematic.parse(d))
+  .handler(async ({ data }) => {
+    const bytes = Uint8Array.from(atob(data.data), (c) => c.charCodeAt(0));
+    if (bytes.byteLength > 8 * 1024 * 1024) throw new Error("Each image must be under 8 MB.");
+    const { getPersonalAdmin } = await import("./personal-supabase.server");
+    const db = getPersonalAdmin();
+    const path = `collaborations/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${data.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const { error } = await db.storage.from(BUCKET).upload(path, bytes, { contentType: data.contentType, upsert: false });
+    if (error) throw new Error(error.message);
+    return { url: db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl };
+  });

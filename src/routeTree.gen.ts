@@ -25,6 +25,8 @@ import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminSiteRouteImport } from './routes/admin.site'
 import { Route as AdminStaffRouteImport } from './routes/admin.staff'
 import { Route as FlowerSlugRouteImport } from './routes/flower.$slug'
+import { Route as JournalIndexRouteImport } from './routes/journal.index'
+import { Route as JournalSlugRouteImport } from './routes/journal.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -106,6 +108,16 @@ const FlowerSlugRoute = FlowerSlugRouteImport.update({
   path: '/flower/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JournalIndexRoute = JournalIndexRouteImport.update({
+  id: '/journal/',
+  path: '/journal/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JournalSlugRoute = JournalSlugRouteImport.update({
+  id: '/journal/$slug',
+  path: '/journal/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -123,7 +135,9 @@ export interface FileRoutesByFullPath {
   '/admin/site': typeof AdminSiteRoute
   '/admin/staff': typeof AdminStaffRoute
   '/flower/$slug': typeof FlowerSlugRoute
+  '/journal/$slug': typeof JournalSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/journal/': typeof JournalIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -140,7 +154,9 @@ export interface FileRoutesByTo {
   '/admin/site': typeof AdminSiteRoute
   '/admin/staff': typeof AdminStaffRoute
   '/flower/$slug': typeof FlowerSlugRoute
+  '/journal/$slug': typeof JournalSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/journal': typeof JournalIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -159,7 +175,9 @@ export interface FileRoutesById {
   '/admin/site': typeof AdminSiteRoute
   '/admin/staff': typeof AdminStaffRoute
   '/flower/$slug': typeof FlowerSlugRoute
+  '/journal/$slug': typeof JournalSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/journal/': typeof JournalIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -179,7 +197,9 @@ export interface FileRouteTypes {
     | '/admin/site'
     | '/admin/staff'
     | '/flower/$slug'
+    | '/journal/$slug'
     | '/admin/'
+    | '/journal/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -196,7 +216,9 @@ export interface FileRouteTypes {
     | '/admin/site'
     | '/admin/staff'
     | '/flower/$slug'
+    | '/journal/$slug'
     | '/admin'
+    | '/journal'
   id:
     | '__root__'
     | '/'
@@ -214,7 +236,9 @@ export interface FileRouteTypes {
     | '/admin/site'
     | '/admin/staff'
     | '/flower/$slug'
+    | '/journal/$slug'
     | '/admin/'
+    | '/journal/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -230,6 +254,8 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   FlowerSlugRoute: typeof FlowerSlugRoute
+  JournalSlugRoute: typeof JournalSlugRoute
+  JournalIndexRoute: typeof JournalIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -346,6 +372,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FlowerSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/journal/': {
+      id: '/journal/'
+      path: '/journal'
+      fullPath: '/journal/'
+      preLoaderRoute: typeof JournalIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journal/$slug': {
+      id: '/journal/$slug'
+      path: '/journal/$slug'
+      fullPath: '/journal/$slug'
+      preLoaderRoute: typeof JournalSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -378,6 +418,8 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   FlowerSlugRoute: FlowerSlugRoute,
+  JournalSlugRoute: JournalSlugRoute,
+  JournalIndexRoute: JournalIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

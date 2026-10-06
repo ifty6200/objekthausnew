@@ -4,6 +4,7 @@ import { Reveal, RuleLine } from "@/components/Reveal";
 import { SocialLinks } from "@/components/Social";
 import { QuickAdd } from "@/components/AddToCart";
 import { HeroVideo } from "@/components/HeroVideo";
+import { CoCreatePanel } from "@/components/CoCreatePanel";
 import { Wordmark } from "@/components/SiteNav";
 import { useAllFlowers } from "@/lib/products";
 import { useHero, usePanel5, useManifesto, useFeatured } from "@/lib/site";
@@ -18,14 +19,14 @@ export const Route = createFileRoute("/")({
   head: () => ({
     links: [{ rel: "canonical", href: "https://objekthausstudio.lovable.app/" }],
     meta: [
-      { title: "ObjektHaus — A Quiet Exhibition of Objects" },
+      { title: "ObjektHaus — A Quiet Exhibition of Handcrafted Objects" },
       {
         name: "description",
         content:
           "Scroll through the ObjektHaus exhibition: Object No.07, its botanical archive card, the materials behind it and the flowers that name each plywood object.",
       },
       { property: "og:url", content: "https://objekthausstudio.lovable.app/" },
-      { property: "og:title", content: "ObjektHaus — A Quiet Exhibition of Objects" },
+      { property: "og:title", content: "ObjektHaus — A Quiet Exhibition of Handcrafted Objects" },
       {
         property: "og:description",
         content: "Scroll through the ObjektHaus exhibition: Object No.07, its botanical archive card, the materials behind it and the flowers that name each plywood object.",
@@ -298,6 +299,8 @@ function Index() {
       </section>
 
       {/* VII — Bring it home */}
+      <CoCreatePanel />
+
       <section id="order" data-tone="dark" className="panel bg-clay text-clay-foreground">
         <Reveal
           as="h2"

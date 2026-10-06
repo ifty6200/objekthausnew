@@ -37,6 +37,7 @@ function Order() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reference, setReference] = useState<string | null>(null);
+  const [pay, setPay] = useState<"cod" | "bkash" | "nagad">("cod");
   const { lines, setQty, remove, total, totalWeight, count, clear } = useCart();
   const flowers = useAllFlowers();
   const delivery = useDelivery();
@@ -69,7 +70,11 @@ function Order() {
           phone: String(form.get("phone") ?? ""),
           address: String(form.get("address") ?? ""),
           email: String(form.get("email") ?? "") || null,
-          note: String(form.get("note") ?? "").trim() || null,
+          note:
+            [
+              pay === "cod" ? null : `Payment: ${pay === "bkash" ? "bKash" : "Nagad"} — sender ${String(form.get("sender") ?? "")} — TrxID ${String(form.get("trxid") ?? "")}`,
+              String(form.get("note") ?? "").trim() || null,
+            ].filter(Boolean).join("\n") || null,
           items: lines.map((l) => ({
             slug: l.slug,
             name: l.name,
@@ -293,6 +298,29 @@ function Order() {
                 className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
               />
             </label>
+            <fieldset className="space-y-3">
+              <legend className="caps opacity-55">Payment</legend>
+              <div className="flex flex-wrap gap-5 text-sm">
+                {(["cod", "bkash", "nagad"] as const).map((m) => (
+                  <label key={m} className="flex items-center gap-2">
+                    <input type="radio" name="pay" checked={pay === m} onChange={() => setPay(m)} />
+                    {m === "cod" ? "Cash on delivery" : m === "bkash" ? "bKash" : "Nagad"}
+                  </label>
+                ))}
+              </div>
+              {pay !== "cod" && (
+                <div className="space-y-4 border border-current/20 p-4 text-sm">
+                  <p className="opacity-80">
+                    Send <AnimatedNumber value={formatPrice(total + shipping)} /> by {pay === "bkash" ? "bKash" : "Nagad"} to{" "}
+                    <strong>01635592323</strong>, then enter your details below.
+                  </p>
+                  <label className="block"><span className="caps opacity-55">Sender number</span>
+                    <input required name="sender" type="tel" maxLength={20} pattern="[0-9+\s-]{10,20}" className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current" /></label>
+                  <label className="block"><span className="caps opacity-55">Transaction ID (TrxID)</span>
+                    <input required name="trxid" maxLength={30} pattern="[A-Za-z0-9]{6,30}" className="mt-2 w-full border-b border-current/30 bg-transparent py-2 uppercase outline-none focus:border-current" /></label>
+                </div>
+              )}
+            </fieldset>
             {checkout.noteEnabled && (
               <label className="block">
                 <span className="caps opacity-55">{checkout.noteLabel}</span>

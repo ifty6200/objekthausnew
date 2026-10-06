@@ -42,15 +42,16 @@ export const Route = createFileRoute("/flower/$slug")({
       : [],
     meta: [
       { property: "og:url", content: `https://objekthausstudio.lovable.app/flower/${params.slug}` },
-      { title: `${loaderData?.name ?? "Floret"} — ObjektHaus` },
+      { title: loaderData ? `${loaderData.product} — ${loaderData.name} | ObjektHaus` : "Floret — ObjektHaus" },
       {
         name: "description",
         content:
           (loaderData ? `${loaderData.product} — handcrafted plywood object with a numbered ${loaderData.name} archive card. Ships across Bangladesh.` : undefined) ??
           "A plywood object from the ObjektHaus botanical archive.",
       },
-      { property: "og:title", content: `${loaderData?.name ?? "Floret"} — ObjektHaus` },
-      { property: "og:description", content: loaderData?.why ?? "" },
+      { property: "og:title", content: loaderData ? `${loaderData.product} — ${loaderData.name} | ObjektHaus` : "Floret — ObjektHaus" },
+      { property: "og:description", content: loaderData ? `${loaderData.product} — handcrafted plywood object with a numbered ${loaderData.name} archive card.` : "" },
+      ...(loaderData?.images?.[0]?.src?.startsWith("https") ? [{ property: "og:image", content: loaderData.images[0].src }, { name: "twitter:image", content: loaderData.images[0].src }] : []),
       { property: "og:type", content: "product" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

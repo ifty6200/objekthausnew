@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminListOrders, adminUpdateOrder, adminDeleteOrder } from "@/lib/data.functions";
 import { formatPrice } from "@/lib/cart";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { deliveryCost, useDelivery } from "@/lib/site";
 
 type OrderStatus = "new" | "pending" | "confirmed" | "shipped" | "cancelled";
@@ -153,8 +154,34 @@ function AdminOrders() {
     await qc.invalidateQueries({ queryKey: ["orders"] });
   };
 
+  const live = orders.filter((o) => o.status !== "cancelled");
+  const today = new Date().toDateString();
+  const month = new Date().toISOString().slice(0, 7);
+  const sum = (l: Order[]) => l.reduce((t, o) => t + Number(o.total), 0);
+  const todayRev = sum(live.filter((o) => new Date(o.created_at).toDateString() === today));
+  const mtd = sum(live.filter((o) => o.created_at.slice(0, 7) === month));
+  const dispatchKg = orders.filter((o) => o.status === "confirmed").reduce((t, o) => t + Number(o.total_weight), 0);
+  const mfs = live.filter((o) => /Payment: (bKash|Nagad)/.test(o.note ?? "")).length;
+  const verifyPayment = async (o: Order) => {
+    await adminUpdateOrder({ data: { id: o.id, note: `${o.note ?? ""}\nPayment verified ${new Date().toLocaleDateString()}` } });
+    await qc.invalidateQueries({ queryKey: ["orders"] });
+  };
+
   return (
     <div>
+      <div className="mb-10 grid grid-cols-2 gap-px border border-current/20 bg-current/20 lg:grid-cols-4">
+        {[
+          ["Today's revenue", formatPrice(todayRev)],
+          ["Month to date", formatPrice(mtd)],
+          ["To dispatch", `${dispatchKg.toFixed(1)} kg`],
+          ["COD / bKash·Nagad", `${live.length - mfs} / ${mfs}`],
+        ].map(([k, v]) => (
+          <div key={k} className="bg-background p-4">
+            <p className="caps opacity-55">{k}</p>
+            <p className="mt-2 font-display text-2xl font-light"><AnimatedNumber value={v} /></p>
+          </div>
+        ))}
+      </div>
       <div className="flex flex-wrap gap-x-7 gap-y-3">
         {filters.map((f) => (
           <Link
@@ -255,6 +282,11 @@ function AdminOrders() {
                   )}
 
                   <div className="mt-5 flex flex-wrap gap-5">
+                    {/Payment: (bKash|Nagad)/.test(o.note ?? "") && !/Payment verified/.test(o.note ?? "") && (
+                      <button type="button" onClick={() => verifyPayment(o)} className="caps link-underline">
+                        Mark payment verified
+                      </button>
+                    )}
                     <button type="button" onClick={() => setEditingId(o.id)} className="caps link-underline">
                       Edit order
                     </button>

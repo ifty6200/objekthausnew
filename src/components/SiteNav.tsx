@@ -12,6 +12,7 @@ const items = [
   { no: "II", label: "Queen Anne's Lace", hash: "card" },
   { no: "III", label: "Botanical Archive", to: "/archive" },
   { no: "IV", label: "Contact", to: "/contact" },
+  { no: "V", label: "Journal", to: "/journal" },
   { no: "V", label: "Your orders", to: "/account" },
   { no: "VI", label: "Studio panel", to: "/admin" },
   { no: "VII", label: "Privacy policy", to: "/privacy" },

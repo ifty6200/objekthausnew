@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { MediaUpload } from "@/components/MediaUpload";
+import { JournalEditor, CoCreateCounter } from "@/components/StudioExtras";
 import { adminSaveSetting } from "@/lib/data.functions";
 import { migrateMediaToPersonal } from "@/lib/media.functions";
 import {
@@ -164,6 +165,8 @@ function AdminSite() {
 
   return (
     <div className="space-y-16">
+      <JournalEditor />
+      <CoCreateCounter />
       <MediaMigration />
       <section className="border border-current/20 p-6">
         <h2 className="font-display text-3xl font-light">Hero video</h2>

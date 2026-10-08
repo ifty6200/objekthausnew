@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { useAllFlowers } from "@/lib/products";
+import { useState } from "react";
+import { ArchiveCursorPreview } from "@/components/ArchiveCursorPreview";
+import type { Flower } from "@/lib/flowers";
 import archiveDark from "@/assets/archive-dark.jpg";
 import qalCard from "@/assets/qal-card.jpg.asset.json";
 
@@ -30,6 +33,7 @@ export const Route = createFileRoute("/archive")({
 
 function Archive() {
   const flowers = useAllFlowers();
+  const [hover, setHover] = useState<Flower | null>(null);
 
   return (
     <main data-tone="light" className="min-h-screen bg-ink text-ink-foreground">
@@ -57,12 +61,13 @@ function Archive() {
 
       <section className="mx-auto max-w-5xl px-7 py-16 sm:px-10">
         <p className="caps mb-8 opacity-50">Each floret is an object — open one</p>
-        <ul className="divide-y divide-current/15">
+        <ul className="divide-y divide-current/15" onPointerLeave={() => setHover(null)}>
           {flowers.map((f, i) => (
             <Reveal as="li" key={f.no} delay={i * 70}>
               <Link
                 to="/flower/$slug"
                 params={{ slug: f.slug }}
+                onPointerEnter={() => setHover(f)}
                 className="group flex items-baseline gap-5 py-7 transition-opacity duration-500 hover:opacity-65"
               >
                 <span className="caps w-12 shrink-0 opacity-50">{f.no}</span>
@@ -105,7 +110,7 @@ function Archive() {
           </Link>
         </Reveal>
       </section>
-      <footer className="flex gap-6 px-7 py-8 sm:px-10"><Link to="/privacy" className="caps link-underline opacity-60">Privacy policy</Link><Link to="/terms" className="caps link-underline opacity-60">Terms</Link></footer>
+      <ArchiveCursorPreview active={hover} />
     </main>
   );
 }

@@ -4,7 +4,9 @@ import { Reveal, RuleLine } from "@/components/Reveal";
 import { SocialLinks } from "@/components/Social";
 import { QuickAdd } from "@/components/AddToCart";
 import { HeroVideo } from "@/components/HeroVideo";
-import { CoCreatePanel } from "@/components/CoCreatePanel";
+import { CoCreateTeaser } from "@/components/CoCreatePanel";
+import { ObserverShowcase } from "@/components/ObserverShowcase";
+import { MotionEnhancer } from "@/components/MotionEnhancer";
 import { Wordmark } from "@/components/SiteNav";
 import { useAllFlowers } from "@/lib/products";
 import { useHero, usePanel5, useManifesto, useFeatured } from "@/lib/site";
@@ -299,7 +301,8 @@ function Index() {
       </section>
 
       {/* VII — Bring it home */}
-      <CoCreatePanel />
+      <CoCreateTeaser />
+      <ObserverShowcase />
 
       <section id="order" data-tone="dark" className="panel bg-clay text-clay-foreground">
         <Reveal
@@ -328,18 +331,9 @@ function Index() {
         <div className="mt-20 flex justify-center">
           <RuleLine />
         </div>
-        <footer className="mt-10">
-          <div className="caps flex items-center justify-between opacity-70">
-            <Link to="/privacy" className="transition-opacity duration-500 hover:opacity-60">
-              Privacy
-            </Link>
-            <Link to="/terms" className="transition-opacity duration-500 hover:opacity-60">
-              Terms
-            </Link>
-          </div>
-          <p className="caps mt-6 text-center opacity-55">© ObjektHaus 2024</p>
-        </footer>
+        <p className="caps mt-10 text-center opacity-55">© ObjektHaus 2024</p>
       </section>
+      <MotionEnhancer />
     </main>
   );
 }

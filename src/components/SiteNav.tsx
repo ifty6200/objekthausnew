@@ -6,17 +6,16 @@ import { SocialLinks } from "./Social";
 import { useCart } from "@/lib/cart";
 import eyeMark from "@/assets/objekthaus-eye.png.asset.json";
 import { WordmarkGlyph } from "./WordmarkGlyph";
+import { useFaq } from "@/lib/motion";
 
-const items = [
-  { no: "I", label: "Object No.01 — Halo Pendant", hash: "object" },
-  { no: "II", label: "Queen Anne's Lace", hash: "card" },
-  { no: "III", label: "Botanical Archive", to: "/archive" },
-  { no: "IV", label: "Contact", to: "/contact" },
-  { no: "V", label: "Journal", to: "/journal" },
+const items: { no: string; label: string; to?: string; hash?: string; faq?: boolean }[] = [
+  { no: "I", label: "Botanical Archive", to: "/archive" },
+  { no: "II", label: "Journal", to: "/journal" },
+  { no: "III", label: "Got an idea?", to: "/collaborate" },
+  { no: "IV", label: "Frequently asked", faq: true },
   { no: "V", label: "Your orders", to: "/account" },
-  { no: "VI", label: "Studio panel", to: "/admin" },
-  { no: "VII", label: "Privacy policy", to: "/privacy" },
-  { no: "VIII", label: "Terms", to: "/terms" },
+  { no: "VI", label: "Contact", to: "/contact" },
+  { no: "VII", label: "Studio panel", to: "/admin" },
 ];
 
 /** The original hand-brushed ObjektHaus eye, drawn in currentColor via a mask. */
@@ -39,6 +38,9 @@ export function SiteNav() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { count, setOpen: setCartOpen } = useCart();
+  const faq = useFaq();
+  const [faqOpen, setFaqOpen] = useState(false);
+  const [openQ, setOpenQ] = useState<number | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -154,7 +156,36 @@ export function SiteNav() {
           <ul>
             {items.map((item, i) => (
               <li key={item.label}>
-                {item.hash ? (
+                {item.faq ? (
+                  <div>
+                    <button
+                      type="button"
+                      aria-expanded={faqOpen}
+                      onClick={() => setFaqOpen((v) => !v)}
+                      style={{ transitionDelay: open ? `${120 + i * 90}ms` : "0ms" }}
+                      className={`group flex w-full items-baseline gap-5 py-4 text-left transition-all duration-700 hover:opacity-60 ${
+                        open ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+                      }`}
+                    >
+                      <span className="caps w-7 shrink-0 opacity-45">{item.no}</span>
+                      <span className="font-display text-2xl font-light sm:text-3xl">{item.label}</span>
+                      <span className={`ml-auto self-center transition-transform duration-500 ${faqOpen ? "rotate-45" : ""}`}>+</span>
+                    </button>
+                    {faqOpen && (
+                      <ul className="mb-4 ml-12 border-t border-dashed border-current/30">
+                        {faq.map((f, qi) => (
+                          <li key={qi} className="border-b border-dashed border-current/30">
+                            <button type="button" aria-expanded={openQ === qi} onClick={() => setOpenQ(openQ === qi ? null : qi)} className="flex w-full justify-between gap-4 py-3 text-left font-mono text-xs tracking-wider uppercase">
+                              <span>{f.q}</span>
+                              <span className={`transition-transform duration-300 ${openQ === qi ? "rotate-180" : ""}`}>⌄</span>
+                            </button>
+                            {openQ === qi && <p className="pb-4 text-sm leading-relaxed opacity-75">{f.a}</p>}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ) : item.hash ? (
                   <button
                     type="button"
                     onClick={() => goToSection(item.hash!)}

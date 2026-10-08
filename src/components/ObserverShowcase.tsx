@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { loadGsap, prefersReducedMotion, useShowcase } from "@/lib/motion";
 import archiveDark from "@/assets/archive-dark.jpg";
 
@@ -77,7 +76,7 @@ export function ObserverShowcase() {
                       </span>
                     ))}
                   </h2>
-                  {sl.link && <Link to={sl.link} className="corner-action caps mt-10 inline-flex">Enter</Link>}
+                  {sl.link && <a href={sl.link} className="corner-action caps mt-10 inline-flex">Enter</a>}
                 </div>
               </div>
             </div>

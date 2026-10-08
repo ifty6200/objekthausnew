@@ -59,6 +59,8 @@ export const defaultPanel5: Panel5Settings = {
 
 async function fetchSetting<T>(key: string, fallback: T): Promise<T> {
   const { value } = await getSetting({ data: { key } });
+  // Lists (journal posts, FAQ) must stay lists — spreading them into an object corrupts them.
+  if (Array.isArray(fallback) || Array.isArray(value)) return (Array.isArray(value) ? value : fallback) as T;
   return { ...fallback, ...((value ?? {}) as Partial<T>) };
 }
 

@@ -15,6 +15,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CollaborateRouteImport } from './routes/collaborate'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -56,6 +57,11 @@ const ArchiveRoute = ArchiveRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollaborateRoute = CollaborateRouteImport.update({
+  id: '/collaborate',
+  path: '/collaborate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/admin-login': typeof AdminLoginRoute
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
+  '/collaborate': typeof CollaborateRoute
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/admin-login': typeof AdminLoginRoute
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
+  '/collaborate': typeof CollaborateRoute
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   '/admin-login': typeof AdminLoginRoute
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
+  '/collaborate': typeof CollaborateRoute
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/admin-login'
     | '/archive'
     | '/auth'
+    | '/collaborate'
     | '/contact'
     | '/order'
     | '/privacy'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/admin-login'
     | '/archive'
     | '/auth'
+    | '/collaborate'
     | '/contact'
     | '/order'
     | '/privacy'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/admin-login'
     | '/archive'
     | '/auth'
+    | '/collaborate'
     | '/contact'
     | '/order'
     | '/privacy'
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   ArchiveRoute: typeof ArchiveRoute
   AuthRoute: typeof AuthRoute
+  CollaborateRoute: typeof CollaborateRoute
   ContactRoute: typeof ContactRoute
   OrderRoute: typeof OrderRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -300,6 +313,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collaborate': {
+      id: '/collaborate'
+      path: '/collaborate'
+      fullPath: '/collaborate'
+      preLoaderRoute: typeof CollaborateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -412,6 +432,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   ArchiveRoute: ArchiveRoute,
   AuthRoute: AuthRoute,
+  CollaborateRoute: CollaborateRoute,
   ContactRoute: ContactRoute,
   OrderRoute: OrderRoute,
   PrivacyRoute: PrivacyRoute,

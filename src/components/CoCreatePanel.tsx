@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { uploadSchematic } from "@/lib/media.functions";
 import { defaultContact, useSetting, whatsappHref, type ContactSettings } from "@/lib/site";
@@ -138,6 +139,28 @@ export function CoCreatePanel() {
             </button>
           </form>
         )}
+      </div>
+    </section>
+  );
+}
+
+/** Slim homepage invitation that leads to the full form on /collaborate. */
+export function CoCreateTeaser() {
+  const stats = useSetting<Stats>("cocreate", { creators: 0, inProduction: 0 }).data;
+  return (
+    <section data-tone="dark" className="relative overflow-hidden bg-sand px-7 py-20 text-sand-foreground sm:px-10">
+      <div className="mx-auto flex max-w-5xl flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="caps opacity-55">Co-creation</p>
+          <h2 className="mt-4 font-display text-5xl font-light sm:text-6xl">Got an idea?</h2>
+          <p className="mt-4 max-w-md opacity-75">Send us your design. We make it together and share profit from every sale.</p>
+          {stats && stats.creators > 0 && (
+            <p className="mt-3 font-mono text-xs uppercase tracking-widest opacity-50">
+              <AnimatedNumber value={String(stats.creators).padStart(2, "0")} /> co-creators in dialogue
+            </p>
+          )}
+        </div>
+        <Link to="/collaborate" className="corner-action caps">Submit your design →</Link>
       </div>
     </section>
   );

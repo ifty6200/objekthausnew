@@ -303,7 +303,7 @@ function Index() {
       <CoCreateTeaser />
       <ObserverShowcase />
 
-      <section id="order" data-snap-end data-tone="dark" className="panel bg-clay text-clay-foreground">
+      <section id="order" data-snap-end data-tone="dark" className="panel relative z-20 bg-clay text-clay-foreground">
         <Reveal
           as="h2"
           className="font-display text-[2.6rem] leading-[1.05] font-light sm:text-6xl"

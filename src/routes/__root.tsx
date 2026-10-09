@@ -16,6 +16,7 @@ import { CartProvider } from "@/lib/cart";
 import { CartDrawer } from "@/components/CartDrawer";
 import { WhatsAppConcierge } from "@/components/WhatsAppConcierge";
 import { SiteFooter } from "@/components/SiteFooter";
+import { MotionEnhancer } from "@/components/MotionEnhancer";
 
 function NotFoundComponent() {
   return (
@@ -167,6 +168,7 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <SiteFooter />
+        <MotionEnhancer />
         <CartDrawer />
         <WhatsAppConcierge />
       </CartProvider>

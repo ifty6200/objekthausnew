@@ -6,7 +6,6 @@ import { QuickAdd } from "@/components/AddToCart";
 import { HeroVideo } from "@/components/HeroVideo";
 import { CoCreateTeaser } from "@/components/CoCreatePanel";
 import { ObserverShowcase } from "@/components/ObserverShowcase";
-import { MotionEnhancer } from "@/components/MotionEnhancer";
 import { Wordmark } from "@/components/SiteNav";
 import { useAllFlowers } from "@/lib/products";
 import { useHero, usePanel5, useManifesto, useFeatured } from "@/lib/site";
@@ -304,7 +303,7 @@ function Index() {
       <CoCreateTeaser />
       <ObserverShowcase />
 
-      <section id="order" data-tone="dark" className="panel bg-clay text-clay-foreground">
+      <section id="order" data-snap-end data-tone="dark" className="panel bg-clay text-clay-foreground">
         <Reveal
           as="h2"
           className="font-display text-[2.6rem] leading-[1.05] font-light sm:text-6xl"
@@ -332,8 +331,11 @@ function Index() {
           <RuleLine />
         </div>
         <p className="caps mt-10 text-center opacity-55">© ObjektHaus 2024</p>
+        <p className="mt-4 flex justify-center gap-5 text-[0.65rem] tracking-widest uppercase opacity-45">
+          <Link to="/privacy" className="hover:opacity-100">Privacy policy</Link>
+          <Link to="/terms" className="hover:opacity-100">Terms</Link>
+        </p>
       </section>
-      <MotionEnhancer />
     </main>
   );
 }

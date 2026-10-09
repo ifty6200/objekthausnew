@@ -11,9 +11,9 @@ import { useFaq } from "@/lib/motion";
 const items: { no: string; label: string; to?: string; hash?: string; faq?: boolean }[] = [
   { no: "I", label: "Botanical Archive", to: "/archive" },
   { no: "II", label: "Journal", to: "/journal" },
-  { no: "III", label: "Got an idea?", to: "/collaborate" },
-  { no: "IV", label: "Frequently asked", faq: true },
-  { no: "V", label: "Your orders", to: "/account" },
+  { no: "III", label: "Your orders", to: "/account" },
+  { no: "IV", label: "Got an idea?", to: "/collaborate" },
+  { no: "V", label: "Frequently asked", faq: true },
   { no: "VI", label: "Contact", to: "/contact" },
   { no: "VII", label: "Studio panel", to: "/admin" },
 ];

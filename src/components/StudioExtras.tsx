@@ -5,6 +5,7 @@ import { adminSaveSetting } from "@/lib/data.functions";
 import { useSetting } from "@/lib/site";
 import { MediaUpload } from "@/components/MediaUpload";
 import { slugify, useJournal, type JournalPost } from "@/lib/journal";
+import { defaultFaq, defaultShowcase, type FaqItem, type ShowcaseSettings, type ShowcaseSlide } from "@/lib/motion";
 
 const input = "mt-2 w-full border-b border-current/30 bg-transparent py-2 text-sm outline-none focus:border-current";
 const blank = (): JournalPost => ({
@@ -93,6 +94,76 @@ export function CoCreateCounter() {
         <label className="block"><span className="caps opacity-55">Objects in production</span><input type="number" min={0} className={input} value={d.inProduction} onChange={(e) => setD({ ...d, inProduction: Number(e.target.value) })} /></label>
       </div>
       <div className="mt-6 flex gap-5">
+        <button type="button" className="caps link-underline" onClick={async () => { await save(d); setOk(true); setTimeout(() => setOk(false), 2500); }}>Save</button>
+        {ok && <span className="caps opacity-55">Saved</span>}
+      </div>
+    </section>
+  );
+}
+
+function move<T>(l: T[], i: number, d: number) { const n = [...l]; const j = i + d; if (j < 0 || j >= n.length) return n; [n[i], n[j]] = [n[j], n[i]]; return n; }
+
+/** Studio editor for the FAQ shown in the menu. */
+export function FaqEditor() {
+  const cur = useSetting<FaqItem[]>("faq", defaultFaq).data;
+  const [l, setL] = useState<FaqItem[]>(defaultFaq);
+  const [ok, setOk] = useState(false);
+  const save = useSave("faq");
+  useEffect(() => { if (Array.isArray(cur) && cur.length) setL(cur); }, [cur]);
+  const up = (i: number, p: Partial<FaqItem>) => setL(l.map((x, k) => (k === i ? { ...x, ...p } : x)));
+  return (
+    <section className="border border-current/20 p-6">
+      <h2 className="font-display text-3xl font-light">Frequently asked</h2>
+      {l.map((f, i) => (
+        <div key={i} className="mt-6 border-t border-current/15 pt-4">
+          <input className={input} placeholder="Question" value={f.q} onChange={(e) => up(i, { q: e.target.value })} />
+          <textarea rows={2} className={`${input} resize-none`} placeholder="Answer" value={f.a} onChange={(e) => up(i, { a: e.target.value })} />
+          <div className="mt-2 flex flex-wrap gap-4 text-sm">
+            <label className="flex items-center gap-2"><input type="checkbox" checked={f.published !== false} onChange={(e) => up(i, { published: e.target.checked })} /> Shown</label>
+            <button type="button" className="caps" onClick={() => setL(move(l, i, -1))}>↑</button>
+            <button type="button" className="caps" onClick={() => setL(move(l, i, 1))}>↓</button>
+            <button type="button" className="caps opacity-50" onClick={() => setL(l.filter((_, k) => k !== i))}>Delete</button>
+          </div>
+        </div>
+      ))}
+      <div className="mt-6 flex gap-5">
+        <button type="button" className="caps link-underline" onClick={() => setL([...l, { q: "", a: "", published: true }])}>Add question</button>
+        <button type="button" className="caps link-underline" onClick={async () => { await save(l); setOk(true); setTimeout(() => setOk(false), 2500); }}>Save</button>
+        {ok && <span className="caps opacity-55">Saved</span>}
+      </div>
+    </section>
+  );
+}
+
+/** Studio editor for the full-screen photo plates after "Got an idea?". */
+export function ShowcaseEditor() {
+  const cur = useSetting<ShowcaseSettings>("showcase", defaultShowcase).data ?? defaultShowcase;
+  const [d, setD] = useState<ShowcaseSettings>(cur);
+  const [ok, setOk] = useState(false);
+  const save = useSave("showcase");
+  useEffect(() => setD(cur), [cur]);
+  const slides = d.slides ?? [];
+  const up = (i: number, p: Partial<ShowcaseSlide>) => setD({ ...d, slides: slides.map((x, k) => (k === i ? { ...x, ...p } : x)) });
+  return (
+    <section className="border border-current/20 p-6">
+      <h2 className="font-display text-3xl font-light">Photo plates</h2>
+      <label className="mt-4 flex items-center gap-2 text-sm"><input type="checkbox" checked={d.enabled} onChange={(e) => setD({ ...d, enabled: e.target.checked })} /> Show plates on the homepage</label>
+      {slides.map((s, i) => (
+        <div key={i} className="mt-6 grid gap-3 border-t border-current/15 pt-4 sm:grid-cols-2">
+          <input className={input} placeholder="Heading" value={s.heading} onChange={(e) => up(i, { heading: e.target.value })} />
+          <input className={input} placeholder="Caption" value={s.caption} onChange={(e) => up(i, { caption: e.target.value })} />
+          <input className={input} placeholder="Link (e.g. /archive)" value={s.link} onChange={(e) => up(i, { link: e.target.value })} />
+          <div><MediaUpload label="Photo" accept="image/*" value={s.image} onChange={(image) => up(i, { image })} /></div>
+          <div className="flex flex-wrap gap-4 text-sm sm:col-span-2">
+            <label className="flex items-center gap-2"><input type="checkbox" checked={s.published !== false} onChange={(e) => up(i, { published: e.target.checked })} /> Shown</label>
+            <button type="button" className="caps" onClick={() => setD({ ...d, slides: move(slides, i, -1) })}>↑</button>
+            <button type="button" className="caps" onClick={() => setD({ ...d, slides: move(slides, i, 1) })}>↓</button>
+            <button type="button" className="caps opacity-50" onClick={() => setD({ ...d, slides: slides.filter((_, k) => k !== i) })}>Delete</button>
+          </div>
+        </div>
+      ))}
+      <div className="mt-6 flex gap-5">
+        <button type="button" className="caps link-underline" onClick={() => setD({ ...d, slides: [...slides, { heading: "", caption: "", image: "", link: "", published: true }] })}>Add plate</button>
         <button type="button" className="caps link-underline" onClick={async () => { await save(d); setOk(true); setTimeout(() => setOk(false), 2500); }}>Save</button>
         {ok && <span className="caps opacity-55">Saved</span>}
       </div>

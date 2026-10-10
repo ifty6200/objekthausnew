@@ -23,19 +23,10 @@ export function MotionEnhancer({ selector = "main > section" }: { selector?: str
             scrollTrigger: { trigger: el, start: "top 80%", once: true },
           });
         });
-        // One single snap controller (multiple triggers fought each other and caused double jumps).
-        const points = () => {
-          const vh = window.innerHeight;
-          const pts: number[] = [];
-          const box = document.querySelector<HTMLElement>("[aria-label='Studio plates']");
-          if (box) {
-            const top = box.getBoundingClientRect().top + window.scrollY;
-            box.querySelectorAll("[data-plate]").forEach((_, i) => pts.push(top + i * vh));
-          }
-          document.querySelectorAll<HTMLElement>("[data-snap-end]").forEach((e) => pts.push(e.getBoundingClientRect().top + window.scrollY));
-          return pts;
-        };
-        if (document.querySelector("[data-plate], [data-snap-end]")) {
+        // Plates snap themselves (ObserverShowcase); this only snaps onto the page ending.
+        const points = () =>
+          Array.from(document.querySelectorAll<HTMLElement>("[data-snap-end]")).map((e) => e.getBoundingClientRect().top + window.scrollY);
+        if (document.querySelector("[data-snap-end]")) {
           ScrollTrigger.create({
             start: 0, end: "max",
             snap: {
@@ -45,7 +36,7 @@ export function MotionEnhancer({ selector = "main > section" }: { selector?: str
                 const vh = window.innerHeight;
                 let best = -1, dist = Infinity;
                 for (const p of points()) { const d = Math.abs(p - y); if (d < dist) { dist = d; best = p; } }
-                if (best < 0 || dist > vh * 0.5) return progress;
+                if (best < 0 || dist > vh * 0.4) return progress;
                 return Math.min(best, max) / max;
               },
               duration: { min: 0.35, max: 0.7 }, delay: 0.15, ease: "power2.inOut", inertia: false,

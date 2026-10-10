@@ -18,6 +18,8 @@ export function WhatsAppConcierge() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const btn = useRef<HTMLButtonElement>(null);
   const ring = useRef<HTMLSpanElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(false);
   const gs = useRef<typeof import("gsap").gsap | null>(null);
   useEffect(() => {
     if (prefersReducedMotion() || path.startsWith("/admin")) return;
@@ -28,10 +30,24 @@ export function WhatsAppConcierge() {
     });
     return () => tw?.kill();
   }, [path]);
+  useEffect(() => {
+    const g = gs.current;
+    if (open) { setShown(true); return; }
+    if (!shown) return;
+    if (!g || !panel.current) { setShown(false); return; }
+    g.to(panel.current, { scale: 0.85, autoAlpha: 0, y: 12, duration: 0.25, ease: "power2.in", onComplete: () => setShown(false) });
+  }, [open]);
+  useEffect(() => {
+    const g = gs.current;
+    if (!shown || !open || !g || !panel.current) return;
+    g.fromTo(panel.current, { autoAlpha: 0, scale: 0.75, y: 20 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(2.2)" });
+    g.from(panel.current.querySelectorAll("li"), { autoAlpha: 0, x: 12, duration: 0.4, stagger: 0.05, ease: "back.out(2)", delay: 0.1 });
+  }, [shown, open]);
   const pulse = () => {
     const g = gs.current;
-    if (!g || !ring.current) return;
-    g.fromTo(ring.current, { scale: 1, autoAlpha: 0.6 }, { scale: 2.4, autoAlpha: 0, duration: 0.9, ease: "power2.out" });
+    if (!g || !ring.current || !btn.current) return;
+    g.fromTo(ring.current, { scale: 1, autoAlpha: 0.5 }, { scale: 2.4, autoAlpha: 0, duration: 0.9, ease: "power2.out" });
+    g.fromTo(btn.current, { scale: 0.8 }, { scale: 1, duration: 0.8, ease: "elastic.out(1.2, 0.35)" });
   };
   const hover = (v: boolean) => gs.current && btn.current && gs.current.to(btn.current, { scale: v ? 1.1 : 1, duration: 0.4, ease: v ? "back.out(3)" : "elastic.out(1, 0.4)" });
   if (path.startsWith("/admin")) return null;
@@ -44,8 +60,8 @@ export function WhatsAppConcierge() {
 
   return (
     <div className="fixed right-4 bottom-20 z-40 flex flex-col items-end gap-3 sm:right-6 sm:bottom-6">
-      {open && (
-        <div className="w-72 border border-current/20 bg-bone p-5 text-bone-foreground shadow-2xl">
+      {shown && (
+        <div ref={panel} style={{ transformOrigin: "bottom right" }} className="w-72 border border-current/20 bg-bone p-5 text-bone-foreground shadow-2xl">
           <p className="caps opacity-55">Studio concierge</p>
           <ul className="mt-3 space-y-2">
             {presets.map((p) => (
@@ -82,9 +98,9 @@ export function WhatsAppConcierge() {
         onPointerLeave={() => hover(false)}
         aria-expanded={open}
         aria-label={open ? "Close WhatsApp chat" : "Chat with the studio on WhatsApp"}
-        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[hsl(142_25%_42%)] text-bone shadow-xl"
+        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-soot text-bone ring-1 ring-bone/15 shadow-xl"
       >
-        <span ref={ring} aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-full bg-[hsl(142_25%_50%)] opacity-0" />
+        <span ref={ring} aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-full bg-soot opacity-0" />
         {open ? (
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" className="relative"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.8" /></svg>
         ) : (

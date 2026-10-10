@@ -33,23 +33,59 @@ export function ObserverShowcase() {
             else gsap.set(c, { autoAlpha: 0, yPercent: 150 });
           });
         };
-        const tl = gsap.timeline({
-          defaults: { ease: "none" },
-          scrollTrigger: {
-            trigger: el, start: "top top", end: "bottom bottom", scrub: 0.6,
-            snap: n > 1 ? { snapTo: 1 / (n - 1), directional: true, duration: { min: 0.45, max: 0.9 }, delay: 0.05, ease: "power3.inOut" } : undefined,
-            onUpdate: (st) => show(Math.round(st.progress * (n - 1))),
-            onEnter: () => show(0),
-            onEnterBack: (st) => show(Math.round(st.progress * (n - 1))),
-          },
-        });
+        const tl = gsap.timeline({ defaults: { ease: "none" }, paused: true });
         plates.forEach((p, i) => {
           if (i === 0) return;
-          tl.fromTo(p, { yPercent: 100 }, { yPercent: 0, duration: 1 }, i - 1)
-            .fromTo(p.querySelector("[data-bg]"), { scale: 1.15 }, { scale: 1, duration: 1 }, i - 1)
-            .to(plates[i - 1].querySelector("[data-bg]"), { scale: 0.92, autoAlpha: 0.4, duration: 1 }, i - 1);
+          tl.fromTo(p, { yPercent: 100 }, { yPercent: 0, duration: 1, ease: "power2.inOut" }, i - 1)
+            .fromTo(p.querySelector("[data-bg]"), { scale: 1.15 }, { scale: 1, duration: 1, ease: "power2.inOut" }, i - 1)
+            .to(plates[i - 1].querySelector("[data-bg]"), { scale: 0.92, autoAlpha: 0.4, duration: 1, ease: "power2.inOut" }, i - 1);
         });
         if (n === 1) tl.to({}, { duration: 1 });
+
+        // Pin the stage; gestures are intercepted so ONE swipe/wheel step = exactly ONE panel.
+        let step = 0;
+        let busy = false;
+        const st = gsap.plugins?.Observer
+          ? null
+          : null;
+        void st;
+        const trigger = (window as any).ScrollTrigger;
+        const pin = trigger?.create?.({ trigger: el, start: "top top", end: "bottom bottom", pin: el.querySelector(".sticky"), pinSpacing: false });
+        const goTo = (next: number) => {
+          next = gsap.utils.clamp(0, n - 1, next);
+          if (busy || next === step) return;
+          busy = true;
+          step = next;
+          show(step);
+          gsap.to(tl, {
+            progress: n > 1 ? step / (n - 1) : 0,
+            duration: 0.85,
+            ease: "power3.inOut",
+            onComplete: () => { busy = false; },
+          });
+        };
+        const Observer = (gsap as any).Observer;
+        const obs = Observer?.create({
+          target: el,
+          type: "wheel,touch,pointer",
+          wheelSpeed: -1,
+          tolerance: 12,
+          preventDefault: true,
+          onDown: () => goTo(step + 1),
+          onUp: () => goTo(step - 1),
+          onEnable: () => show(step),
+        });
+        // Allow leaving the pinned section at the edges (scroll past first/last panel).
+        const release = trigger?.create?.({
+          trigger: el,
+          start: "top top",
+          end: "bottom bottom",
+          onEnter: () => { step = 0; show(0); tl.progress(0); obs?.enable(); },
+          onEnterBack: () => { step = n - 1; show(step); tl.progress(1); obs?.enable(); },
+          onLeave: () => obs?.disable(),
+          onLeaveBack: () => obs?.disable(),
+        });
+        void pin; void release;
         chars.forEach((c) => gsap.set(c, { autoAlpha: 0, yPercent: 150 }));
       }, el);
       kill = () => ctx.revert();

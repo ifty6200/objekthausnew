@@ -23,13 +23,35 @@ export function MotionEnhancer({ selector = "main > section" }: { selector?: str
             scrollTrigger: { trigger: el, start: "top 80%", once: true },
           });
         });
-        // Fluid snap: plates and the page ending settle to fill the screen, never trapping scroll.
-        gsap.utils.toArray<HTMLElement>("[data-plate], [data-snap-end]").forEach((el) => {
+        // One single snap controller (multiple triggers fought each other and caused double jumps).
+        const points = () => {
+          const vh = window.innerHeight;
+          const pts: number[] = [];
+          const box = document.querySelector<HTMLElement>("[aria-label='Studio plates']");
+          if (box) {
+            const top = box.getBoundingClientRect().top + window.scrollY;
+            box.querySelectorAll("[data-plate]").forEach((_, i) => pts.push(top + i * vh));
+          }
+          document.querySelectorAll<HTMLElement>("[data-snap-end]").forEach((e) => pts.push(e.getBoundingClientRect().top + window.scrollY));
+          return pts;
+        };
+        if (document.querySelector("[data-plate], [data-snap-end]")) {
           ScrollTrigger.create({
-            trigger: el, start: "top bottom", end: "top top",
-            snap: { snapTo: [0, 1], duration: { min: 0.3, max: 0.8 }, delay: 0.08, ease: "power2.inOut", inertia: false },
+            start: 0, end: "max",
+            snap: {
+              snapTo: (progress: number) => {
+                const max = ScrollTrigger.maxScroll(window);
+                const y = progress * max;
+                const vh = window.innerHeight;
+                let best = -1, dist = Infinity;
+                for (const p of points()) { const d = Math.abs(p - y); if (d < dist) { dist = d; best = p; } }
+                if (best < 0 || dist > vh * 0.5) return progress;
+                return Math.min(best, max) / max;
+              },
+              duration: { min: 0.35, max: 0.7 }, delay: 0.15, ease: "power2.inOut", inertia: false,
+            },
           });
-        });
+        }
       });
       const fine = window.matchMedia("(hover: hover)").matches;
       const btns = Array.from(document.querySelectorAll<HTMLElement>("main a, main button, footer a, header a, header button, [data-cta]"));

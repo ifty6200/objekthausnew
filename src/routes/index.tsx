@@ -303,34 +303,25 @@ function Index() {
       <CoCreateTeaser />
       <ObserverShowcase />
 
-      <section id="order" data-snap-end data-tone="dark" className="panel relative z-20 bg-clay text-clay-foreground">
-        <Reveal
-          as="h2"
-          className="font-display text-[2.6rem] leading-[1.05] font-light sm:text-6xl"
-        >
+      <section id="order" data-snap-end data-tone="dark" className="relative z-20 flex h-[100svh] flex-col justify-center overflow-hidden bg-clay px-7 py-10 text-clay-foreground sm:px-10 lg:px-16">
+        <h2 className="font-display text-[2.4rem] leading-[1.05] font-light sm:text-6xl">
           Bring it
           <br />
           home
-        </Reveal>
-        <div className="mt-12 flex flex-col items-start gap-8">
-          <Reveal delay={80}>
-            <Link to="/order" className="corner-action font-display text-3xl font-light">
-              Order <Arrow />
-            </Link>
-          </Reveal>
-          <Reveal delay={160}>
-            <Link to="/contact" className="corner-action font-display text-3xl font-light">
-              Contact <Arrow />
-            </Link>
-          </Reveal>
-          <Reveal delay={240}>
-            <SocialLinks className="opacity-75" size={20} />
-          </Reveal>
+        </h2>
+        <div className="mt-8 flex flex-col items-start gap-5">
+          <Link to="/order" className="corner-action font-display text-2xl font-light sm:text-3xl">
+            Order <Arrow />
+          </Link>
+          <Link to="/contact" className="corner-action font-display text-2xl font-light sm:text-3xl">
+            Contact <Arrow />
+          </Link>
+          <SocialLinks className="opacity-75" size={20} />
         </div>
-        <div className="mt-20 flex justify-center">
+        <div className="mt-10 flex justify-center">
           <RuleLine />
         </div>
-        <p className="caps mt-10 text-center opacity-55">© ObjektHaus 2024</p>
+        <p className="caps mt-6 text-center opacity-55">© ObjektHaus 2024</p>
         <p className="mt-4 flex justify-center gap-5 text-[0.65rem] tracking-widest uppercase opacity-45">
           <Link to="/privacy" className="hover:opacity-100">Privacy policy</Link>
           <Link to="/terms" className="hover:opacity-100">Terms</Link>

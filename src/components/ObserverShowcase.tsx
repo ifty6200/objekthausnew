@@ -19,12 +19,19 @@ export function ObserverShowcase() {
       const el = root.current;
       if (!alive || !el) return;
       const ctx = gsap.context(() => {
-        gsap.utils.toArray<HTMLElement>(el.querySelectorAll("[data-plate]")).forEach((sec) => {
+        // Positions are measured from the container, because sticky plates report shifting offsets.
+        const vh = () => window.innerHeight;
+        gsap.utils.toArray<HTMLElement>(el.querySelectorAll("[data-plate]")).forEach((sec, i) => {
           const bg = sec.querySelector("[data-bg]");
-          gsap.fromTo(bg, { yPercent: 15 }, { yPercent: 0, ease: "none", scrollTrigger: { trigger: sec, start: "top bottom", end: "top top", scrub: true } });
+          if (i > 0) gsap.fromTo(bg, { yPercent: 15 }, { yPercent: 0, ease: "none", scrollTrigger: { trigger: el, start: () => `top+=${(i - 1) * vh()} top`, end: () => `top+=${i * vh()} top`, scrub: true, invalidateOnRefresh: true } });
           gsap.fromTo(sec.querySelectorAll("[data-ch]"), { autoAlpha: 0, yPercent: 150 }, {
             autoAlpha: 1, yPercent: 0, duration: 1, ease: "power2", stagger: { each: 0.02, from: "random" },
-            scrollTrigger: { trigger: sec, start: "top 40%", toggleActions: "play none none reverse" },
+            scrollTrigger: {
+              trigger: el, invalidateOnRefresh: true,
+              start: () => `top+=${(i - 0.5) * vh()} top`,
+              end: () => `top+=${(i + 0.5) * vh()} top`,
+              toggleActions: "restart none restart reset",
+            },
           });
         });
       }, el);

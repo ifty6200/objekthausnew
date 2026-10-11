@@ -16,7 +16,8 @@ export function ObserverShowcase() {
     if (!slides.length || !root.current || prefersReducedMotion()) return;
     let alive = true;
     let kill = () => {};
-    loadGsap().then(({ gsap }) => {
+    let cleanup = () => {};
+    loadGsap().then(({ gsap, Observer }) => {
       const el = root.current;
       if (!alive || !el) return;
       const ctx = gsap.context(() => {
@@ -42,15 +43,10 @@ export function ObserverShowcase() {
         });
         if (n === 1) tl.to({}, { duration: 1 });
 
-        // Pin the stage; gestures are intercepted so ONE swipe/wheel step = exactly ONE panel.
+        // Gestures are intercepted so ONE swipe/wheel step = exactly ONE panel.
+        // Pinning itself is pure CSS (sticky wrapper); no GSAP pin to avoid double-pinning.
         let step = 0;
         let busy = false;
-        const st = gsap.plugins?.Observer
-          ? null
-          : null;
-        void st;
-        const trigger = (window as any).ScrollTrigger;
-        const pin = trigger?.create?.({ trigger: el, start: "top top", end: "bottom bottom", pin: el.querySelector(".sticky"), pinSpacing: false });
         const goTo = (next: number) => {
           next = gsap.utils.clamp(0, n - 1, next);
           if (busy || next === step) return;
@@ -64,33 +60,65 @@ export function ObserverShowcase() {
             onComplete: () => { busy = false; },
           });
         };
-        const Observer = (gsap as any).Observer;
-        const obs = Observer?.create({
-          target: el,
+        const obs = Observer.create({
+          target: window,
           type: "wheel,touch,pointer",
           wheelSpeed: -1,
           tolerance: 12,
           preventDefault: true,
-          onDown: () => goTo(step + 1),
-          onUp: () => goTo(step - 1),
+          onDown: () => {
+            // Already on the last plate: release the stage so the page keeps scrolling to the footer.
+            const top = el.getBoundingClientRect().top + window.scrollY;
+            if (step >= n - 1) { handoff = true; obs.disable(); window.scrollTo({ top: top + el.offsetHeight, behavior: "smooth" }); }
+            else goTo(step + 1);
+          },
+          onUp: () => {
+            // Already on the first plate: release the stage so the page scrolls back to the previous panel.
+            const top = el.getBoundingClientRect().top + window.scrollY;
+            if (step <= 0) { handoff = true; obs.disable(); window.scrollTo({ top: Math.max(0, top - window.innerHeight), behavior: "smooth" }); }
+            else goTo(step - 1);
+          },
           onEnable: () => show(step),
         });
-        // Allow leaving the pinned section at the edges (scroll past first/last panel).
-        const release = trigger?.create?.({
-          trigger: el,
-          start: "top top",
-          end: "bottom bottom",
-          onEnter: () => { step = 0; show(0); tl.progress(0); obs?.enable(); },
-          onEnterBack: () => { step = n - 1; show(step); tl.progress(1); obs?.enable(); },
-          onLeave: () => obs?.disable(),
-          onLeaveBack: () => obs?.disable(),
-        });
-        void pin; void release;
+        obs.disable(); // inert until the stage is actually pinned in view
+        // Geometry-driven arm/disarm: the Observer only owns gestures while the stage fills the
+        // viewport. This replaces ScrollTrigger enter/leave callbacks, which do not fire reliably
+        // when the section is already scrolled into position.
+        const isPinned = () => {
+          const r = el.getBoundingClientRect();
+          return r.top <= 0 && r.bottom >= window.innerHeight;
+        };
+        let wasPinned = false;
+        let handoff = false; // true while an edge-release scroll is in progress
+        const sync = () => {
+          const pinned = isPinned();
+          if (pinned && !wasPinned) {
+            if (handoff) {
+              handoff = false; // release scroll finished; wait for the next entry
+            } else {
+              const fromTop = el.getBoundingClientRect().top > -window.innerHeight;
+              step = fromTop ? 0 : n - 1;
+              show(step);
+              tl.progress(n > 1 ? step / (n - 1) : 0);
+              obs.enable();
+            }
+          } else if (!pinned && wasPinned) {
+            obs.disable();
+            handoff = false;
+          } else if (pinned && !handoff) {
+            obs.enable();
+          }
+          wasPinned = pinned;
+        };
+        const onScroll = () => sync();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        sync();
         chars.forEach((c) => gsap.set(c, { autoAlpha: 0, yPercent: 150 }));
+        cleanup = () => window.removeEventListener("scroll", onScroll);
       }, el);
       kill = () => ctx.revert();
     });
-    return () => { alive = false; kill(); };
+    return () => { alive = false; cleanup(); kill(); };
   }, [JSON.stringify(slides)]);
 
   if (!s.enabled || !slides.length) return null;

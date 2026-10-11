@@ -42,10 +42,10 @@ export function ObserverShowcase() {
         });
         if (n === 1) tl.to({}, { duration: 1 });
 
-        // Pin the stage; gestures are intercepted so ONE swipe/wheel step = exactly ONE panel.
+        // Gestures are intercepted so ONE swipe/wheel step = exactly ONE panel.
+        // Pinning itself is pure CSS (sticky wrapper); no GSAP pin to avoid double-pinning.
         let step = 0;
         let busy = false;
-        const pin = ScrollTrigger.create({ trigger: el, start: "top top", end: "bottom bottom", pin: el.querySelector(".sticky"), pinSpacing: false });
         const goTo = (next: number) => {
           next = gsap.utils.clamp(0, n - 1, next);
           if (busy || next === step) return;
@@ -80,7 +80,7 @@ export function ObserverShowcase() {
           onLeave: () => obs.disable(),
           onLeaveBack: () => obs.disable(),
         });
-        void pin; void release;
+        void release;
         chars.forEach((c) => gsap.set(c, { autoAlpha: 0, yPercent: 150 }));
       }, el);
       kill = () => ctx.revert();

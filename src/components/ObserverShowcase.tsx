@@ -61,7 +61,7 @@ export function ObserverShowcase() {
           });
         };
         const obs = Observer.create({
-          target: el,
+          target: window,
           type: "wheel,touch,pointer",
           wheelSpeed: -1,
           tolerance: 12,
@@ -102,7 +102,8 @@ export function ObserverShowcase() {
             }
           } else if (!pinned && wasPinned) {
             obs.disable();
-          } else if (pinned) {
+            handoff = false;
+          } else if (pinned && !handoff) {
             obs.enable();
           }
           wasPinned = pinned;

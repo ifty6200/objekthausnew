@@ -16,7 +16,7 @@ export function ObserverShowcase() {
     if (!slides.length || !root.current || prefersReducedMotion()) return;
     let alive = true;
     let kill = () => {};
-    loadGsap().then(({ gsap }) => {
+    loadGsap().then(({ gsap, ScrollTrigger, Observer }) => {
       const el = root.current;
       if (!alive || !el) return;
       const ctx = gsap.context(() => {
@@ -45,12 +45,7 @@ export function ObserverShowcase() {
         // Pin the stage; gestures are intercepted so ONE swipe/wheel step = exactly ONE panel.
         let step = 0;
         let busy = false;
-        const st = gsap.plugins?.Observer
-          ? null
-          : null;
-        void st;
-        const trigger = (window as any).ScrollTrigger;
-        const pin = trigger?.create?.({ trigger: el, start: "top top", end: "bottom bottom", pin: el.querySelector(".sticky"), pinSpacing: false });
+        const pin = ScrollTrigger.create({ trigger: el, start: "top top", end: "bottom bottom", pin: el.querySelector(".sticky"), pinSpacing: false });
         const goTo = (next: number) => {
           next = gsap.utils.clamp(0, n - 1, next);
           if (busy || next === step) return;

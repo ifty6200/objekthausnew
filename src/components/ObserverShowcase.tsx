@@ -69,6 +69,7 @@ export function ObserverShowcase() {
           onUp: () => goTo(step - 1),
           onEnable: () => show(step),
         });
+        obs.disable(); // inert until the stage is actually pinned in view
         // Allow leaving the pinned section at the edges (scroll past first/last panel).
         const release = ScrollTrigger.create({
           trigger: el,

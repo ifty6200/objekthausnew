@@ -68,12 +68,14 @@ export function ObserverShowcase() {
           preventDefault: true,
           onDown: () => {
             // Already on the last plate: release the stage so the page keeps scrolling to the footer.
-            if (step >= n - 1) { handoff = true; obs.disable(); window.scrollTo({ top: el.offsetTop + el.offsetHeight, behavior: "smooth" }); }
+            const top = el.getBoundingClientRect().top + window.scrollY;
+            if (step >= n - 1) { handoff = true; obs.disable(); window.scrollTo({ top: top + el.offsetHeight, behavior: "smooth" }); }
             else goTo(step + 1);
           },
           onUp: () => {
             // Already on the first plate: release the stage so the page scrolls back to the previous panel.
-            if (step <= 0) { handoff = true; obs.disable(); window.scrollTo({ top: Math.max(0, el.offsetTop - window.innerHeight), behavior: "smooth" }); }
+            const top = el.getBoundingClientRect().top + window.scrollY;
+            if (step <= 0) { handoff = true; obs.disable(); window.scrollTo({ top: Math.max(0, top - window.innerHeight), behavior: "smooth" }); }
             else goTo(step - 1);
           },
           onEnable: () => show(step),

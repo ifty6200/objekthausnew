@@ -16,7 +16,8 @@ export function ObserverShowcase() {
     if (!slides.length || !root.current || prefersReducedMotion()) return;
     let alive = true;
     let kill = () => {};
-    loadGsap().then(({ gsap, ScrollTrigger, Observer }) => {
+    let cleanup = () => {};
+    loadGsap().then(({ gsap, Observer }) => {
       const el = root.current;
       if (!alive || !el) return;
       const ctx = gsap.context(() => {
@@ -114,7 +115,7 @@ export function ObserverShowcase() {
       }, el);
       kill = () => ctx.revert();
     });
-    return () => { alive = false; kill(); };
+    return () => { alive = false; cleanup(); kill(); };
   }, [JSON.stringify(slides)]);
 
   if (!s.enabled || !slides.length) return null;

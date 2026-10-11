@@ -67,29 +67,50 @@ export function ObserverShowcase() {
           preventDefault: true,
           onDown: () => {
             // Already on the last plate: release the stage so the page keeps scrolling to the footer.
-            if (step >= n - 1) { obs.disable(); window.scrollTo({ top: el.offsetTop + el.offsetHeight, behavior: "smooth" }); }
+            if (step >= n - 1) { handoff = true; obs.disable(); window.scrollTo({ top: el.offsetTop + el.offsetHeight, behavior: "smooth" }); }
             else goTo(step + 1);
           },
           onUp: () => {
             // Already on the first plate: release the stage so the page scrolls back to the previous panel.
-            if (step <= 0) { obs.disable(); window.scrollTo({ top: Math.max(0, el.offsetTop - window.innerHeight), behavior: "smooth" }); }
+            if (step <= 0) { handoff = true; obs.disable(); window.scrollTo({ top: Math.max(0, el.offsetTop - window.innerHeight), behavior: "smooth" }); }
             else goTo(step - 1);
           },
           onEnable: () => show(step),
         });
         obs.disable(); // inert until the stage is actually pinned in view
-        // Allow leaving the pinned section at the edges (scroll past first/last panel).
-        const release = ScrollTrigger.create({
-          trigger: el,
-          start: "top top",
-          end: "bottom bottom",
-          onEnter: () => { step = 0; show(0); tl.progress(0); obs.enable(); },
-          onEnterBack: () => { step = n - 1; show(step); tl.progress(1); obs.enable(); },
-          onLeave: () => obs.disable(),
-          onLeaveBack: () => obs.disable(),
-        });
-        void release;
+        // Geometry-driven arm/disarm: the Observer only owns gestures while the stage fills the
+        // viewport. This replaces ScrollTrigger enter/leave callbacks, which do not fire reliably
+        // when the section is already scrolled into position.
+        const isPinned = () => {
+          const r = el.getBoundingClientRect();
+          return r.top <= 0 && r.bottom >= window.innerHeight;
+        };
+        let wasPinned = false;
+        let handoff = false; // true while an edge-release scroll is in progress
+        const sync = () => {
+          const pinned = isPinned();
+          if (pinned && !wasPinned) {
+            if (handoff) {
+              handoff = false; // release scroll finished; wait for the next entry
+            } else {
+              const fromTop = el.getBoundingClientRect().top > -window.innerHeight;
+              step = fromTop ? 0 : n - 1;
+              show(step);
+              tl.progress(n > 1 ? step / (n - 1) : 0);
+              obs.enable();
+            }
+          } else if (!pinned && wasPinned) {
+            obs.disable();
+          } else if (pinned) {
+            obs.enable();
+          }
+          wasPinned = pinned;
+        };
+        const onScroll = () => sync();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        sync();
         chars.forEach((c) => gsap.set(c, { autoAlpha: 0, yPercent: 150 }));
+        cleanup = () => window.removeEventListener("scroll", onScroll);
       }, el);
       kill = () => ctx.revert();
     });

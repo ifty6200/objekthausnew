@@ -59,8 +59,7 @@ export function ObserverShowcase() {
             onComplete: () => { busy = false; },
           });
         };
-        const Observer = (gsap as any).Observer;
-        const obs = Observer?.create({
+        const obs = Observer.create({
           target: el,
           type: "wheel,touch,pointer",
           wheelSpeed: -1,
@@ -71,14 +70,14 @@ export function ObserverShowcase() {
           onEnable: () => show(step),
         });
         // Allow leaving the pinned section at the edges (scroll past first/last panel).
-        const release = trigger?.create?.({
+        const release = ScrollTrigger.create({
           trigger: el,
           start: "top top",
           end: "bottom bottom",
-          onEnter: () => { step = 0; show(0); tl.progress(0); obs?.enable(); },
-          onEnterBack: () => { step = n - 1; show(step); tl.progress(1); obs?.enable(); },
-          onLeave: () => obs?.disable(),
-          onLeaveBack: () => obs?.disable(),
+          onEnter: () => { step = 0; show(0); tl.progress(0); obs.enable(); },
+          onEnterBack: () => { step = n - 1; show(step); tl.progress(1); obs.enable(); },
+          onLeave: () => obs.disable(),
+          onLeaveBack: () => obs.disable(),
         });
         void pin; void release;
         chars.forEach((c) => gsap.set(c, { autoAlpha: 0, yPercent: 150 }));

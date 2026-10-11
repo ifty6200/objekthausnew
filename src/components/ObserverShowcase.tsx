@@ -65,8 +65,16 @@ export function ObserverShowcase() {
           wheelSpeed: -1,
           tolerance: 12,
           preventDefault: true,
-          onDown: () => goTo(step + 1),
-          onUp: () => goTo(step - 1),
+          onDown: () => {
+            // Already on the last plate: release the stage so the page keeps scrolling to the footer.
+            if (step >= n - 1) { obs.disable(); window.scrollTo({ top: el.offsetTop + el.offsetHeight, behavior: "smooth" }); }
+            else goTo(step + 1);
+          },
+          onUp: () => {
+            // Already on the first plate: release the stage so the page scrolls back to the previous panel.
+            if (step <= 0) { obs.disable(); window.scrollTo({ top: Math.max(0, el.offsetTop - window.innerHeight), behavior: "smooth" }); }
+            else goTo(step - 1);
+          },
           onEnable: () => show(step),
         });
         obs.disable(); // inert until the stage is actually pinned in view

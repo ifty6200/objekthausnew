@@ -63,7 +63,6 @@ export function ObserverShowcase() {
         const obs = Observer.create({
           target: window,
           type: "wheel,touch,pointer",
-          wheelSpeed: -1,
           tolerance: 12,
           preventDefault: true,
           onDown: () => {

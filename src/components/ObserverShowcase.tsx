@@ -55,8 +55,8 @@ export function ObserverShowcase() {
           show(step);
           gsap.to(tl, {
             progress: n > 1 ? step / (n - 1) : 0,
-            duration: 0.85,
-            ease: "power3.inOut",
+            duration: 1.6,
+            ease: "power2.inOut",
             onComplete: () => { busy = false; },
           });
         };

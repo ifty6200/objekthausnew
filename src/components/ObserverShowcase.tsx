@@ -13,7 +13,7 @@ export function ObserverShowcase() {
   const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!slides.length || !root.current || prefersReducedMotion()) return;
+    if (!s.enabled || !slides.length || !root.current || prefersReducedMotion()) return;
     let alive = true;
     let kill = () => {};
     let cleanup = () => {};
@@ -49,6 +49,8 @@ export function ObserverShowcase() {
         // Pinning itself is pure CSS (sticky wrapper); no GSAP pin to avoid double-pinning.
         let step = 0;
         let busy = false;
+        let gestureUsed = false;
+        let handoff = false;
         const goTo = (next: number) => {
           next = gsap.utils.clamp(0, n - 1, next);
           if (busy || next === step) return;
@@ -63,23 +65,31 @@ export function ObserverShowcase() {
             onComplete: () => { busy = false; },
           });
         };
+        const move = (dir: number) => {
+          // Ignore the rest of a swipe (including its release) and wheel momentum.
+          if (busy || gestureUsed || handoff) return;
+          gestureUsed = true;
+          const top = el.getBoundingClientRect().top + window.scrollY;
+          if ((dir > 0 && step === n - 1) || (dir < 0 && step === 0)) {
+            handoff = true;
+            obs.disable();
+            const height = el.firstElementChild?.getBoundingClientRect().height ?? window.innerHeight;
+            window.scrollTo({ top: dir > 0 ? top + el.offsetHeight : Math.max(0, top - height), behavior: "smooth" });
+          } else goTo(step + dir);
+        };
         const obs = Observer.create({
           target: window,
           type: "wheel,touch,pointer",
           tolerance: 12,
           preventDefault: true,
-          onDown: () => {
-            // Already on the last plate: release the stage so the page keeps scrolling to the footer.
-            const top = el.getBoundingClientRect().top + window.scrollY;
-            if (step >= n - 1) { handoff = true; obs.disable(); window.scrollTo({ top: top + el.offsetHeight, behavior: "smooth" }); }
-            else goTo(step + 1);
-          },
-          onUp: () => {
-            // Already on the first plate: release the stage so the page scrolls back to the previous panel.
-            const top = el.getBoundingClientRect().top + window.scrollY;
-            if (step <= 0) { handoff = true; obs.disable(); window.scrollTo({ top: Math.max(0, top - window.innerHeight), behavior: "smooth" }); }
-            else goTo(step - 1);
-          },
+          dragMinimum: 12,
+          ignore: "a, button, input, textarea, select, [role='dialog']",
+          onPress: () => { gestureUsed = false; },
+          onStopDelay: 0.2,
+          onStop: () => { if (!obs.isPressed) gestureUsed = false; },
+          // Wheel deltas follow page direction; touch/pointer deltas follow the finger.
+          onDown: (self) => move(self.event.type === "wheel" ? 1 : -1),
+          onUp: (self) => move(self.event.type === "wheel" ? -1 : 1),
           onEnable: () => show(step),
         });
         obs.disable(); // inert until the stage is actually pinned in view
@@ -88,18 +98,21 @@ export function ObserverShowcase() {
         // when the section is already scrolled into position.
         const isPinned = () => {
           const r = el.getBoundingClientRect();
-          return r.top <= 0 && r.bottom >= window.innerHeight;
+          const height = el.firstElementChild?.getBoundingClientRect().height ?? window.innerHeight;
+          // Mobile scroll coordinates can land on fractional pixels and browser chrome
+          // changes innerHeight independently of the stable-height photo stage.
+          return r.top <= 1 && r.bottom >= height - 1;
         };
         let wasPinned = false;
-        let handoff = false; // true while an edge-release scroll is in progress
+        let lastY = window.scrollY;
         const sync = () => {
           const pinned = isPinned();
+          const fromTop = window.scrollY >= lastY;
+          lastY = window.scrollY;
           if (pinned && !wasPinned) {
-            if (handoff) {
-              handoff = false; // release scroll finished; wait for the next entry
-            } else {
-              const fromTop = el.getBoundingClientRect().top > -window.innerHeight;
+            if (!handoff) {
               step = fromTop ? 0 : n - 1;
+              gestureUsed = false;
               show(step);
               tl.progress(n > 1 ? step / (n - 1) : 0);
               obs.enable();
@@ -114,14 +127,20 @@ export function ObserverShowcase() {
         };
         const onScroll = () => sync();
         window.addEventListener("scroll", onScroll, { passive: true });
-        sync();
+        window.addEventListener("resize", onScroll);
         chars.forEach((c) => gsap.set(c, { autoAlpha: 0, yPercent: 150 }));
-        cleanup = () => window.removeEventListener("scroll", onScroll);
+        sync();
+        cleanup = () => {
+          window.removeEventListener("scroll", onScroll);
+          window.removeEventListener("resize", onScroll);
+          obs.kill();
+          gsap.killTweensOf(tl);
+        };
       }, el);
       kill = () => ctx.revert();
     });
     return () => { alive = false; cleanup(); kill(); };
-  }, [JSON.stringify(slides)]);
+  }, [s.enabled, JSON.stringify(slides)]);
 
   if (!s.enabled || !slides.length) return null;
 

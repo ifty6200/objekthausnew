@@ -26,30 +26,30 @@ function Post() {
   const next = posts[i + 1];
 
   return (
-    <main data-tone="dark" className="min-h-screen bg-bone text-bone-foreground">
+    <main data-tone="dark" className="min-h-screen bg-bone text-soot">
       <SiteNav />
-      <article className="mx-auto max-w-2xl px-7 pt-32 pb-24 sm:px-10 lg:pt-40">
+      <article className="mx-auto max-w-3xl px-7 pt-32 pb-24 sm:px-10 lg:pt-40">
         {!post ? (
-          <p className="opacity-70">This note could not be found. <Link to="/journal" className="link-underline">Back to the Journal</Link></p>
+          <p className="font-mono uppercase">This note could not be found. <Link to="/journal" className="underline">Back to the Journal</Link></p>
         ) : (
           <>
-            <p className="caps opacity-55">{post.category} · {post.date}</p>
-            <h1 className="mt-4 font-display text-4xl font-light sm:text-6xl">{post.title}</h1>
-            {post.cover && <img src={post.cover} alt={post.title} fetchPriority="high" className="mt-10 aspect-[4/3] w-full object-cover" />}
-            <div className="mt-10 space-y-5 text-[1.05rem] leading-relaxed">
+            <span className="inline-block border-2 border-soot bg-vermillion px-2 py-0.5 font-mono text-xs font-bold uppercase text-bone">{post.category} · {post.date}</span>
+            <h1 className="mt-5 border-b-4 border-soot pb-6 font-sans text-5xl font-black uppercase leading-[0.9] sm:text-7xl">{post.title}</h1>
+            {post.cover && <img src={post.cover} alt={post.title} fetchPriority="high" className="mt-10 aspect-[4/3] w-full border-4 border-soot object-cover shadow-[10px_10px_0_var(--color-cobalt)]" />}
+            <div className="mt-12 space-y-5 text-[1.05rem] leading-relaxed">
               {post.body.split(/\n{2,}/).map((para, k) =>
                 para.startsWith("## ") ? (
-                  <h2 key={k} className="pt-4 font-display text-3xl font-light">{para.slice(3)}</h2>
+                  <h2 key={k} className="pt-4 font-sans text-3xl font-black uppercase">{para.slice(3)}</h2>
                 ) : para.startsWith("> ") ? (
-                  <blockquote key={k} className="border-l border-current/40 pl-5 font-display text-2xl font-light italic">{para.slice(2)}</blockquote>
+                  <blockquote key={k} className="border-4 border-l-[12px] border-soot border-l-vermillion bg-bone p-5 font-sans text-2xl font-bold uppercase shadow-[6px_6px_0_var(--color-cobalt)]">{para.slice(2)}</blockquote>
                 ) : (
                   <p key={k} className="whitespace-pre-line opacity-85">{para}</p>
                 ),
               )}
             </div>
-            <div className="mt-16 flex justify-between gap-6 border-t border-current/20 pt-6">
-              <Link to="/journal" className="caps link-underline">All notes</Link>
-              {next && <Link to="/journal/$slug" params={{ slug: next.slug }} className="caps link-underline">{next.title} →</Link>}
+            <div className="mt-16 flex flex-wrap justify-between gap-6 border-t-4 border-soot pt-6 font-mono text-xs font-bold uppercase">
+              <Link to="/journal" className="border-2 border-soot px-3 py-1 hover:bg-soot hover:text-bone">← All notes</Link>
+              {next && <Link to="/journal/$slug" params={{ slug: next.slug }} className="border-2 border-soot bg-cobalt px-3 py-1 text-bone shadow-[3px_3px_0_var(--color-soot)]">{next.title} →</Link>}
             </div>
           </>
         )}

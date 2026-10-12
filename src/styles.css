@@ -50,6 +50,8 @@
   --color-ink: var(--ink);
   --color-ink-foreground: var(--ink-foreground);
   --color-soot: #141513;
+  --color-cobalt: #2448c8;
+  --color-vermillion: #e2401f;
   --color-bone: var(--bone);
   --color-bone-foreground: var(--bone-foreground);
   --color-clay: var(--clay);

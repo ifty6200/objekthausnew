@@ -25,12 +25,14 @@ export function ObserverShowcase() {
         const n = plates.length;
         const chars = plates.map((p) => p.querySelectorAll("[data-ch]"));
         let active = -1;
-        const show = (i: number) => {
+        const show = (i: number, dir = 1, animateOut = false) => {
           if (i === active) return;
+          const prev = active;
           active = i;
           chars.forEach((c, k) => {
             gsap.killTweensOf(c);
-            if (k === i) gsap.fromTo(c, { autoAlpha: 0, yPercent: 150 }, { autoAlpha: 1, yPercent: 0, duration: 0.9, ease: "power3.out", stagger: { each: 0.02, from: "random" } });
+            if (k === i) gsap.fromTo(c, { autoAlpha: 0, yPercent: 150 * dir }, { autoAlpha: 1, yPercent: 0, duration: 1, delay: animateOut ? 0.45 : 0, ease: "power3.out", stagger: { each: 0.02, from: "random" } });
+            else if (k === prev && animateOut) gsap.to(c, { autoAlpha: 0, yPercent: -120 * dir, duration: 0.55, ease: "power2.in", stagger: { each: 0.012, from: "random" } });
             else gsap.set(c, { autoAlpha: 0, yPercent: 150 });
           });
         };
@@ -51,8 +53,9 @@ export function ObserverShowcase() {
           next = gsap.utils.clamp(0, n - 1, next);
           if (busy || next === step) return;
           busy = true;
+          const dir = next > step ? 1 : -1;
           step = next;
-          show(step);
+          show(step, dir, true);
           gsap.to(tl, {
             progress: n > 1 ? step / (n - 1) : 0,
             duration: 1.6,

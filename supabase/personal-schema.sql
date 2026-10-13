@@ -80,3 +80,48 @@ create table if not exists public.staff (
 grant all on public.staff to service_role;
 alter table public.staff enable row level security;
 -- No policies on purpose: credentials are only reachable by the service role.
+
+-- ── Order integrity upgrade (safe to re-run) ─────────────────────────────
+alter table public.orders add column if not exists payment_method text;
+alter table public.orders add column if not exists payment_trx_id text;
+alter table public.orders add column if not exists courier text;
+alter table public.orders add column if not exists tracking_code text;
+
+-- A bKash/Nagad transaction ID can only be used on one order.
+create unique index if not exists orders_trx_unique
+  on public.orders (upper(btrim(payment_trx_id)))
+  where payment_trx_id is not null and btrim(payment_trx_id) <> '';
+
+-- Audit trail: every status / payment / courier change is recorded.
+create table if not exists public.order_audit (
+  id bigserial primary key,
+  order_id uuid not null,
+  field text not null,
+  old_value text,
+  new_value text,
+  changed_at timestamptz not null default now()
+);
+create index if not exists order_audit_order_idx on public.order_audit (order_id, changed_at desc);
+grant all on public.order_audit to service_role;
+grant usage, select on sequence public.order_audit_id_seq to service_role;
+alter table public.order_audit enable row level security;
+
+create or replace function public.log_order_changes()
+returns trigger language plpgsql set search_path = public as $$
+begin
+  if new.status is distinct from old.status then
+    insert into order_audit(order_id, field, old_value, new_value) values (new.id, 'status', old.status, new.status);
+  end if;
+  if new.payment_trx_id is distinct from old.payment_trx_id then
+    insert into order_audit(order_id, field, old_value, new_value) values (new.id, 'payment_trx_id', old.payment_trx_id, new.payment_trx_id);
+  end if;
+  if new.courier is distinct from old.courier or new.tracking_code is distinct from old.tracking_code then
+    insert into order_audit(order_id, field, old_value, new_value)
+      values (new.id, 'courier', concat_ws(' ', old.courier, old.tracking_code), concat_ws(' ', new.courier, new.tracking_code));
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists orders_audit on public.orders;
+create trigger orders_audit after update on public.orders
+  for each row execute function public.log_order_changes();

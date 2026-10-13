@@ -103,6 +103,16 @@ export function ObserverShowcase() {
           // changes innerHeight independently of the stable-height photo stage.
           return r.top <= 1 && r.bottom >= height - 1;
         };
+        // Hard swipes: native momentum can fly through the whole track. While armed, freeze page
+        // scroll (overflow hidden kills inertia on iOS/Android) and snap to the stage edge.
+        const html = document.documentElement;
+        const lock = (on: boolean) => {
+          html.style.overflow = on ? "hidden" : "";
+          html.style.overscrollBehavior = on ? "none" : "";
+          (el.firstElementChild as HTMLElement | null)?.style.setProperty("touch-action", on ? "none" : "");
+        };
+        const origDisable = obs.disable.bind(obs);
+        obs.disable = () => { lock(false); return origDisable(); };
         let wasPinned = false;
         let lastY = window.scrollY;
         const sync = () => {
@@ -115,12 +125,18 @@ export function ObserverShowcase() {
               gestureUsed = false;
               show(step);
               tl.progress(n > 1 ? step / (n - 1) : 0);
+              const top = el.getBoundingClientRect().top + window.scrollY;
+              const height = el.firstElementChild?.getBoundingClientRect().height ?? window.innerHeight;
+              window.scrollTo({ top: fromTop ? top : top + el.offsetHeight - height, behavior: "instant" as ScrollBehavior });
+              lastY = window.scrollY;
+              lock(true);
               obs.enable();
             }
           } else if (!pinned && wasPinned) {
             obs.disable();
             handoff = false;
-          } else if (pinned && !handoff) {
+          } else if (pinned && !handoff && !obs.isEnabled) {
+            lock(true);
             obs.enable();
           }
           wasPinned = pinned;
@@ -133,6 +149,7 @@ export function ObserverShowcase() {
         cleanup = () => {
           window.removeEventListener("scroll", onScroll);
           window.removeEventListener("resize", onScroll);
+          lock(false);
           obs.kill();
           gsap.killTweensOf(tl);
         };

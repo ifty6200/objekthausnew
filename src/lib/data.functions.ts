@@ -100,6 +100,9 @@ type OrderInput = {
   shipping: number;
   total: number;
   delivery_zone?: string;
+  payment_method?: string | null;
+  payment_trx_id?: string | null;
+  payment_sender?: string | null;
   user_id?: string | null;
 };
 
@@ -107,6 +110,12 @@ export const placeOrder = createServerFn({ method: "POST" })
   .inputValidator((input: OrderInput) => input)
   .handler(async ({ data }) => {
     const db = await personalAdmin();
+    const trxId = data.payment_trx_id?.trim().toUpperCase() || null;
+    if (trxId) {
+      const { data: existing, error: lookupError } = await db.from("orders").select("reference").ilike("payment_trx_id", trxId).limit(1);
+      if (lookupError && !isMissingTable(lookupError)) throw lookupError;
+      if (existing?.length) throw new Error("This transaction ID has already been used. Check the ID or contact the studio.");
+    }
     const { data: row, error } = await db
       .from("orders")
       .insert({
@@ -121,10 +130,16 @@ export const placeOrder = createServerFn({ method: "POST" })
         shipping: data.shipping,
         total: data.total,
         delivery_zone: data.delivery_zone ?? "inside",
+        payment_method: data.payment_method ?? null,
+        payment_trx_id: trxId,
+        payment_sender: data.payment_sender ?? null,
         user_id: data.user_id ?? null,
       })
       .select("reference")
       .single();
+    if (error?.code === "23505" || /orders_trx_unique|duplicate key/i.test(String(error?.message ?? ""))) {
+      throw new Error("This transaction ID has already been used. Please verify it or contact the studio.");
+    }
     assertSchema(error);
 
     const reference = (row?.reference ?? "") as string;

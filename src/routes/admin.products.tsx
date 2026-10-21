@@ -37,6 +37,7 @@ const emptyDraft: Draft = {
   images: [],
   sort_order: 0,
   published: true,
+  stock_quantity: 0,
 };
 
 const slugify = (s: string) =>
@@ -138,6 +139,8 @@ function AdminProducts() {
         </button>
       </div>
 
+      <section className="mt-8 border border-current/20 p-5"><h3 className="font-display text-2xl font-light">Stock overview</h3><div className="mt-4 overflow-x-auto"><table className="w-full min-w-[30rem] text-left text-sm"><thead className="caps opacity-55"><tr><th className="py-2 pr-4">Object</th><th className="py-2 pr-4">SKU / no.</th><th className="py-2 pr-4">Available</th><th className="py-2">Visibility</th></tr></thead><tbody>{rows.map((r) => <tr key={r.id} className="border-t border-current/10"><td className="py-3 pr-4">{r.product || r.name}</td><td className="py-3 pr-4">{r.no || "—"}</td><td className="py-3 pr-4 tabular-nums">{r.stock_quantity ?? 0}</td><td className="py-3">{r.published ? "Published" : "Hidden"}</td></tr>)}</tbody></table></div><p className="mt-3 text-xs opacity-55">Quantities are saved with each Studio object. Built-in objects without a database override show zero until you create or edit their stock record.</p></section>
+
       <FeaturedPicker rows={rows} />
 
 
@@ -155,6 +158,7 @@ function AdminProducts() {
             <Field label="Price (৳)" type="number" value={draft.price} onChange={(v) => set({ price: Number(v) })} />
             <Field label="Weight (kg)" type="number" value={draft.weight_kg} onChange={(v) => set({ weight_kg: Number(v) })} />
             <Field label="Sort order" type="number" value={draft.sort_order} onChange={(v) => set({ sort_order: Number(v) })} />
+            <Field label="Stock quantity" type="number" value={draft.stock_quantity ?? 0} onChange={(v) => set({ stock_quantity: Math.max(0, Number(v) || 0) })} />
             <Field label="Short note" value={draft.note} onChange={(v) => set({ note: v })} />
           </div>
           <div className="mt-6 space-y-6">

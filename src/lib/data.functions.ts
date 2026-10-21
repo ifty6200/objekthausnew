@@ -262,6 +262,10 @@ type AdminOrderInput = {
   shipping?: number;
   total?: number;
   total_weight?: number;
+  courier?: string | null;
+  tracking_code?: string | null;
+  payment_trx_id?: string | null;
+  payment_sender?: string | null;
 };
 
 export const adminListOrders = createServerFn({ method: "GET" }).handler(async () => {
@@ -290,4 +294,16 @@ export const adminDeleteOrder = createServerFn({ method: "POST" })
     const { error } = await db.from("orders").delete().eq("id", data.id);
     assertSchema(error);
     return { ok: true };
+  });
+
+
+// Chronological order audit trail for Studio.
+export const adminListOrderAudit = createServerFn({ method: "GET" })
+  .inputValidator((input: { order_id: string }) => input)
+  .handler(async ({ data }) => {
+    await assertAdmin();
+    const db = await personalAdmin();
+    const { data: rows, error } = await db.from("order_audit").select("*").eq("order_id", data.order_id).order("changed_at", { ascending: false }).limit(100);
+    if (error && !isMissingTable(error)) throw error;
+    return rows ?? [];
   });

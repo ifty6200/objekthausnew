@@ -21,6 +21,7 @@ export type ProductRow = {
   images: { src: string; alt: string }[];
   sort_order: number;
   published: boolean;
+  stock_quantity?: number;
 };
 
 export type HiddenSettings = { slugs: string[] };

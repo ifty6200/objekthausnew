@@ -7,6 +7,7 @@ import { HeroVideo } from "@/components/HeroVideo";
 import { CoCreateTeaser } from "@/components/CoCreatePanel";
 import { ObserverShowcase } from "@/components/ObserverShowcase";
 import { Wordmark } from "@/components/SiteNav";
+import { ImageWithSkeleton } from "@/components/ImageWithSkeleton";
 import { useAllFlowers } from "@/lib/products";
 import { useHero, usePanel5, useManifesto, useFeatured } from "@/lib/site";
 import heroVideo from "@/assets/hero-meadow.mp4.asset.json";
@@ -117,17 +118,14 @@ function Index() {
       <section id="object" data-tone="dark" className="panel bg-clay text-clay-foreground">
         <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
         <Reveal className="image-veil mx-auto w-full max-w-md lg:max-w-none">
-          <img
+          <ImageWithSkeleton
             src={featured?.images[0]?.src || haloHero.url}
-            alt={
-              featured
-                ? `${featured.product} by ObjektHaus`
-                : "ObjektHaus Object No.01, the Halo Pendant lamp glowing above a dark table"
-            }
+            alt={featured ? `${featured.product} by ObjektHaus` : "ObjektHaus Object No.01, the Halo Pendant lamp glowing above a dark table"}
             loading="lazy"
             width={1020}
             height={1110}
-            className="mx-auto aspect-[1020/1110] w-full object-cover lg:max-h-[68svh] lg:w-auto"
+            frameClassName="mx-auto aspect-[1020/1110] w-full lg:max-h-[68svh] lg:w-auto"
+            className="h-full w-full object-cover"
           />
         </Reveal>
         <div className="lg:pr-6">

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { adminListOrders, adminUpdateOrder, adminDeleteOrder } from "@/lib/data.functions";
+import { adminListOrders, adminUpdateOrder, adminDeleteOrder, adminListOrderAudit } from "@/lib/data.functions";
 import { formatPrice } from "@/lib/cart";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { deliveryCost, useDelivery } from "@/lib/site";
@@ -34,6 +34,10 @@ type Order = {
   status: OrderStatus;
   note: string | null;
   created_at: string;
+  courier?: string | null;
+  tracking_code?: string | null;
+  payment_trx_id?: string | null;
+  payment_sender?: string | null;
 };
 
 const filters: { key: Filter; label: string }[] = [
@@ -333,6 +337,7 @@ function OrderEditor({
   onSaved: () => void | Promise<void>;
 }) {
   const [d, setD] = useState<Order>({ ...order, items: order.items.map((i) => ({ ...i })) });
+  const auditQuery = useQuery({ queryKey: ["order-audit", order.id], queryFn: () => adminListOrderAudit({ data: { order_id: order.id } }) });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const set = (p: Partial<Order>) => setD((c) => ({ ...c, ...p }));
@@ -375,6 +380,10 @@ function OrderEditor({
           shipping: Number(d.shipping),
           total: Number(d.total),
           total_weight: Number(d.total_weight),
+          courier: d.courier || null,
+          tracking_code: d.tracking_code || null,
+          payment_trx_id: d.payment_trx_id || null,
+          payment_sender: d.payment_sender || null,
         },
       });
     } catch (e) {
@@ -460,6 +469,7 @@ function OrderEditor({
         <Field label="Total (৳)" type="number" value={d.total} onChange={(v) => set({ total: Number(v) })} />
       </div>
 
+      <section className="mt-8 border-t border-current/20 pt-5"><p className="caps opacity-55">Order change history</p>{auditQuery.isLoading ? <p className="mt-3 text-sm opacity-55">Loading history…</p> : auditQuery.data?.length ? <ol className="mt-3 space-y-2 text-sm">{auditQuery.data.map((a: any) => <li key={a.id} className="border-l border-current/25 pl-3"><span className="opacity-55">{new Date(a.changed_at).toLocaleString()}</span><span className="ml-2">{a.field}: {a.old_value || "—"} → {a.new_value || "—"}</span></li>)}</ol> : <p className="mt-3 text-sm opacity-55">No recorded changes yet. New status, payment and courier updates will appear here.</p>}</section>
       {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
 
       <div className="mt-7 flex flex-wrap gap-6">

@@ -24,6 +24,7 @@ create table if not exists public.products (
   sort_order integer not null default 0,
   published boolean not null default true,
   stock_out boolean not null default false,
+  stock_quantity integer not null default 0 check (stock_quantity >= 0),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -56,6 +57,7 @@ create table if not exists public.orders (
 
 create index if not exists orders_user_id_idx on public.orders (user_id);
 create index if not exists orders_created_at_idx on public.orders (created_at desc);
+alter table public.products add column if not exists stock_quantity integer not null default 0 check (stock_quantity >= 0);
 
 grant all on public.products to service_role;
 grant all on public.site_settings to service_role;
@@ -84,6 +86,7 @@ alter table public.staff enable row level security;
 -- ── Order integrity upgrade (safe to re-run) ─────────────────────────────
 alter table public.orders add column if not exists payment_method text;
 alter table public.orders add column if not exists payment_trx_id text;
+alter table public.orders add column if not exists payment_sender text;
 alter table public.orders add column if not exists courier text;
 alter table public.orders add column if not exists tracking_code text;
 

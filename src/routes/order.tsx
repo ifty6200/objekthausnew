@@ -88,6 +88,9 @@ function Order() {
           shipping,
           total: total + shipping,
           delivery_zone: "inside",
+          payment_method: pay,
+          payment_trx_id: pay === "cod" ? null : String(form.get("trxid") ?? "").trim().toUpperCase(),
+          payment_sender: pay === "cod" ? null : String(form.get("sender") ?? "").trim(),
           user_id: userId,
         },
       });
@@ -100,8 +103,10 @@ function Order() {
       setReference(ref);
       setSent(true);
       clear();
-    } catch {
-      setError("We could not record your order. Please try again or write to the studio.");
+    } catch (err) {
+      setError(err instanceof Error && /transaction ID has already been used/i.test(err.message)
+        ? "This transaction ID has already been used for another order. Please check the ID or contact the studio."
+        : "We could not record your order. Please try again or write to the studio.");
     } finally {
       setBusy(false);
     }

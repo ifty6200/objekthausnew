@@ -70,9 +70,9 @@ export function useSetting<T>(key: string, fallback: T) {
     queryFn: () => fetchSetting<T>(key, fallback),
     initialData: fallback,
     initialDataUpdatedAt: 0,
-    staleTime: 0,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
 }
 

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/journal/")({
 });
 
 const ink = "border-[3px] border-ink";
-const pop = (c = "soot") => `shadow-[6px_6px_0_var(--color-${c})]`;
+const pop = (c = "ink") => `shadow-[6px_6px_0_var(--color-${c})]`;
 const halftone = { backgroundImage: "radial-gradient(var(--color-ink) 1px, transparent 1.4px)", backgroundSize: "8px 8px" };
 const hatch = { backgroundImage: "repeating-linear-gradient(45deg, var(--color-ink) 0 1px, transparent 1px 7px)" };
 const mins = (p: JournalPost) => Math.max(1, Math.round((p.body || "").split(/\s+/).length / 200));
@@ -68,7 +68,7 @@ function Journal() {
             <div className="relative">
               <span className="absolute -left-2 -top-10 grid h-24 w-24 rotate-12 place-items-center bg-olive font-black uppercase text-bone" style={{ clipPath: "polygon(50% 0,61% 20%,83% 9%,80% 32%,100% 40%,84% 56%,96% 77%,72% 78%,64% 100%,50% 84%,36% 100%,28% 78%,4% 77%,16% 56%,0 40%,20% 32%,17% 9%,39% 20%)" }}>New</span>
               <p className="font-mono text-xs uppercase opacity-70">{featured.category} · {featured.date}</p>
-              <h1 className="mt-3 font-sans text-6xl font-black uppercase leading-[0.82] tracking-tight sm:text-8xl" style={{ textShadow: "4px 3px 0 var(--color-cobalt), -3px -2px 0 var(--color-vermillion)" }}>
+              <h1 className="mt-3 font-sans text-6xl font-black uppercase leading-[0.82] tracking-tight sm:text-8xl" style={{ textShadow: "4px 3px 0 var(--color-olive), -3px -2px 0 var(--color-clay)" }}>
                 {featured.title}
               </h1>
               <p className="mt-6 max-w-md opacity-80">{featured.excerpt}</p>
@@ -97,7 +97,7 @@ function Journal() {
             </div>
             <div className="flex snap-x gap-6 overflow-x-auto pb-6">
               {filtered.map((p, i) => (
-                <PostLink key={p.slug} p={p} className={`w-72 shrink-0 snap-start ${ink} bg-bone ${pop(i % 2 ? "vermillion" : "cobalt")} transition hover:-translate-y-1`}>
+                <PostLink key={p.slug} p={p} className={`w-72 shrink-0 snap-start ${ink} bg-bone ${pop(i % 2 ? "olive" : "clay")} transition hover:-translate-y-1`}>
                   {p.cover ? <img src={p.cover} alt={p.title} loading="lazy" className="aspect-[4/3] w-full border-b-[3px] border-ink object-cover" /> : <div className="aspect-[4/3] border-b-[3px] border-ink" style={halftone} />}
                   <div className="p-4">
                     <p className="font-mono text-[11px] uppercase opacity-70">{vol(posts.indexOf(p))} · {p.category}</p>
@@ -145,7 +145,7 @@ function Journal() {
 
           {/* 6. New volumes reel */}
           <section className="relative px-4 py-20 sm:px-8">
-            <div className="absolute inset-x-0 top-0 h-6 bg-[#1b2440]" style={{ ...tear, transform: "scaleY(-1)" }} />
+            <div className="absolute inset-x-0 top-0 h-6 bg-olive" style={{ ...tear, transform: "scaleY(-1)" }} />
             <div className="flex flex-wrap items-end justify-between gap-4">
               <h2 className="font-sans text-5xl font-black uppercase">New Volumes</h2>
               <div className="flex flex-wrap gap-2">

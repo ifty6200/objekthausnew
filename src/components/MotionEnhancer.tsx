@@ -19,7 +19,7 @@ export function MotionEnhancer({ selector = "main > section" }: { selector?: str
           if (el.hasAttribute("data-plate")) return;
           const kids = el.querySelectorAll(":scope > div, :scope > h2, :scope > p");
           gsap.from(kids.length ? kids : el, {
-            autoAlpha: 0, y: 40, duration: 1.1, ease: "power2.out", stagger: 0.12,
+            autoAlpha: 0, y: 40, duration: 0.45, ease: "power2.out", stagger: 0.04,
             scrollTrigger: { trigger: el, start: "top 80%", once: true },
           });
         });
@@ -39,16 +39,16 @@ export function MotionEnhancer({ selector = "main > section" }: { selector?: str
                 if (best < 0 || dist > vh * 0.4) return progress;
                 return Math.min(best, max) / max;
               },
-              duration: { min: 0.35, max: 0.7 }, delay: 0.15, ease: "power2.inOut", inertia: false,
+              duration: { min: 0.18, max: 0.32 }, delay: 0.05, ease: "power1.out", inertia: false,
             },
           });
         }
       });
       const fine = window.matchMedia("(hover: hover)").matches;
       const btns = Array.from(document.querySelectorAll<HTMLElement>("main a, main button, footer a, header a, header button, [data-cta]"));
-      const on = (e: Event) => gsap.to(e.currentTarget as HTMLElement, { scale: 1.04, duration: 0.4, ease: "back.out(3)" });
-      const off = (e: Event) => gsap.to(e.currentTarget as HTMLElement, { scale: 1, duration: 0.5, ease: "elastic.out(1, 0.4)" });
-      const tap = (e: Event) => gsap.fromTo(e.currentTarget as HTMLElement, { scale: 0.95 }, { scale: 1, duration: 0.6, ease: "back.out(2.2)" });
+      const on = (e: Event) => gsap.to(e.currentTarget as HTMLElement, { scale: 1.04, duration: 0.12, ease: "power1.out" });
+      const off = (e: Event) => gsap.to(e.currentTarget as HTMLElement, { scale: 1, duration: 0.14, ease: "power1.out" });
+      const tap = (e: Event) => gsap.fromTo(e.currentTarget as HTMLElement, { scale: 0.95 }, { scale: 1, duration: 0.16, ease: "power1.out" });
       btns.forEach((b) => {
         if (fine) { b.addEventListener("pointerenter", on); b.addEventListener("pointerleave", off); }
         b.addEventListener("pointerdown", tap);
@@ -58,7 +58,7 @@ export function MotionEnhancer({ selector = "main > section" }: { selector?: str
         ctx.revert();
         btns.forEach((b) => { b.removeEventListener("pointerenter", on); b.removeEventListener("pointerleave", off); b.removeEventListener("pointerdown", tap); });
       };
-    }), 300);
+    }), 0);
     return () => { alive = false; clearTimeout(t); cleanup(); };
   }, [selector, path]);
   return null;

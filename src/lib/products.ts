@@ -47,7 +47,7 @@ export function rowToFlower(r: ProductRow): Flower {
 }
 
 /** A studio row may leave fields blank — the built-in copy fills the gaps. */
-function mergeWithBuiltIn(row: Flower): Flower {
+export function mergeWithBuiltIn(row: Flower): Flower {
   const base = flowers.find((f) => f.slug === row.slug);
   if (!base) return row;
   const merged = { ...base } as Flower;

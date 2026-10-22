@@ -5,13 +5,25 @@ import { defaultContact, useSetting, whatsappHref, type ContactSettings } from "
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal, RuleLine } from "@/components/Reveal";
 import { getFlower, type Flower } from "@/lib/flowers";
-import { useAllFlowers, useFlower, useProductsLoaded } from "@/lib/products";
+import { listProducts } from "@/lib/data.functions";
+import { mergeWithBuiltIn, rowToFlower, useAllFlowers, useFlower, useProductsLoaded } from "@/lib/products";
 import { AddToCart, QuickAdd } from "@/components/AddToCart";
 import { formatPrice, toAnalyticsItem } from "@/lib/cart";
 import { trackViewItem } from "@/lib/analytics";
 
 export const Route = createFileRoute("/flower/$slug")({
-  loader: ({ params }) => getFlower(params.slug) ?? null,
+  loader: async ({ params }) => {
+    // Resolve live Studio-created products on direct visits and browser refreshes.
+    // Keep the built-in catalogue available if the personal database is temporarily unreachable.
+    try {
+      const rows = await listProducts();
+      const row = rows.find((product) => product.slug === params.slug);
+      if (row) return mergeWithBuiltIn(rowToFlower(row));
+    } catch (error) {
+      console.error("Live product detail lookup failed; using built-in catalogue:", error);
+    }
+    return getFlower(params.slug) ?? null;
+  },
   head: ({ loaderData, params }) => ({
     links: [{ rel: "canonical", href: `https://objekthausstudio.lovable.app/flower/${params.slug}` }],
     scripts: loaderData
@@ -66,6 +78,7 @@ function FlowerCard() {
   // Live studio data always wins over the build-time copy in the loader.
   const live = useFlower(slug);
   const f = live ?? (Route.useLoaderData() as Flower | null) ?? null;
+  const loaded = useProductsLoaded();
 
   const viewedSlug = f?.slug;
   const viewedName = f?.product;
@@ -73,7 +86,6 @@ function FlowerCard() {
   const viewedPrice = f?.price;
   // Fire view_item once per object, and only after the live prices have arrived,
   // so the event never carries a stale build-time price.
-  const loaded = useProductsLoaded();
   const trackedSlug = useRef<string | null>(null);
   useEffect(() => {
     if (!loaded) return;
@@ -95,7 +107,8 @@ function FlowerCard() {
         <SiteNav />
         <section className="mx-auto max-w-5xl px-7 pt-40 pb-20 sm:px-10">
           <p className="caps opacity-55">Botanical archive</p>
-          <p className="mt-4 font-display text-4xl font-light">Opening this floret…</p>
+          <p className="mt-4 font-display text-4xl font-light">{loaded ? "This floret is unavailable." : "Opening this floret…"}</p>
+          {loaded && <p className="mt-3 max-w-md text-sm opacity-65">The product could not be found in the catalogue. Return to the archive and choose another object.</p>}
           <Link to="/archive" className="caps link-underline mt-8 inline-block">
             Back to the archive
           </Link>

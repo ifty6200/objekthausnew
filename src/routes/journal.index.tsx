@@ -19,152 +19,172 @@ export const Route = createFileRoute("/journal/")({
   component: Journal,
 });
 
-const ink = "border-[3px] border-ink";
-const pop = (c = "ink") => `shadow-[6px_6px_0_var(--color-${c})]`;
-const halftone = { backgroundImage: "radial-gradient(var(--color-ink) 1px, transparent 1.4px)", backgroundSize: "8px 8px" };
-const hatch = { backgroundImage: "repeating-linear-gradient(45deg, var(--color-ink) 0 1px, transparent 1px 7px)" };
-const mins = (p: JournalPost) => Math.max(1, Math.round((p.body || "").split(/\s+/).length / 200));
-const vol = (i: number) => `Vol. ${String(i + 1).padStart(2, "0")}`;
-const tear = { clipPath: "polygon(0 30%,4% 0,9% 40%,14% 10%,20% 45%,26% 5%,33% 35%,40% 0,47% 40%,54% 8%,61% 42%,68% 2%,75% 38%,82% 6%,89% 44%,95% 12%,100% 35%,100% 100%,0 100%)" };
+const readMinutes = (post: JournalPost) => Math.max(1, Math.round((post.body || "").split(/\\s+/).length / 200));
+const volume = (i: number) => `No. ${String(i + 1).padStart(2, "0")}`;
 
-function PostLink({ p, className, children }: { p: JournalPost; className?: string; children: React.ReactNode }) {
-  return <Link to="/journal/$slug" params={{ slug: p.slug }} className={className}>{children}</Link>;
+function PostLink({ post, className, children }: { post: JournalPost; className?: string; children: React.ReactNode }) {
+  return <Link to="/journal/$slug" params={{ slug: post.slug }} className={className}>{children}</Link>;
 }
 
 function Journal() {
   const posts = useJournal();
-  const [cat, setCat] = useState("All");
-  const [reel, setReel] = useState("All");
-  const featured = posts.find((p) => p.featured) ?? posts[0];
-  const cats = Array.from(new Set(posts.map((p) => p.category).filter(Boolean)));
-  const filtered = posts.filter((p) => cat === "All" || p.category === cat);
-  const covers = posts.map((p) => p.cover).filter(Boolean);
-  const reelPosts = posts.filter((p) => reel === "All" || p.category === reel);
+  const [category, setCategory] = useState("All");
+  const [reelCategory, setReelCategory] = useState("All");
+  const featured = posts.find((post) => post.featured) ?? posts[0];
+  const categories = Array.from(new Set(posts.map((post) => post.category).filter(Boolean)));
+  const filtered = posts.filter((post) => category === "All" || post.category === category);
+  const reelPosts = posts.filter((post) => reelCategory === "All" || post.category === reelCategory);
 
   return (
     <main data-tone="dark" className="min-h-screen overflow-x-clip bg-bone text-ink">
       <SiteNav />
 
-      {/* 1. Top bar */}
-      <header className={`mx-4 mt-24 flex flex-wrap items-center gap-4 ${ink} bg-bone p-3 ${pop()} sm:mx-8`}>
-        <span className={`grid h-11 w-11 place-items-center ${ink} bg-olive font-black text-olive-foreground`}>OH</span>
-        <div className="mr-auto leading-none">
-          <p className="font-sans text-lg font-black uppercase">The Journal</p>
-          <p className="font-mono text-[10px] uppercase opacity-70">ObjektHaus studio notes · Dhaka</p>
+      <header className="mx-auto max-w-7xl px-6 pb-8 pt-32 sm:px-10 lg:px-16 lg:pt-40">
+        <div className="flex flex-wrap items-end justify-between gap-6 border-b border-ink/20 pb-6">
+          <div>
+            <p className="caps opacity-55">ObjektHaus · Dhaka</p>
+            <h1 className="mt-3 font-display text-6xl font-light leading-none sm:text-7xl lg:text-8xl">The Journal</h1>
+          </div>
+          <p className="max-w-xs pb-1 text-sm font-light leading-relaxed opacity-65">Notes on the objects we make, the materials we choose, and the small details worth noticing.</p>
         </div>
-        <nav className="flex flex-wrap gap-2">
-          {["All", ...cats].slice(0, 5).map((c) => (
-            <button key={c} type="button" onClick={() => setCat(c)} className={`${ink} rounded-full px-3 py-1 font-mono text-xs font-bold uppercase ${cat === c ? "bg-clay text-clay-foreground" : "bg-bone hover:bg-ink hover:text-bone"}`}>{c}</button>
-          ))}
-        </nav>
+        {categories.length > 0 && (
+          <nav aria-label="Filter journal by category" className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+            {["All", ...categories].map((item) => (
+              <button key={item} type="button" onClick={() => setCategory(item)} aria-pressed={category === item}
+                className={`border-b pb-1 text-xs uppercase tracking-[0.16em] transition-colors ${category === item ? "border-olive text-ink" : "border-transparent text-ink/50 hover:border-ink/35 hover:text-ink"}`}>
+                {item}
+              </button>
+            ))}
+          </nav>
+        )}
       </header>
 
       {!featured ? (
-        <p className="px-8 py-32 text-center font-mono uppercase">The first notes from the studio are on their way.</p>
+        <section className="mx-auto max-w-7xl px-6 py-28 sm:px-10 lg:px-16">
+          <p className="font-display text-3xl font-light">The first notes from the studio are on their way.</p>
+        </section>
       ) : (
         <>
-          {/* 2. Split hero */}
-          <section className="grid items-center gap-10 px-4 py-16 sm:px-8 lg:grid-cols-2">
-            <div className="relative">
-              <span className="absolute -left-2 -top-10 grid h-24 w-24 rotate-12 place-items-center bg-olive font-black uppercase text-bone" style={{ clipPath: "polygon(50% 0,61% 20%,83% 9%,80% 32%,100% 40%,84% 56%,96% 77%,72% 78%,64% 100%,50% 84%,36% 100%,28% 78%,4% 77%,16% 56%,0 40%,20% 32%,17% 9%,39% 20%)" }}>New</span>
-              <p className="font-mono text-xs uppercase opacity-70">{featured.category} · {featured.date}</p>
-              <h1 className="mt-3 font-sans text-6xl font-black uppercase leading-[0.82] tracking-tight sm:text-8xl" style={{ textShadow: "4px 3px 0 var(--color-olive), -3px -2px 0 var(--color-clay)" }}>
-                {featured.title}
-              </h1>
-              <p className="mt-6 max-w-md opacity-80">{featured.excerpt}</p>
-              <PostLink p={featured} className={`mt-8 inline-flex items-center gap-3 ${ink} bg-ink px-5 py-3 font-mono text-xs font-bold uppercase text-bone ${pop("olive")} transition hover:-translate-y-1`}>Read the note → <span className="opacity-60">読む</span></PostLink>
+          <section className="mx-auto grid max-w-7xl gap-10 px-6 pb-20 sm:px-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16 lg:px-16 lg:pb-28">
+            <div className="order-2 lg:order-1">
+              <p className="caps text-olive">Featured note <span className="mx-2 opacity-40">/</span> {featured.category || "Studio notes"}</p>
+              <h2 className="mt-5 max-w-2xl font-display text-4xl font-light leading-[1.08] sm:text-5xl lg:text-6xl">{featured.title}</h2>
+              <p className="mt-5 max-w-xl text-base font-light leading-relaxed opacity-70">{featured.excerpt}</p>
+              <div className="mt-8 flex flex-wrap items-center gap-5">
+                <PostLink post={featured} className="corner-action caps">Read the note <span aria-hidden="true" className="arrow">↗</span></PostLink>
+                <span className="text-xs tracking-wide opacity-50">{featured.date} · {readMinutes(featured)} min read</span>
+              </div>
             </div>
-            <div className="grid grid-cols-6 gap-1.5 [perspective:900px]" aria-hidden="true">
-              {Array.from({ length: 18 }).map((_, i) => (
-                <div key={i} className={`aspect-square border-2 border-ink bg-cover bg-center grayscale transition duration-700 hover:grayscale-0 ${i % 5 === 0 ? "bg-clay" : i % 7 === 0 ? "bg-olive" : "bg-bone"}`}
-                  style={{ backgroundImage: covers.length ? `url(${covers[i % covers.length]})` : undefined, transform: `rotateY(${(i % 6 - 2.5) * 6}deg) rotateX(${(Math.floor(i / 6) - 1) * 8}deg)`, ...(covers.length ? {} : halftone) }} />
-              ))}
+            <PostLink post={featured} className="group order-1 block lg:order-2">
+              <div className="relative aspect-[5/4] overflow-hidden bg-sand">
+                {featured.cover ? (
+                  <img src={featured.cover} alt={featured.title} fetchPriority="high" className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" />
+                ) : (
+                  <div className="flex h-full items-end p-8"><span className="font-display text-4xl font-light opacity-35">ObjektHaus / Studio archive</span></div>
+                )}
+                <span className="absolute bottom-4 left-4 bg-bone/90 px-3 py-2 text-[10px] uppercase tracking-[0.18em]">Latest from the studio</span>
+              </div>
+            </PostLink>
+          </section>
+
+          <section className="bg-sand/60 py-16 sm:py-20">
+            <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
+              <div className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/20 pb-5">
+                <div>
+                  <p className="caps opacity-50">The archive</p>
+                  <h2 className="mt-2 font-display text-4xl font-light sm:text-5xl">Keep reading</h2>
+                </div>
+                <p className="text-xs tracking-wide opacity-55">{filtered.length} {filtered.length === 1 ? "note" : "notes"} · approx. {Math.round(filtered.reduce((sum, post) => sum + readMinutes(post), 0) / Math.max(1, filtered.length))} min average read</p>
+              </div>
+              {filtered.length === 0 ? (
+                <p className="py-16 font-display text-2xl font-light">No notes in this category yet.</p>
+              ) : (
+                <div className="mt-2 grid gap-x-8 md:grid-cols-2 lg:grid-cols-3">
+                  {filtered.map((post, index) => (
+                    <PostLink key={post.slug} post={post} className="group border-b border-ink/15 py-7">
+                      <div className="overflow-hidden bg-sand">
+                        {post.cover ? <img src={post.cover} alt={post.title} loading="lazy" className="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-[1.025]" /> : <div className="aspect-[4/3] bg-olive/10" />}
+                      </div>
+                      <div className="mt-5 flex items-center justify-between gap-3 text-[10px] uppercase tracking-[0.16em] opacity-55">
+                        <span>{volume(posts.indexOf(post))} · {post.category}</span><span>{readMinutes(post)} min</span>
+                      </div>
+                      <h3 className="mt-2 font-display text-2xl font-light leading-tight group-hover:text-olive sm:text-3xl">{post.title}</h3>
+                      <p className="mt-3 line-clamp-3 text-sm font-light leading-relaxed opacity-65">{post.excerpt}</p>
+                      <span className="mt-5 inline-block text-xs uppercase tracking-[0.15em] opacity-70">Read note <span aria-hidden="true">↗</span></span>
+                    </PostLink>
+                  ))}
+                </div>
+              )}
             </div>
           </section>
 
-          {/* Publication rail */}
-          <div className="overflow-hidden border-y-[3px] border-ink bg-ink py-3 text-bone">
-            <div className="flex w-max animate-[marquee_30s_linear_infinite] gap-10 font-mono text-sm font-bold uppercase">
-              {[...posts, ...posts, ...posts].map((p, i) => <span key={i}>{vol(i % posts.length)} · {p.title} ✦</span>)}
-            </div>
-          </div>
-
-          {/* 3. Latest reading */}
-          <section className="grid gap-10 px-4 py-20 sm:px-8 lg:grid-cols-[1fr_2fr]">
-            <div className="lg:sticky lg:top-28 lg:self-start">
-              <h2 className="font-sans text-5xl font-black uppercase leading-none">Keep<br />Reading</h2>
-              <p className="mt-4 font-mono text-sm uppercase">{filtered.length} notes · {Math.round(filtered.reduce((a, p) => a + mins(p), 0) / Math.max(1, filtered.length))} min avg read</p>
-            </div>
-            <div className="flex snap-x gap-6 overflow-x-auto pb-6">
-              {filtered.map((p, i) => (
-                <PostLink key={p.slug} p={p} className={`w-72 shrink-0 snap-start ${ink} bg-bone ${pop(i % 2 ? "olive" : "clay")} transition hover:-translate-y-1`}>
-                  {p.cover ? <img src={p.cover} alt={p.title} loading="lazy" className="aspect-[4/3] w-full border-b-[3px] border-ink object-cover" /> : <div className="aspect-[4/3] border-b-[3px] border-ink" style={halftone} />}
-                  <div className="p-4">
-                    <p className="font-mono text-[11px] uppercase opacity-70">{vol(posts.indexOf(p))} · {p.category}</p>
-                    <h3 className="mt-1 font-sans text-xl font-black uppercase leading-tight">{p.title}</h3>
-                    <div className="mt-3 h-2 border-2 border-ink"><div className="h-full bg-clay" style={{ width: `${Math.min(100, mins(p) * 10)}%` }} /></div>
-                    <p className="mt-2 font-mono text-[11px] uppercase">{mins(p)} min read →</p>
-                  </div>
-                </PostLink>
-              ))}
-            </div>
-          </section>
-
-          {/* 4. Six flavors bento */}
-          <section className="px-4 py-20 sm:px-8">
-            <h2 className="font-sans text-5xl font-black uppercase">Six Flavors</h2>
-            <div className="mt-8 grid auto-rows-[180px] grid-cols-2 gap-4 lg:grid-cols-4">
-              {posts.slice(0, 6).map((p, i) => (
-                <PostLink key={p.slug} p={p} className={`group relative overflow-hidden ${ink} ${pop()} ${["col-span-2 row-span-2 bg-clay text-bone", "bg-olive text-olive-foreground", "bg-bone", "row-span-2 bg-bone", "bg-ink text-bone", "col-span-2 lg:col-span-1 bg-bone"][i]}`}>
-                  <div className="absolute inset-0 opacity-20" style={i % 2 ? hatch : halftone} />
-                  {p.cover && <img src={p.cover} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-90" />}
-                  <div className="relative flex h-full flex-col justify-end p-5">
-                    <p className="font-mono text-[11px] uppercase">{p.category}</p>
-                    <h3 className="font-sans text-2xl font-black uppercase leading-none">{p.title}</h3>
-                  </div>
-                </PostLink>
-              ))}
-            </div>
-          </section>
-
-          {/* 5. The Shelf */}
-          <section className="grid gap-10 bg-olive px-4 py-20 text-bone sm:px-8 lg:grid-cols-[1fr_2fr]" style={{ backgroundImage: "radial-gradient(rgb(255 255 255 / .12) 1px, transparent 1.4px)", backgroundSize: "10px 10px" }}>
-            <div className="lg:sticky lg:top-28 lg:self-start">
-              <h2 className="font-sans text-5xl font-black uppercase">The Shelf</h2>
-              <p className="mt-3 font-mono text-sm uppercase opacity-70">{posts.length} volumes in the archive</p>
-            </div>
-            <div className="flex h-80 items-end gap-2 overflow-x-auto border-b-8 border-bone pb-0 [perspective:800px]">
-              {posts.slice(0, 12).map((p, i) => (
-                <PostLink key={p.slug} p={p} className={`flex shrink-0 items-center justify-center border-2 border-ink px-2 transition duration-300 [writing-mode:vertical-rl] hover:-translate-y-4 hover:[transform:rotateY(-20deg)] ${["bg-olive", "bg-bone text-ink", "bg-clay", "bg-ink"][i % 4]}`}
-                  style={{ height: `${70 + ((i * 37) % 30)}%`, width: `${44 + ((i * 13) % 20)}px` }}>
-                  <span className="truncate font-sans text-sm font-black uppercase">{p.title}</span>
-                </PostLink>
-              ))}
-            </div>
-          </section>
-
-          {/* 6. New volumes reel */}
-          <section className="relative px-4 py-20 sm:px-8">
-            <div className="absolute inset-x-0 top-0 h-6 bg-olive" style={{ ...tear, transform: "scaleY(-1)" }} />
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <h2 className="font-sans text-5xl font-black uppercase">New Volumes</h2>
-              <div className="flex flex-wrap gap-2">
-                {["All", ...cats].map((c) => (
-                  <button key={c} type="button" onClick={() => setReel(c)} className={`${ink} px-3 py-1 font-mono text-xs font-bold uppercase ${reel === c ? "bg-olive text-bone" : "bg-bone"}`}>{c}</button>
+          <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20 lg:px-16">
+            <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
+              <div>
+                <p className="caps opacity-50">From the collection</p>
+                <h2 className="mt-3 font-display text-4xl font-light sm:text-5xl">Six flavors</h2>
+                <p className="mt-4 max-w-xs text-sm font-light leading-relaxed opacity-60">Different threads from the studio, gathered in one place.</p>
+              </div>
+              <div className="grid gap-x-8 sm:grid-cols-2">
+                {posts.slice(0, 6).map((post, index) => (
+                  <PostLink key={post.slug} post={post} className="group flex gap-4 border-b border-ink/15 py-5">
+                    <span className="pt-1 font-display text-xl font-light text-olive/70">{String(index + 1).padStart(2, "0")}</span>
+                    <span>
+                      <span className="block text-[10px] uppercase tracking-[0.16em] opacity-50">{post.category}</span>
+                      <span className="mt-1 block font-display text-xl font-light leading-tight group-hover:text-olive">{post.title}</span>
+                    </span>
+                    <span className="ml-auto pt-1 text-sm opacity-40 transition-transform group-hover:translate-x-1">↗</span>
+                  </PostLink>
                 ))}
               </div>
             </div>
-            <div className="mt-8 flex snap-x gap-5 overflow-x-auto pb-6">
-              {reelPosts.map((p) => (
-                <PostLink key={p.slug} p={p} className={`flex w-80 shrink-0 snap-start ${ink} bg-bone ${pop("olive")}`}>
-                  <div className="grid w-24 place-items-center border-r-[3px] border-dashed border-ink bg-olive p-2 text-center font-mono text-bone">
-                    <span className="text-xs font-bold uppercase">{p.date}</span>
-                  </div>
-                  <div className="p-4">
-                    <p className="font-mono text-[11px] uppercase opacity-70">{vol(posts.indexOf(p))} · {p.category}</p>
-                    <h3 className="mt-1 font-sans text-lg font-black uppercase leading-tight">{p.title}</h3>
-                    <p className="mt-3 font-mono text-[11px] uppercase">Read →</p>
-                  </div>
+          </section>
+
+          <section className="bg-olive py-16 text-bone sm:py-20">
+            <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
+              <div className="flex flex-wrap items-end justify-between gap-5">
+                <div>
+                  <p className="caps opacity-60">The collection</p>
+                  <h2 className="mt-3 font-display text-4xl font-light sm:text-5xl">On the shelf</h2>
+                </div>
+                <p className="text-xs tracking-wide opacity-65">{posts.length} volumes in the archive</p>
+              </div>
+              <div className="mt-8 flex gap-3 overflow-x-auto pb-3">
+                {posts.slice(0, 12).map((post, index) => (
+                  <PostLink key={post.slug} post={post} className="group flex min-h-64 w-36 shrink-0 flex-col justify-between border border-bone/25 bg-ink/10 p-4 transition-colors hover:bg-bone/10 sm:w-44">
+                    <span className="text-[10px] uppercase tracking-[0.16em] opacity-60">{volume(index)}</span>
+                    {post.cover && <img src={post.cover} alt="" loading="lazy" className="my-4 aspect-[3/4] w-full object-cover opacity-80 transition group-hover:opacity-100" />}
+                    <span className="font-display text-xl font-light leading-tight">{post.title}</span>
+                  </PostLink>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20 lg:px-16">
+            <div className="flex flex-wrap items-end justify-between gap-5 border-b border-ink/20 pb-5">
+              <div>
+                <p className="caps opacity-50">Recently added</p>
+                <h2 className="mt-3 font-display text-4xl font-light sm:text-5xl">New volumes</h2>
+              </div>
+              <nav aria-label="Filter new journal volumes" className="flex flex-wrap gap-x-4 gap-y-2">
+                {["All", ...categories].map((item) => (
+                  <button key={item} type="button" onClick={() => setReelCategory(item)} aria-pressed={reelCategory === item}
+                    className={`border-b pb-1 text-[10px] uppercase tracking-[0.15em] transition-colors ${reelCategory === item ? "border-olive text-ink" : "border-transparent opacity-55 hover:opacity-100"}`}>
+                    {item}
+                  </button>
+                ))}
+              </nav>
+            </div>
+            <div className="mt-2 grid gap-0 sm:grid-cols-2 lg:grid-cols-3">
+              {reelPosts.map((post) => (
+                <PostLink key={post.slug} post={post} className="group flex gap-4 border-b border-ink/15 py-5 sm:pr-5">
+                  <span className="font-display text-2xl font-light text-olive/70">{String(posts.indexOf(post) + 1).padStart(2, "0")}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[10px] uppercase tracking-[0.15em] opacity-50">{post.date} · {post.category}</span>
+                    <span className="mt-1 block font-display text-xl font-light leading-tight group-hover:text-olive">{post.title}</span>
+                    <span className="mt-2 block text-[10px] uppercase tracking-[0.15em] opacity-55">{readMinutes(post)} min read ↗</span>
+                  </span>
                 </PostLink>
               ))}
             </div>
@@ -172,14 +192,12 @@ function Journal() {
         </>
       )}
 
-      {/* 7. Footer */}
-      <footer className="relative mt-10 bg-ink px-4 pb-10 pt-16 text-bone sm:px-8">
-        <div className="absolute inset-x-0 -top-5 h-6 bg-ink" style={tear} />
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div><p className="font-sans text-3xl font-black uppercase">ObjektHaus</p><p className="mt-2 font-mono text-xs uppercase opacity-60">Handcrafted objects · Dhaka</p></div>
-          <div className="font-mono text-xs uppercase"><p className="opacity-50">Directory</p><Link to="/archive" className="mt-2 block hover:text-olive-foreground">Botanical Archive</Link><Link to="/collaborate" className="block hover:text-olive-foreground">Got an idea?</Link><Link to="/contact" className="block hover:text-olive-foreground">Contact</Link></div>
-          <div className="font-mono text-xs uppercase"><p className="opacity-50">Categories</p>{cats.map((c) => <p key={c} className="mt-1">{c}</p>)}</div>
-          <div className="font-mono text-xs uppercase"><p className="opacity-50">Colophon</p><p className="mt-2 opacity-80">Printed in ink, olive & clay. {posts.length} notes so far.</p></div>
+      <footer className="bg-ink py-12 text-bone">
+        <div className="mx-auto grid max-w-7xl gap-8 px-6 sm:grid-cols-2 sm:px-10 lg:grid-cols-4 lg:px-16">
+          <div><p className="font-display text-3xl font-light">ObjektHaus</p><p className="mt-2 text-xs opacity-55">Handcrafted objects · Dhaka</p></div>
+          <div className="text-xs leading-7"><p className="caps mb-2 opacity-45">Directory</p><Link to="/archive" className="block hover:opacity-65">Botanical Archive</Link><Link to="/collaborate" className="block hover:opacity-65">Got an idea?</Link><Link to="/contact" className="block hover:opacity-65">Contact</Link></div>
+          <div className="text-xs leading-7"><p className="caps mb-2 opacity-45">Categories</p>{categories.map((item) => <p key={item}>{item}</p>)}</div>
+          <div className="text-xs leading-7"><p className="caps mb-2 opacity-45">Colophon</p><p className="opacity-65">Studio notes in ink, olive, bone and clay.</p><p className="mt-2 opacity-45">{posts.length} notes in the archive</p></div>
         </div>
       </footer>
     </main>

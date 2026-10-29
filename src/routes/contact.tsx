@@ -58,20 +58,28 @@ function Contact() {
 
         {sent ? (
           <p className="mt-14 font-display text-2xl font-light">
-            Your message has been received. We answer slowly, but we answer.
+            WhatsApp is ready with your message. Please press Send in WhatsApp to deliver it to the studio.
           </p>
         ) : (
           <form
             className="mt-14 space-y-6"
             onSubmit={(e) => {
               e.preventDefault();
-              setSent(true);
+              const form = new FormData(e.currentTarget);
+              const name = String(form.get("name") ?? "").trim();
+              const email = String(form.get("email") ?? "").trim();
+              const message = String(form.get("message") ?? "").trim();
+              const text = `Hello ObjektHaus,\n\n${message}\n\nFrom: ${name}\nEmail: ${email}`;
+              const chat = window.open(`${whatsappHref(contact.whatsapp)}?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+              if (chat) setSent(true);
             }}
           >
             <label className="block">
               <span className="caps opacity-55">Name</span>
               <input
                 required
+                name="name"
+                autoComplete="name"
                 className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
               />
             </label>
@@ -80,6 +88,8 @@ function Contact() {
               <input
                 required
                 type="email"
+                name="email"
+                autoComplete="email"
                 className="mt-2 w-full border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
               />
             </label>
@@ -87,6 +97,7 @@ function Contact() {
               <span className="caps opacity-55">Message</span>
               <textarea
                 required
+                name="message"
                 rows={4}
                 className="mt-2 w-full resize-none border-b border-current/30 bg-transparent py-2 outline-none focus:border-current"
               />

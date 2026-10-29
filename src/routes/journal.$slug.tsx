@@ -21,36 +21,66 @@ export const Route = createFileRoute("/journal/$slug")({
 function Post() {
   const { slug } = Route.useParams();
   const posts = useJournal();
-  const i = posts.findIndex((p) => p.slug === slug);
-  const post = posts[i];
-  const next = posts[i + 1];
+  const index = posts.findIndex((item) => item.slug === slug);
+  const post = posts[index];
+  const previous = index > 0 ? posts[index - 1] : undefined;
+  const next = posts[index + 1];
 
   return (
     <main data-tone="dark" className="min-h-screen bg-bone text-ink">
       <SiteNav />
-      <article className="mx-auto max-w-3xl px-7 pt-32 pb-24 sm:px-10 lg:pt-40">
+      <article className="mx-auto max-w-4xl px-6 pb-24 pt-32 sm:px-10 lg:pt-40">
         {!post ? (
-          <p className="font-mono uppercase">This note could not be found. <Link to="/journal" className="underline">Back to the Journal</Link></p>
+          <div className="border-t border-ink/20 pt-8">
+            <p className="font-display text-3xl font-light">This note could not be found.</p>
+            <Link to="/journal" className="corner-action caps mt-6">Back to the Journal <span aria-hidden="true">↗</span></Link>
+          </div>
         ) : (
           <>
-            <span className="inline-block border-2 border-ink bg-olive px-2 py-0.5 font-mono text-xs font-bold uppercase text-olive-foreground">{post.category} · {post.date}</span>
-            <h1 className="mt-5 border-b-4 border-ink pb-6 font-sans text-5xl font-black uppercase leading-[0.9] sm:text-7xl">{post.title}</h1>
-            {post.cover && <img src={post.cover} alt={post.title} fetchPriority="high" className="mt-10 aspect-[4/3] w-full border-4 border-ink object-cover shadow-[10px_10px_0_var(--color-olive)]" />}
-            <div className="mt-12 space-y-5 text-[1.05rem] leading-relaxed">
-              {post.body.split(/\n{2,}/).map((para, k) =>
-                para.startsWith("## ") ? (
-                  <h2 key={k} className="pt-4 font-sans text-3xl font-black uppercase">{para.slice(3)}</h2>
-                ) : para.startsWith("> ") ? (
-                  <blockquote key={k} className="border-4 border-l-[12px] border-ink border-l-olive bg-bone p-5 font-sans text-2xl font-bold uppercase shadow-[6px_6px_0_var(--color-olive)]">{para.slice(2)}</blockquote>
+            <Link to="/journal" className="caps inline-flex items-center gap-3 opacity-55 transition hover:opacity-100"><span aria-hidden="true">←</span> The Journal</Link>
+            <header className="mt-12 border-b border-ink/20 pb-8 sm:mt-16">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] uppercase tracking-[0.18em] text-olive">
+                <span>{post.category || "Studio notes"}</span><span className="opacity-45">/</span><time>{post.date}</time>
+              </div>
+              <h1 className="mt-5 max-w-3xl font-display text-5xl font-light leading-[1.04] sm:text-6xl lg:text-7xl">{post.title}</h1>
+              {post.excerpt && <p className="mt-6 max-w-2xl text-lg font-light leading-relaxed opacity-65">{post.excerpt}</p>}
+            </header>
+            {post.cover && (
+              <figure className="mt-8 sm:mt-10">
+                <img src={post.cover} alt={post.title} fetchPriority="high" className="max-h-[70vh] w-full bg-sand object-cover" />
+                <figcaption className="mt-3 text-[10px] uppercase tracking-[0.16em] opacity-45">ObjektHaus · Studio journal</figcaption>
+              </figure>
+            )}
+            <div className="mx-auto mt-12 max-w-2xl space-y-6 text-base font-light leading-[1.9] sm:mt-16 sm:text-lg">
+              {post.body.split(/\n{2,}/).map((paragraph, paragraphIndex) =>
+                paragraph.startsWith("## ") ? (
+                  <h2 key={paragraphIndex} className="pt-8 font-display text-3xl font-light leading-tight sm:text-4xl">{paragraph.slice(3)}</h2>
+                ) : paragraph.startsWith("> ") ? (
+                  <blockquote key={paragraphIndex} className="my-10 border-l border-olive pl-6 font-display text-2xl italic leading-snug text-olive sm:pl-8 sm:text-3xl">{paragraph.slice(2)}</blockquote>
                 ) : (
-                  <p key={k} className="whitespace-pre-line opacity-85">{para}</p>
+                  <p key={paragraphIndex} className="whitespace-pre-line opacity-80">{paragraph}</p>
                 ),
               )}
             </div>
-            <div className="mt-16 flex flex-wrap justify-between gap-6 border-t-4 border-ink pt-6 font-mono text-xs font-bold uppercase">
-              <Link to="/journal" className="border-2 border-ink px-3 py-1 hover:bg-ink hover:text-bone">← All notes</Link>
-              {next && <Link to="/journal/$slug" params={{ slug: next.slug }} className="border-2 border-ink bg-clay px-3 py-1 text-clay-foreground shadow-[3px_3px_0_var(--color-ink)]">{next.title} →</Link>}
-            </div>
+            <nav aria-label="More journal notes" className="mt-16 grid gap-6 border-t border-ink/20 pt-6 sm:grid-cols-2 sm:gap-10">
+              <div>
+                <p className="caps opacity-45">Back to the collection</p>
+                <Link to="/journal" className="mt-3 inline-block font-display text-2xl font-light hover:text-olive">All journal notes ↗</Link>
+              </div>
+              <div className="sm:text-right">
+                {next ? (
+                  <>
+                    <p className="caps opacity-45">Continue reading</p>
+                    <Link to="/journal/$slug" params={{ slug: next.slug }} className="mt-3 inline-block font-display text-2xl font-light hover:text-olive">{next.title} <span aria-hidden="true">↗</span></Link>
+                  </>
+                ) : previous ? (
+                  <>
+                    <p className="caps opacity-45">Previous note</p>
+                    <Link to="/journal/$slug" params={{ slug: previous.slug }} className="mt-3 inline-block font-display text-2xl font-light hover:text-olive">{previous.title} <span aria-hidden="true">↗</span></Link>
+                  </>
+                ) : null}
+              </div>
+            </nav>
           </>
         )}
       </article>

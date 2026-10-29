@@ -62,8 +62,17 @@ function Order() {
     setBusy(true);
     setError(null);
     const form = new FormData(e.currentTarget);
-    const userId = (await supabase.auth.getUser()).data.user?.id ?? null;
     try {
+      // Checkout is available to guests. A managed-auth lookup must never
+      // prevent an otherwise valid order from being saved.
+      let userId: string | null = null;
+      try {
+        const auth = await supabase.auth.getUser();
+        userId = auth.data.user?.id ?? null;
+        if (auth.error) console.warn("Could not resolve checkout user; continuing as guest:", auth.error);
+      } catch (authError) {
+        console.warn("Checkout auth lookup failed; continuing as guest:", authError);
+      }
       const { reference: ref } = await sendOrder({
         data: {
           customer_name: String(form.get("name") ?? ""),
